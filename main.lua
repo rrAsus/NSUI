@@ -8,86 +8,90 @@ local NSUIFolder = "NSUI"
 local ConfigurationFolder = NSUIFolder.."/Configurations"
 local ConfigurationExtension = ".nsui"
 
+local ESQuint = Enum.EasingStyle.Quint
+local TINew = TweenInfo.new
+local fRGB = Color3.fromRGB
+
 local NSUILibrary = {
     Flags = {},
     Theme = {
         Default = {
             TextFont = "Default", -- Default will use the various font faces used across NSUI
-            TextColor = Color3.fromRGB(240, 240, 240),
+            TextColor = fRGB(240, 240, 240),
 
-            Background = Color3.fromRGB(25, 25, 25),
-            Topbar = Color3.fromRGB(34, 34, 34),
-            Shadow = Color3.fromRGB(20, 20, 20),
+            Background = fRGB(25, 25, 25),
+            Topbar = fRGB(34, 34, 34),
+            Shadow = fRGB(20, 20, 20),
 
-            NotificationBackground = Color3.fromRGB(20, 20, 20),
-            NotificationActionsBackground = Color3.fromRGB(230, 230, 230),
+            NotificationBackground = fRGB(20, 20, 20),
+            NotificationActionsBackground = fRGB(230, 230, 230),
 
-            TabBackground = Color3.fromRGB(80, 80, 80),
-            TabStroke = Color3.fromRGB(85, 85, 85),
-            TabBackgroundSelected = Color3.fromRGB(210, 210, 210),
-            TabTextColor = Color3.fromRGB(240, 240, 240),
-            SelectedTabTextColor = Color3.fromRGB(50, 50, 50),
+            TabBackground = fRGB(80, 80, 80),
+            TabStroke = fRGB(85, 85, 85),
+            TabBackgroundSelected = fRGB(210, 210, 210),
+            TabTextColor = fRGB(240, 240, 240),
+            SelectedTabTextColor = fRGB(50, 50, 50),
 
-            ElementBackground = Color3.fromRGB(35, 35, 35),
-            ElementBackgroundHover = Color3.fromRGB(40, 40, 40),
-            SecondaryElementBackground = Color3.fromRGB(25, 25, 25), -- For labels and paragraphs
-            ElementStroke = Color3.fromRGB(50, 50, 50),
-            SecondaryElementStroke = Color3.fromRGB(40, 40, 40), -- For labels and paragraphs
+            ElementBackground = fRGB(35, 35, 35),
+            ElementBackgroundHover = fRGB(40, 40, 40),
+            SecondaryElementBackground = fRGB(25, 25, 25), -- For labels and paragraphs
+            ElementStroke = fRGB(50, 50, 50),
+            SecondaryElementStroke = fRGB(40, 40, 40), -- For labels and paragraphs
 
-            SliderBackground = Color3.fromRGB(43, 105, 159),
-            SliderProgress = Color3.fromRGB(43, 105, 159),
-            SliderStroke = Color3.fromRGB(48, 119, 177),
+            SliderBackground = fRGB(43, 105, 159),
+            SliderProgress = fRGB(43, 105, 159),
+            SliderStroke = fRGB(48, 119, 177),
 
-            ToggleBackground = Color3.fromRGB(30, 30, 30),
-            ToggleEnabled = Color3.fromRGB(0, 146, 214),
-            ToggleDisabled = Color3.fromRGB(100, 100, 100),
-            ToggleEnabledStroke = Color3.fromRGB(0, 170, 255),
-            ToggleDisabledStroke = Color3.fromRGB(125, 125, 125),
-            ToggleEnabledOuterStroke = Color3.fromRGB(100, 100, 100),
-            ToggleDisabledOuterStroke = Color3.fromRGB(65, 65, 65),
+            ToggleBackground = fRGB(30, 30, 30),
+            ToggleEnabled = fRGB(0, 146, 214),
+            ToggleDisabled = fRGB(100, 100, 100),
+            ToggleEnabledStroke = fRGB(0, 170, 255),
+            ToggleDisabledStroke = fRGB(125, 125, 125),
+            ToggleEnabledOuterStroke = fRGB(100, 100, 100),
+            ToggleDisabledOuterStroke = fRGB(65, 65, 65),
 
-            InputBackground = Color3.fromRGB(30, 30, 30),
-            InputStroke = Color3.fromRGB(65, 65, 65),
-            PlaceholderColor = Color3.fromRGB(178, 178, 178)
+            InputBackground = fRGB(30, 30, 30),
+            InputStroke = fRGB(65, 65, 65),
+            PlaceholderColor = fRGB(178, 178, 178)
         },
         Light = {
             TextFont = "Gotham", -- Default will use the various font faces used across NSUI
-            TextColor = Color3.fromRGB(50, 50, 50), -- i need to make all text 240, 240, 240 and base gray on transparency not color to do this
+            TextColor = fRGB(50, 50, 50), -- i need to make all text 240, 240, 240 and base gray on transparency not color to do this
 
-            Background = Color3.fromRGB(255, 255, 255),
-            Topbar = Color3.fromRGB(217, 217, 217),
-            Shadow = Color3.fromRGB(223, 223, 223),
+            Background = fRGB(255, 255, 255),
+            Topbar = fRGB(217, 217, 217),
+            Shadow = fRGB(223, 223, 223),
 
-            NotificationBackground = Color3.fromRGB(20, 20, 20),
-            NotificationActionsBackground = Color3.fromRGB(230, 230, 230),
+            NotificationBackground = fRGB(20, 20, 20),
+            NotificationActionsBackground = fRGB(230, 230, 230),
 
-            TabBackground = Color3.fromRGB(220, 220, 220),
-            TabStroke = Color3.fromRGB(112, 112, 112),
-            TabBackgroundSelected = Color3.fromRGB(0, 142, 208),
-            TabTextColor = Color3.fromRGB(240, 240, 240),
-            SelectedTabTextColor = Color3.fromRGB(50, 50, 50),
+            TabBackground = fRGB(220, 220, 220),
+            TabStroke = fRGB(112, 112, 112),
+            TabBackgroundSelected = fRGB(0, 142, 208),
+            TabTextColor = fRGB(240, 240, 240),
+            SelectedTabTextColor = fRGB(50, 50, 50),
 
-            ElementBackground = Color3.fromRGB(198, 198, 198),
-            ElementBackgroundHover = Color3.fromRGB(230, 230, 230),
-            SecondaryElementBackground = Color3.fromRGB(136, 136, 136), -- For labels and paragraphs
-            ElementStroke = Color3.fromRGB(180, 199, 97),
-            SecondaryElementStroke = Color3.fromRGB(40, 40, 40), -- For labels and paragraphs
+            ElementBackground = fRGB(198, 198, 198),
+            ElementBackgroundHover = fRGB(230, 230, 230),
+            SecondaryElementBackground = fRGB(136, 136, 136), -- For labels and paragraphs
+            ElementStroke = fRGB(180, 199, 97),
+            SecondaryElementStroke = fRGB(40, 40, 40), -- For labels and paragraphs
 
-            SliderBackground = Color3.fromRGB(31, 159, 71),
-            SliderProgress = Color3.fromRGB(31, 159, 71),
-            SliderStroke = Color3.fromRGB(42, 216, 94),
+            SliderBackground = fRGB(31, 159, 71),
+            SliderProgress = fRGB(31, 159, 71),
+            SliderStroke = fRGB(42, 216, 94),
 
-            ToggleBackground = Color3.fromRGB(170, 203, 60),
-            ToggleEnabled = Color3.fromRGB(32, 214, 29),
-            ToggleDisabled = Color3.fromRGB(100, 22, 23),
-            ToggleEnabledStroke = Color3.fromRGB(17, 255, 0),
-            ToggleDisabledStroke = Color3.fromRGB(65, 8, 8),
-            ToggleEnabledOuterStroke = Color3.fromRGB(0, 170, 0),
-            ToggleDisabledOuterStroke = Color3.fromRGB(170, 0, 0),
+            ToggleBackground = fRGB(170, 203, 60),
+            ToggleEnabled = fRGB(32, 214, 29),
+            ToggleDisabled = fRGB(100, 22, 23),
+            ToggleEnabledStroke = fRGB(17, 255, 0),
+            ToggleDisabledStroke = fRGB(65, 8, 8),
+            ToggleEnabledOuterStroke = fRGB(0, 170, 0),
+            ToggleDisabledOuterStroke = fRGB(170, 0, 0),
 
-            InputBackground = Color3.fromRGB(31, 159, 71),
-            InputStroke = Color3.fromRGB(19, 65, 31),
-            PlaceholderColor = Color3.fromRGB(178, 178, 178)
+            InputBackground = fRGB(31, 159, 71),
+            InputStroke = fRGB(19, 65, 31),
+            PlaceholderColor = fRGB(178, 178, 178)
         }
     }
 }
@@ -97,7 +101,7 @@ local NSUILibrary = {
 -- Services
 
 local UserInputService = game:GetService("UserInputService")
-local TweenService = game:GetService("TweenService")
+local TS = game:GetService("TweenService")
 local HttpService = game:GetService("HttpService")
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
@@ -216,7 +220,7 @@ local function AddDraggingFunctionality(DragPoint, Main)
         UserInputService.InputChanged:Connect(function(Input)
             if Input == DragInput and Dragging then
                 local Delta = Input.Position - MousePos
-                TweenService:Create(Main, TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Position  = UDim2.new(FramePos.X.Scale,FramePos.X.Offset + Delta.X, FramePos.Y.Scale, FramePos.Y.Offset + Delta.Y)}):Play()
+                TS:Create(Main, TINew(0.45, ESQuint, Enum.EasingDirection.Out), {Position  = UDim2.new(FramePos.X.Scale,FramePos.X.Offset + Delta.X, FramePos.Y.Scale, FramePos.Y.Offset + Delta.Y)}):Play()
             end
         end)
     end)
@@ -227,14 +231,14 @@ local function PackColor(Color)
 end    
 
 local function UnpackColor(Color)
-    return Color3.fromRGB(Color.R, Color.G, Color.B)
+    return fRGB(Color.R, Color.G, Color.B)
 end
 
 local function LoadConfiguration(Configuration)
     local Data = HttpService:JSONDecode(Configuration)
     for FlagName, FlagValue in next, Data do
         if NSUILibrary.Flags[FlagName] then
-            spawn(function() 
+            task.spawn(function() 
                 if NSUILibrary.Flags[FlagName].Type == "ColorPicker" then
                     NSUILibrary.Flags[FlagName]:Set(UnpackColor(FlagValue))
                 else
@@ -242,7 +246,7 @@ local function LoadConfiguration(Configuration)
                 end    
             end)
         else
-            NSUILibrary:Notify({Title = "Flag Error", Content = "NSUI was unable to find '"..FlagName.. "'' in the current script"})
+            NSUILibrary:Notify({Title = "Flag Error", Content = "NSUI was unable to find "..FlagName.. " in the current script"})
         end
     end
 end
@@ -286,15 +290,15 @@ local neon = (function() -- Open sourced neon module
 
 
     local binds = {}
-    local root = Instance.new('Folder', RootParent)
-    root.Name = 'neon'
+    local root = Instance.new("Folder", RootParent)
+    root.Name = "neon"
 
 
     local GenUid; do
         local id = 0
         function GenUid()
             id = id + 1
-            return 'neon::'..tostring(id)
+            return "neon::"..tostring(id)
         end
     end
 
@@ -345,17 +349,17 @@ local neon = (function() -- Open sourced neon module
             cf1 = cf1 * CFrame.new(0, perp/2, dif_para/2)
 
             if not p0 then
-                p0 = Instance.new('Part')
-                p0.FormFactor = 'Custom'
+                p0 = Instance.new("Part")
+                p0.FormFactor = "Custom"
                 p0.TopSurface = 0
                 p0.BottomSurface = 0
                 p0.Anchored = true
                 p0.CanCollide = false
-                p0.Material = 'Glass'
+                p0.Material = "Glass"
                 p0.Size = Vector3.new(sz, sz, sz)
-                local mesh = Instance.new('SpecialMesh', p0)
+                local mesh = Instance.new("SpecialMesh", p0)
                 mesh.MeshType = 2
-                mesh.Name = 'WedgeMesh'
+                mesh.Name = "WedgeMesh"
             end
             p0.WedgeMesh.Scale = Vector3.new(0, perp/sz, para/sz)
             p0.CFrame = cf0
@@ -383,13 +387,13 @@ local neon = (function() -- Open sourced neon module
 
         local uid = GenUid()
         local parts = {}
-        local f = Instance.new('Folder', root)
+        local f = Instance.new("Folder", root)
         f.Name = frame.Name
 
         local parents = {}
         do
             local function add(child)
-                if child:IsA'GuiObject' then
+                if child:IsA"GuiObject" then
                     parents[#parents + 1] = child
                     add(child.Parent)
                 end
@@ -482,7 +486,7 @@ local neon = (function() -- Open sourced neon module
 end)()
 
 function NSUILibrary:Notify(NotificationSettings)
-    spawn(function()
+    task.spawn(function()
         local ActionCompleted = true
         local Notification = Notifications.Template:Clone()
         Notification.Parent = Notifications
@@ -551,26 +555,26 @@ function NSUILibrary:Notify(NotificationSettings)
         Notification.Size = UDim2.new(0, 260, 0, 80)
         Notification.BackgroundTransparency = 1
 
-        TweenService:Create(Notification, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 295, 0, 91)}):Play()
-        TweenService:Create(Notification, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.1}):Play()
-        Notification:TweenPosition(UDim2.new(0.5,0,0.915,0),'Out','Quint',0.8,true)
+        TS:Create(Notification, TINew(0.7, ESQuint), {Size = UDim2.new(0, 295, 0, 91)}):Play()
+        TS:Create(Notification, TINew(0.7, ESQuint), {BackgroundTransparency = 0.1}):Play()
+        Notification:TweenPosition(UDim2.new(0.5,0,0.915,0),"Out","Quint",0.8,true)
 
-        wait(0.3)
-        TweenService:Create(Notification.Icon, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
-        TweenService:Create(Notification.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-        TweenService:Create(Notification.Description, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 0.2}):Play()
-        wait(0.2)
+        task.wait(0.3)
+        TS:Create(Notification.Icon, TINew(0.6, ESQuint), {ImageTransparency = 0}):Play()
+        TS:Create(Notification.Title, TINew(0.7, ESQuint), {TextTransparency = 0}):Play()
+        TS:Create(Notification.Description, TINew(0.6, ESQuint), {TextTransparency = 0.2}):Play()
+        task.wait(0.2)
 
 
 
         -- Requires Graphics Level 8-10
         if getgenv().SecureMode == nil then
-            TweenService:Create(Notification, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.4}):Play()
+            TS:Create(Notification, TINew(0.3, ESQuint), {BackgroundTransparency = 0.4}):Play()
         else
             if not getgenv().SecureMode then
-                TweenService:Create(Notification, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.4}):Play()
+                TS:Create(Notification, TINew(0.3, ESQuint), {BackgroundTransparency = 0.4}):Play()
             else 
-                TweenService:Create(Notification, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
+                TS:Create(Notification, TINew(0.3, ESQuint), {BackgroundTransparency = 0}):Play()
             end
         end
 
@@ -582,49 +586,49 @@ function NSUILibrary:Notify(NotificationSettings)
         end
 
         if not NotificationSettings.Actions then
-            wait(NotificationSettings.Duration or NotificationDuration - 0.5)
+            task.wait(NotificationSettings.Duration or NotificationDuration - 0.5)
         else
-            wait(0.8)
-            TweenService:Create(Notification, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 295, 0, 132)}):Play()
-            wait(0.3)
+            task.wait(0.8)
+            TS:Create(Notification, TINew(0.7, ESQuint), {Size = UDim2.new(0, 295, 0, 132)}):Play()
+            task.wait(0.3)
             for _, Action in ipairs(Notification.Actions:GetChildren()) do
                 if Action.ClassName == "TextButton" and Action.Name ~= "Template" then
-                    TweenService:Create(Action, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.2}):Play()
-                    TweenService:Create(Action, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-                    wait(0.05)
+                    TS:Create(Action, TINew(0.5, ESQuint), {BackgroundTransparency = 0.2}):Play()
+                    TS:Create(Action, TINew(0.6, ESQuint), {TextTransparency = 0}):Play()
+                    task.wait(0.05)
                 end
             end
         end
 
-        repeat wait(0.001) until ActionCompleted
+        repeat task.wait(0.001) until ActionCompleted
 
         for _, Action in ipairs(Notification.Actions:GetChildren()) do
             if Action.ClassName == "TextButton" and Action.Name ~= "Template" then
-                TweenService:Create(Action, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-                TweenService:Create(Action, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
+                TS:Create(Action, TINew(0.5, ESQuint), {BackgroundTransparency = 1}):Play()
+                TS:Create(Action, TINew(0.6, ESQuint), {TextTransparency = 1}):Play()
             end
         end
 
-        TweenService:Create(Notification.Title, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Position = UDim2.new(0.47, 0,0.234, 0)}):Play()
-        TweenService:Create(Notification.Description, TweenInfo.new(0.8, Enum.EasingStyle.Quint), {Position = UDim2.new(0.528, 0,0.637, 0)}):Play()
-        TweenService:Create(Notification, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 280, 0, 83)}):Play()
-        TweenService:Create(Notification.Icon, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
-        TweenService:Create(Notification, TweenInfo.new(0.8, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.6}):Play()
+        TS:Create(Notification.Title, TINew(0.6, ESQuint), {Position = UDim2.new(0.47, 0,0.234, 0)}):Play()
+        TS:Create(Notification.Description, TINew(0.8, ESQuint), {Position = UDim2.new(0.528, 0,0.637, 0)}):Play()
+        TS:Create(Notification, TINew(0.6, ESQuint), {Size = UDim2.new(0, 280, 0, 83)}):Play()
+        TS:Create(Notification.Icon, TINew(0.4, ESQuint), {ImageTransparency = 1}):Play()
+        TS:Create(Notification, TINew(0.8, ESQuint), {BackgroundTransparency = 0.6}):Play()
 
-        wait(0.3)
-        TweenService:Create(Notification.Title, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 0.4}):Play()
-        TweenService:Create(Notification.Description, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 0.5}):Play()
-        wait(0.4)
-        TweenService:Create(Notification, TweenInfo.new(0.9, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 260, 0, 0)}):Play()
-        TweenService:Create(Notification, TweenInfo.new(0.8, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-        TweenService:Create(Notification.Title, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-        TweenService:Create(Notification.Description, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-        wait(0.2)
+        task.wait(0.3)
+        TS:Create(Notification.Title, TINew(0.6, ESQuint), {TextTransparency = 0.4}):Play()
+        TS:Create(Notification.Description, TINew(0.6, ESQuint), {TextTransparency = 0.5}):Play()
+        task.wait(0.4)
+        TS:Create(Notification, TINew(0.9, ESQuint), {Size = UDim2.new(0, 260, 0, 0)}):Play()
+        TS:Create(Notification, TINew(0.8, ESQuint), {BackgroundTransparency = 1}):Play()
+        TS:Create(Notification.Title, TINew(0.6, ESQuint), {TextTransparency = 1}):Play()
+        TS:Create(Notification.Description, TINew(0.6, ESQuint), {TextTransparency = 1}):Play()
+        task.wait(0.2)
         if not getgenv().SecureMode then
             neon:UnbindFrame(Notification.BlurModule)
             blurlight:Destroy()
         end
-        wait(0.9)
+        task.wait(0.9)
         Notification:Destroy()
     end)
 end
@@ -642,27 +646,27 @@ end
 function Hide()
     Debounce = true
     NSUILibrary:Notify({Title = "Interface Hidden", Content = "The interface has been hidden, you can unhide the interface by tapping RightShift", Duration = 7})
-    TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 470, 0, 400)}):Play()
-    TweenService:Create(Main.Topbar, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 470, 0, 45)}):Play()
-    TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-    TweenService:Create(Main.Topbar, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-    TweenService:Create(Main.Topbar.Divider, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-    TweenService:Create(Main.Topbar.CornerRepair, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-    TweenService:Create(Main.Topbar.Title, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-    TweenService:Create(Main.Shadow.Image, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
-    TweenService:Create(Topbar.UIStroke, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
+    TS:Create(Main, TINew(0.5, ESQuint), {Size = UDim2.new(0, 470, 0, 400)}):Play()
+    TS:Create(Main.Topbar, TINew(0.5, ESQuint), {Size = UDim2.new(0, 470, 0, 45)}):Play()
+    TS:Create(Main, TINew(0.5, ESQuint), {BackgroundTransparency = 1}):Play()
+    TS:Create(Main.Topbar, TINew(0.5, ESQuint), {BackgroundTransparency = 1}):Play()
+    TS:Create(Main.Topbar.Divider, TINew(0.5, ESQuint), {BackgroundTransparency = 1}):Play()
+    TS:Create(Main.Topbar.CornerRepair, TINew(0.3, ESQuint), {BackgroundTransparency = 1}):Play()
+    TS:Create(Main.Topbar.Title, TINew(0.5, ESQuint), {TextTransparency = 1}):Play()
+    TS:Create(Main.Shadow.Image, TINew(0.5, ESQuint), {ImageTransparency = 1}):Play()
+    TS:Create(Topbar.UIStroke, TINew(0.5, ESQuint), {Transparency = 1}):Play()
     for _, TopbarButton in ipairs(Topbar:GetChildren()) do
         if TopbarButton.ClassName == "ImageButton" then
-            TweenService:Create(TopbarButton, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
+            TS:Create(TopbarButton, TINew(0.5, ESQuint), {ImageTransparency = 1}):Play()
         end
     end
     for _, tabbtn in ipairs(TabList:GetChildren()) do
         if tabbtn.ClassName == "Frame" and tabbtn.Name ~= "Placeholder" then
-            TweenService:Create(tabbtn, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-            TweenService:Create(tabbtn.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-            TweenService:Create(tabbtn.Image, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
-            TweenService:Create(tabbtn.Shadow, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
-            TweenService:Create(tabbtn.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
+            TS:Create(tabbtn, TINew(0.3, ESQuint), {BackgroundTransparency = 1}):Play()
+            TS:Create(tabbtn.Title, TINew(0.3, ESQuint), {TextTransparency = 1}):Play()
+            TS:Create(tabbtn.Image, TINew(0.3, ESQuint), {ImageTransparency = 1}):Play()
+            TS:Create(tabbtn.Shadow, TINew(0.3, ESQuint), {ImageTransparency = 1}):Play()
+            TS:Create(tabbtn.UIStroke, TINew(0.3, ESQuint), {Transparency = 1}):Play()
         end
     end
     for _, tab in ipairs(Elements:GetChildren()) do
@@ -671,11 +675,11 @@ function Hide()
                 if element.ClassName == "Frame" then
                     if element.Name ~= "SectionSpacing" and element.Name ~= "Placeholder" then
                         if element.Name == "SectionTitle" then
-                            TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
+                            TS:Create(element.Title, TINew(0.3, ESQuint), {TextTransparency = 1}):Play()
                         else
-                            TweenService:Create(element, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-                            TweenService:Create(element.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-                            TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
+                            TS:Create(element, TINew(0.3, ESQuint), {BackgroundTransparency = 1}):Play()
+                            TS:Create(element.UIStroke, TINew(0.3, ESQuint), {Transparency = 1}):Play()
+                            TS:Create(element.Title, TINew(0.3, ESQuint), {TextTransparency = 1}):Play()
                         end
                         for _, child in ipairs(element:GetChildren()) do
                             if child.ClassName == "Frame" or child.ClassName == "TextLabel" or child.ClassName == "TextBox" or child.ClassName == "ImageButton" or child.ClassName == "ImageLabel" then
@@ -687,7 +691,7 @@ function Hide()
             end
         end
     end
-    wait(0.5)
+    task.wait(0.5)
     Main.Visible = false
     Debounce = false
 end
@@ -696,36 +700,36 @@ function Unhide()
     Debounce = true
     Main.Position = UDim2.new(0.5, 0, 0.5, 0)
     Main.Visible = true
-    TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 500, 0, 475)}):Play()
-    TweenService:Create(Main.Topbar, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 500, 0, 45)}):Play()
-    TweenService:Create(Main.Shadow.Image, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0.4}):Play()
-    TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-    TweenService:Create(Main.Topbar, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-    TweenService:Create(Main.Topbar.Divider, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-    TweenService:Create(Main.Topbar.CornerRepair, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-    TweenService:Create(Main.Topbar.Title, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+    TS:Create(Main, TINew(0.5, ESQuint), {Size = UDim2.new(0, 500, 0, 475)}):Play()
+    TS:Create(Main.Topbar, TINew(0.5, ESQuint), {Size = UDim2.new(0, 500, 0, 45)}):Play()
+    TS:Create(Main.Shadow.Image, TINew(0.7, ESQuint), {ImageTransparency = 0.4}):Play()
+    TS:Create(Main, TINew(0.5, ESQuint), {BackgroundTransparency = 0}):Play()
+    TS:Create(Main.Topbar, TINew(0.5, ESQuint), {BackgroundTransparency = 0}):Play()
+    TS:Create(Main.Topbar.Divider, TINew(0.5, ESQuint), {BackgroundTransparency = 0}):Play()
+    TS:Create(Main.Topbar.CornerRepair, TINew(0.5, ESQuint), {BackgroundTransparency = 0}):Play()
+    TS:Create(Main.Topbar.Title, TINew(0.5, ESQuint), {TextTransparency = 0}):Play()
     if Minimised then
-        spawn(Maximise)
+        task.spawn(Maximise)
     end
     for _, TopbarButton in ipairs(Topbar:GetChildren()) do
         if TopbarButton.ClassName == "ImageButton" then
-            TweenService:Create(TopbarButton, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0.8}):Play()
+            TS:Create(TopbarButton, TINew(0.7, ESQuint), {ImageTransparency = 0.8}):Play()
         end
     end
     for _, tabbtn in ipairs(TabList:GetChildren()) do
         if tabbtn.ClassName == "Frame" and tabbtn.Name ~= "Placeholder" then
             if tostring(Elements.UIPageLayout.CurrentPage) == tabbtn.Title.Text then
-                TweenService:Create(tabbtn, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-                TweenService:Create(tabbtn.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-                TweenService:Create(tabbtn.Shadow, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageTransparency = 0.9}):Play()
-                TweenService:Create(tabbtn.Image, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
-                TweenService:Create(tabbtn.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
+                TS:Create(tabbtn, TINew(0.3, ESQuint), {BackgroundTransparency = 0}):Play()
+                TS:Create(tabbtn.Title, TINew(0.3, ESQuint), {TextTransparency = 0}):Play()
+                TS:Create(tabbtn.Shadow, TINew(0.3, ESQuint), {ImageTransparency = 0.9}):Play()
+                TS:Create(tabbtn.Image, TINew(0.3, ESQuint), {ImageTransparency = 0}):Play()
+                TS:Create(tabbtn.UIStroke, TINew(0.3, ESQuint), {Transparency = 1}):Play()
             else
-                TweenService:Create(tabbtn, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.7}):Play()
-                TweenService:Create(tabbtn.Image, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageTransparency = 0.2}):Play()
-                TweenService:Create(tabbtn.Shadow, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageTransparency = 0.7}):Play()
-                TweenService:Create(tabbtn.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 0.2}):Play()
-                TweenService:Create(tabbtn.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+                TS:Create(tabbtn, TINew(0.3, ESQuint), {BackgroundTransparency = 0.7}):Play()
+                TS:Create(tabbtn.Image, TINew(0.3, ESQuint), {ImageTransparency = 0.2}):Play()
+                TS:Create(tabbtn.Shadow, TINew(0.3, ESQuint), {ImageTransparency = 0.7}):Play()
+                TS:Create(tabbtn.Title, TINew(0.3, ESQuint), {TextTransparency = 0.2}):Play()
+                TS:Create(tabbtn.UIStroke, TINew(0.3, ESQuint), {Transparency = 0}):Play()
             end
 
         end
@@ -736,11 +740,11 @@ function Unhide()
                 if element.ClassName == "Frame" then
                     if element.Name ~= "SectionSpacing" and element.Name ~= "Placeholder" then
                         if element.Name == "SectionTitle" then
-                            TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+                            TS:Create(element.Title, TINew(0.3, ESQuint), {TextTransparency = 0}):Play()
                         else
-                            TweenService:Create(element, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-                            TweenService:Create(element.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-                            TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+                            TS:Create(element, TINew(0.3, ESQuint), {BackgroundTransparency = 0}):Play()
+                            TS:Create(element.UIStroke, TINew(0.3, ESQuint), {Transparency = 0}):Play()
+                            TS:Create(element.Title, TINew(0.3, ESQuint), {TextTransparency = 0}):Play()
                         end
                         for _, child in ipairs(element:GetChildren()) do
                             if child.ClassName == "Frame" or child.ClassName == "TextLabel" or child.ClassName == "TextBox" or child.ClassName == "ImageButton" or child.ClassName == "ImageLabel" then
@@ -752,7 +756,7 @@ function Unhide()
             end
         end
     end
-    wait(0.5)
+    task.wait(0.5)
     Minimised = false
     Debounce = false
 end
@@ -762,14 +766,14 @@ function Maximise()
     Topbar.ChangeSize.Image = "rbxassetid://"..10137941941
 
 
-    TweenService:Create(Topbar.UIStroke, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-    TweenService:Create(Main.Shadow.Image, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {ImageTransparency = 0.4}):Play()
-    TweenService:Create(Topbar.CornerRepair, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-    TweenService:Create(Topbar.Divider, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-    TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 500, 0, 475)}):Play()
-    TweenService:Create(Topbar, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 500, 0, 45)}):Play()
+    TS:Create(Topbar.UIStroke, TINew(0.5, ESQuint), {Transparency = 1}):Play()
+    TS:Create(Main.Shadow.Image, TINew(0.5, ESQuint), {ImageTransparency = 0.4}):Play()
+    TS:Create(Topbar.CornerRepair, TINew(0.5, ESQuint), {BackgroundTransparency = 0}):Play()
+    TS:Create(Topbar.Divider, TINew(0.5, ESQuint), {BackgroundTransparency = 0}):Play()
+    TS:Create(Main, TINew(0.5, ESQuint), {Size = UDim2.new(0, 500, 0, 475)}):Play()
+    TS:Create(Topbar, TINew(0.5, ESQuint), {Size = UDim2.new(0, 500, 0, 45)}):Play()
     TabList.Visible = true
-    wait(0.2)
+    task.wait(0.2)
 
     Elements.Visible = true
 
@@ -779,11 +783,11 @@ function Maximise()
                 if element.ClassName == "Frame" then
                     if element.Name ~= "SectionSpacing" and element.Name ~= "Placeholder" then
                         if element.Name == "SectionTitle" then
-                            TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+                            TS:Create(element.Title, TINew(0.3, ESQuint), {TextTransparency = 0}):Play()
                         else
-                            TweenService:Create(element, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-                            TweenService:Create(element.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-                            TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+                            TS:Create(element, TINew(0.3, ESQuint), {BackgroundTransparency = 0}):Play()
+                            TS:Create(element.UIStroke, TINew(0.3, ESQuint), {Transparency = 0}):Play()
+                            TS:Create(element.Title, TINew(0.3, ESQuint), {TextTransparency = 0}):Play()
                         end
                         for _, child in ipairs(element:GetChildren()) do
                             if child.ClassName == "Frame" or child.ClassName == "TextLabel" or child.ClassName == "TextBox" or child.ClassName == "ImageButton" or child.ClassName == "ImageLabel" then
@@ -797,29 +801,29 @@ function Maximise()
     end
 
 
-    wait(0.1)
+    task.wait(0.1)
 
     for _, tabbtn in ipairs(TabList:GetChildren()) do
         if tabbtn.ClassName == "Frame" and tabbtn.Name ~= "Placeholder" then
             if tostring(Elements.UIPageLayout.CurrentPage) == tabbtn.Title.Text then
-                TweenService:Create(tabbtn, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-                TweenService:Create(tabbtn.Image, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
-                TweenService:Create(tabbtn.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-                TweenService:Create(tabbtn.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-                TweenService:Create(tabbtn.Shadow, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageTransparency = 0.9}):Play()
+                TS:Create(tabbtn, TINew(0.3, ESQuint), {BackgroundTransparency = 0}):Play()
+                TS:Create(tabbtn.Image, TINew(0.3, ESQuint), {ImageTransparency = 0}):Play()
+                TS:Create(tabbtn.Title, TINew(0.3, ESQuint), {TextTransparency = 0}):Play()
+                TS:Create(tabbtn.UIStroke, TINew(0.3, ESQuint), {Transparency = 1}):Play()
+                TS:Create(tabbtn.Shadow, TINew(0.3, ESQuint), {ImageTransparency = 0.9}):Play()
             else
-                TweenService:Create(tabbtn, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.7}):Play()
-                TweenService:Create(tabbtn.Shadow, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageTransparency = 0.7}):Play()
-                TweenService:Create(tabbtn.Image, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageTransparency = 0.2}):Play()
-                TweenService:Create(tabbtn.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 0.2}):Play()
-                TweenService:Create(tabbtn.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+                TS:Create(tabbtn, TINew(0.3, ESQuint), {BackgroundTransparency = 0.7}):Play()
+                TS:Create(tabbtn.Shadow, TINew(0.3, ESQuint), {ImageTransparency = 0.7}):Play()
+                TS:Create(tabbtn.Image, TINew(0.3, ESQuint), {ImageTransparency = 0.2}):Play()
+                TS:Create(tabbtn.Title, TINew(0.3, ESQuint), {TextTransparency = 0.2}):Play()
+                TS:Create(tabbtn.UIStroke, TINew(0.3, ESQuint), {Transparency = 0}):Play()
             end
 
         end
     end
 
 
-    wait(0.5)
+    task.wait(0.5)
     Debounce = false
 end
 
@@ -829,11 +833,11 @@ function Minimise()
 
     for _, tabbtn in ipairs(TabList:GetChildren()) do
         if tabbtn.ClassName == "Frame" and tabbtn.Name ~= "Placeholder" then
-            TweenService:Create(tabbtn, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-            TweenService:Create(tabbtn.Image, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
-            TweenService:Create(tabbtn.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-            TweenService:Create(tabbtn.Shadow, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
-            TweenService:Create(tabbtn.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
+            TS:Create(tabbtn, TINew(0.3, ESQuint), {BackgroundTransparency = 1}):Play()
+            TS:Create(tabbtn.Image, TINew(0.3, ESQuint), {ImageTransparency = 1}):Play()
+            TS:Create(tabbtn.Title, TINew(0.3, ESQuint), {TextTransparency = 1}):Play()
+            TS:Create(tabbtn.Shadow, TINew(0.3, ESQuint), {ImageTransparency = 1}):Play()
+            TS:Create(tabbtn.UIStroke, TINew(0.3, ESQuint), {Transparency = 1}):Play()
         end
     end
 
@@ -843,11 +847,11 @@ function Minimise()
                 if element.ClassName == "Frame" then
                     if element.Name ~= "SectionSpacing" and element.Name ~= "Placeholder" then
                         if element.Name == "SectionTitle" then
-                            TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
+                            TS:Create(element.Title, TINew(0.3, ESQuint), {TextTransparency = 1}):Play()
                         else
-                            TweenService:Create(element, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-                            TweenService:Create(element.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-                            TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
+                            TS:Create(element, TINew(0.3, ESQuint), {BackgroundTransparency = 1}):Play()
+                            TS:Create(element.UIStroke, TINew(0.3, ESQuint), {Transparency = 1}):Play()
+                            TS:Create(element.Title, TINew(0.3, ESQuint), {TextTransparency = 1}):Play()
                         end
                         for _, child in ipairs(element:GetChildren()) do
                             if child.ClassName == "Frame" or child.ClassName == "TextLabel" or child.ClassName == "TextBox" or child.ClassName == "ImageButton" or child.ClassName == "ImageLabel" then
@@ -860,19 +864,19 @@ function Minimise()
         end
     end
 
-    TweenService:Create(Topbar.UIStroke, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-    TweenService:Create(Main.Shadow.Image, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
-    TweenService:Create(Topbar.CornerRepair, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-    TweenService:Create(Topbar.Divider, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-    TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 495, 0, 45)}):Play()
-    TweenService:Create(Topbar, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 495, 0, 45)}):Play()
+    TS:Create(Topbar.UIStroke, TINew(0.5, ESQuint), {Transparency = 0}):Play()
+    TS:Create(Main.Shadow.Image, TINew(0.5, ESQuint), {ImageTransparency = 1}):Play()
+    TS:Create(Topbar.CornerRepair, TINew(0.5, ESQuint), {BackgroundTransparency = 1}):Play()
+    TS:Create(Topbar.Divider, TINew(0.5, ESQuint), {BackgroundTransparency = 1}):Play()
+    TS:Create(Main, TINew(0.5, ESQuint), {Size = UDim2.new(0, 495, 0, 45)}):Play()
+    TS:Create(Topbar, TINew(0.5, ESQuint), {Size = UDim2.new(0, 495, 0, 45)}):Play()
 
-    wait(0.3)
+    task.wait(0.3)
 
     Elements.Visible = false
     TabList.Visible = false
 
-    wait(0.2)
+    task.wait(0.2)
     Debounce = false
 end
 
@@ -936,21 +940,21 @@ function NSUILibrary:CreateWindow(Settings)
         if not isfile(NSUIFolder.."/Discord Invites".."/"..Settings.Discord.Invite..ConfigurationExtension) then
             if request then
                 request({
-                    Url = 'http://127.0.0.1:6463/rpc?v=1',
-                    Method = 'POST',
+                    Url = "http://127.0.0.1:6463/rpc?v=1",
+                    Method = "POST",
                     Headers = {
-                        ['Content-Type'] = 'application/json',
-                        Origin = 'https://discord.com'
+                        ["Content-Type"] = "application/json",
+                        Origin = "https://discord.com"
                     },
                     Body = HttpService:JSONEncode({
-                        cmd = 'INVITE_BROWSER',
+                        cmd = "INVITE_BROWSER",
                         nonce = HttpService:GenerateGUID(false),
                         args = {code = Settings.Discord.Invite}
                     })
                 })
             end
 
-            if Settings.Discord.RememberJoins then -- We do logic this way so if the developer changes this setting, the user still won't be prompted, only new users
+            if Settings.Discord.RememberJoins then -- We do logic this way so if the developer changes this setting, the user still won"t be prompted, only new users
                 writefile(NSUIFolder.."/Discord Invites".."/"..Settings.Discord.Invite..ConfigurationExtension,"NSUI RememberJoins is true for this invite, this invite will not ask you to join again")
             end
         else
@@ -1042,28 +1046,28 @@ function NSUILibrary:CreateWindow(Settings)
             KeyMain.NoteMessage.TextTransparency = 1
             KeyMain.Hide.ImageTransparency = 1
 
-            TweenService:Create(KeyMain, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-            TweenService:Create(KeyMain, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 500, 0, 187)}):Play()
-            TweenService:Create(KeyMain.Shadow.Image, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {ImageTransparency = 0.5}):Play()
-            wait(0.05)
-            TweenService:Create(KeyMain.Title, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-            TweenService:Create(KeyMain.Subtitle, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-            wait(0.05)
-            TweenService:Create(KeyMain.KeyNote, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-            TweenService:Create(KeyMain.Input, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-            TweenService:Create(KeyMain.Input.UIStroke, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-            TweenService:Create(KeyMain.Input.InputBox, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-            wait(0.05)
-            TweenService:Create(KeyMain.NoteTitle, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-            TweenService:Create(KeyMain.NoteMessage, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-            wait(0.15)
-            TweenService:Create(KeyMain.Hide, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 0.3}):Play()
+            TS:Create(KeyMain, TINew(0.6, ESQuint), {BackgroundTransparency = 0}):Play()
+            TS:Create(KeyMain, TINew(0.6, ESQuint), {Size = UDim2.new(0, 500, 0, 187)}):Play()
+            TS:Create(KeyMain.Shadow.Image, TINew(0.5, ESQuint), {ImageTransparency = 0.5}):Play()
+            task.wait(0.05)
+            TS:Create(KeyMain.Title, TINew(0.4, ESQuint), {TextTransparency = 0}):Play()
+            TS:Create(KeyMain.Subtitle, TINew(0.5, ESQuint), {TextTransparency = 0}):Play()
+            task.wait(0.05)
+            TS:Create(KeyMain.KeyNote, TINew(0.5, ESQuint), {TextTransparency = 0}):Play()
+            TS:Create(KeyMain.Input, TINew(0.5, ESQuint), {BackgroundTransparency = 0}):Play()
+            TS:Create(KeyMain.Input.UIStroke, TINew(0.5, ESQuint), {Transparency = 0}):Play()
+            TS:Create(KeyMain.Input.InputBox, TINew(0.5, ESQuint), {TextTransparency = 0}):Play()
+            task.wait(0.05)
+            TS:Create(KeyMain.NoteTitle, TINew(0.4, ESQuint), {TextTransparency = 0}):Play()
+            TS:Create(KeyMain.NoteMessage, TINew(0.4, ESQuint), {TextTransparency = 0}):Play()
+            task.wait(0.15)
+            TS:Create(KeyMain.Hide, TINew(0.4, ESQuint), {ImageTransparency = 0.3}):Play()
 
 
             KeyUI.Main.Input.InputBox.FocusLost:Connect(function()
                 if #KeyUI.Main.Input.InputBox.Text == 0 then return end
                 local KeyFound = false
-                local FoundKey = ''
+                local FoundKey = ""
                 for _, MKey in ipairs(Settings.KeySettings.Key) do
                     if string.find(KeyMain.Input.InputBox.Text, MKey) then
                         KeyFound = true
@@ -1071,19 +1075,19 @@ function NSUILibrary:CreateWindow(Settings)
                     end
                 end
                 if KeyFound then 
-                    TweenService:Create(KeyMain, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-                    TweenService:Create(KeyMain, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 467, 0, 175)}):Play()
-                    TweenService:Create(KeyMain.Shadow.Image, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
-                    TweenService:Create(KeyMain.Title, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-                    TweenService:Create(KeyMain.Subtitle, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-                    TweenService:Create(KeyMain.KeyNote, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-                    TweenService:Create(KeyMain.Input, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-                    TweenService:Create(KeyMain.Input.UIStroke, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-                    TweenService:Create(KeyMain.Input.InputBox, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-                    TweenService:Create(KeyMain.NoteTitle, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-                    TweenService:Create(KeyMain.NoteMessage, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-                    TweenService:Create(KeyMain.Hide, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
-                    wait(0.51)
+                    TS:Create(KeyMain, TINew(0.6, ESQuint), {BackgroundTransparency = 1}):Play()
+                    TS:Create(KeyMain, TINew(0.6, ESQuint), {Size = UDim2.new(0, 467, 0, 175)}):Play()
+                    TS:Create(KeyMain.Shadow.Image, TINew(0.5, ESQuint), {ImageTransparency = 1}):Play()
+                    TS:Create(KeyMain.Title, TINew(0.4, ESQuint), {TextTransparency = 1}):Play()
+                    TS:Create(KeyMain.Subtitle, TINew(0.5, ESQuint), {TextTransparency = 1}):Play()
+                    TS:Create(KeyMain.KeyNote, TINew(0.5, ESQuint), {TextTransparency = 1}):Play()
+                    TS:Create(KeyMain.Input, TINew(0.5, ESQuint), {BackgroundTransparency = 1}):Play()
+                    TS:Create(KeyMain.Input.UIStroke, TINew(0.5, ESQuint), {Transparency = 1}):Play()
+                    TS:Create(KeyMain.Input.InputBox, TINew(0.5, ESQuint), {TextTransparency = 1}):Play()
+                    TS:Create(KeyMain.NoteTitle, TINew(0.4, ESQuint), {TextTransparency = 1}):Play()
+                    TS:Create(KeyMain.NoteMessage, TINew(0.4, ESQuint), {TextTransparency = 1}):Play()
+                    TS:Create(KeyMain.Hide, TINew(0.4, ESQuint), {ImageTransparency = 1}):Play()
+                    task.wait(0.51)
                     Passthrough = true
                     if Settings.KeySettings.SaveKey then
                         if writefile then
@@ -1093,48 +1097,48 @@ function NSUILibrary:CreateWindow(Settings)
                     end
                 else
                     if AttemptsRemaining == 0 then
-                        TweenService:Create(KeyMain, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-                        TweenService:Create(KeyMain, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 467, 0, 175)}):Play()
-                        TweenService:Create(KeyMain.Shadow.Image, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
-                        TweenService:Create(KeyMain.Title, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-                        TweenService:Create(KeyMain.Subtitle, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-                        TweenService:Create(KeyMain.KeyNote, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-                        TweenService:Create(KeyMain.Input, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-                        TweenService:Create(KeyMain.Input.UIStroke, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-                        TweenService:Create(KeyMain.Input.InputBox, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-                        TweenService:Create(KeyMain.NoteTitle, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-                        TweenService:Create(KeyMain.NoteMessage, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-                        TweenService:Create(KeyMain.Hide, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
-                        wait(0.45)
+                        TS:Create(KeyMain, TINew(0.6, ESQuint), {BackgroundTransparency = 1}):Play()
+                        TS:Create(KeyMain, TINew(0.6, ESQuint), {Size = UDim2.new(0, 467, 0, 175)}):Play()
+                        TS:Create(KeyMain.Shadow.Image, TINew(0.5, ESQuint), {ImageTransparency = 1}):Play()
+                        TS:Create(KeyMain.Title, TINew(0.4, ESQuint), {TextTransparency = 1}):Play()
+                        TS:Create(KeyMain.Subtitle, TINew(0.5, ESQuint), {TextTransparency = 1}):Play()
+                        TS:Create(KeyMain.KeyNote, TINew(0.5, ESQuint), {TextTransparency = 1}):Play()
+                        TS:Create(KeyMain.Input, TINew(0.5, ESQuint), {BackgroundTransparency = 1}):Play()
+                        TS:Create(KeyMain.Input.UIStroke, TINew(0.5, ESQuint), {Transparency = 1}):Play()
+                        TS:Create(KeyMain.Input.InputBox, TINew(0.5, ESQuint), {TextTransparency = 1}):Play()
+                        TS:Create(KeyMain.NoteTitle, TINew(0.4, ESQuint), {TextTransparency = 1}):Play()
+                        TS:Create(KeyMain.NoteMessage, TINew(0.4, ESQuint), {TextTransparency = 1}):Play()
+                        TS:Create(KeyMain.Hide, TINew(0.4, ESQuint), {ImageTransparency = 1}):Play()
+                        task.wait(0.45)
                         game.Players.LocalPlayer:Kick("No Attempts Remaining")
                         game:Shutdown()
                     end
                     KeyMain.Input.InputBox.Text = ""
                     AttemptsRemaining = AttemptsRemaining - 1
-                    TweenService:Create(KeyMain, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 467, 0, 175)}):Play()
-                    TweenService:Create(KeyMain, TweenInfo.new(0.4, Enum.EasingStyle.Elastic), {Position = UDim2.new(0.495,0,0.5,0)}):Play()
-                    wait(0.1)
-                    TweenService:Create(KeyMain, TweenInfo.new(0.4, Enum.EasingStyle.Elastic), {Position = UDim2.new(0.505,0,0.5,0)}):Play()
-                    wait(0.1)
-                    TweenService:Create(KeyMain, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {Position = UDim2.new(0.5,0,0.5,0)}):Play()
-                    TweenService:Create(KeyMain, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 500, 0, 187)}):Play()
+                    TS:Create(KeyMain, TINew(0.6, ESQuint), {Size = UDim2.new(0, 467, 0, 175)}):Play()
+                    TS:Create(KeyMain, TINew(0.4, Enum.EasingStyle.Elastic), {Position = UDim2.new(0.495,0,0.5,0)}):Play()
+                    task.wait(0.1)
+                    TS:Create(KeyMain, TINew(0.4, Enum.EasingStyle.Elastic), {Position = UDim2.new(0.505,0,0.5,0)}):Play()
+                    task.wait(0.1)
+                    TS:Create(KeyMain, TINew(0.4, ESQuint), {Position = UDim2.new(0.5,0,0.5,0)}):Play()
+                    TS:Create(KeyMain, TINew(0.6, ESQuint), {Size = UDim2.new(0, 500, 0, 187)}):Play()
                 end
             end)
 
             KeyMain.Hide.MouseButton1Click:Connect(function()
-                TweenService:Create(KeyMain, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-                TweenService:Create(KeyMain, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 467, 0, 175)}):Play()
-                TweenService:Create(KeyMain.Shadow.Image, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
-                TweenService:Create(KeyMain.Title, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-                TweenService:Create(KeyMain.Subtitle, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-                TweenService:Create(KeyMain.KeyNote, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-                TweenService:Create(KeyMain.Input, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-                TweenService:Create(KeyMain.Input.UIStroke, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-                TweenService:Create(KeyMain.Input.InputBox, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-                TweenService:Create(KeyMain.NoteTitle, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-                TweenService:Create(KeyMain.NoteMessage, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-                TweenService:Create(KeyMain.Hide, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
-                wait(0.51)
+                TS:Create(KeyMain, TINew(0.6, ESQuint), {BackgroundTransparency = 1}):Play()
+                TS:Create(KeyMain, TINew(0.6, ESQuint), {Size = UDim2.new(0, 467, 0, 175)}):Play()
+                TS:Create(KeyMain.Shadow.Image, TINew(0.5, ESQuint), {ImageTransparency = 1}):Play()
+                TS:Create(KeyMain.Title, TINew(0.4, ESQuint), {TextTransparency = 1}):Play()
+                TS:Create(KeyMain.Subtitle, TINew(0.5, ESQuint), {TextTransparency = 1}):Play()
+                TS:Create(KeyMain.KeyNote, TINew(0.5, ESQuint), {TextTransparency = 1}):Play()
+                TS:Create(KeyMain.Input, TINew(0.5, ESQuint), {BackgroundTransparency = 1}):Play()
+                TS:Create(KeyMain.Input.UIStroke, TINew(0.5, ESQuint), {Transparency = 1}):Play()
+                TS:Create(KeyMain.Input.InputBox, TINew(0.5, ESQuint), {TextTransparency = 1}):Play()
+                TS:Create(KeyMain.NoteTitle, TINew(0.4, ESQuint), {TextTransparency = 1}):Play()
+                TS:Create(KeyMain.NoteMessage, TINew(0.4, ESQuint), {TextTransparency = 1}):Play()
+                TS:Create(KeyMain.Hide, TINew(0.4, ESQuint), {ImageTransparency = 1}):Play()
+                task.wait(0.51)
                 NSUILibrary:Destroy()
                 KeyUI:Destroy()
             end)
@@ -1143,21 +1147,21 @@ function NSUILibrary:CreateWindow(Settings)
         end
     end
     if Settings.KeySystem then
-        repeat wait() until Passthrough
+        repeat task.wait() until Passthrough
     end
 
     Notifications.Template.Visible = false
     Notifications.Visible = true
     NSUI.Enabled = true
-    wait(0.5)
-    TweenService:Create(Main, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-    TweenService:Create(Main.Shadow.Image, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0.55}):Play()
-    wait(0.1)
-    TweenService:Create(LoadingFrame.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-    wait(0.05)
-    TweenService:Create(LoadingFrame.Subtitle, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-    wait(0.05)
-    TweenService:Create(LoadingFrame.Version, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+    task.wait(0.5)
+    TS:Create(Main, TINew(0.7, ESQuint), {BackgroundTransparency = 0}):Play()
+    TS:Create(Main.Shadow.Image, TINew(0.7, ESQuint), {ImageTransparency = 0.55}):Play()
+    task.wait(0.1)
+    TS:Create(LoadingFrame.Title, TINew(0.7, ESQuint), {TextTransparency = 0}):Play()
+    task.wait(0.05)
+    TS:Create(LoadingFrame.Subtitle, TINew(0.7, ESQuint), {TextTransparency = 0}):Play()
+    task.wait(0.05)
+    TS:Create(LoadingFrame.Version, TINew(0.7, ESQuint), {TextTransparency = 0}):Play()
 
     Elements.Template.LayoutOrder = 100000
     Elements.Template.Visible = false
@@ -1224,57 +1228,57 @@ function NSUILibrary:CreateWindow(Settings)
         end
         TabButton.UIStroke.Color = SelectedTheme.TabStroke
         -- Animate
-        wait(0.1)
+        task.wait(0.1)
         if FirstTab then
             TabButton.BackgroundColor3 = SelectedTheme.TabBackground
             TabButton.Image.ImageColor3 = SelectedTheme.TabTextColor
             TabButton.Title.TextColor3 = SelectedTheme.TabTextColor
-            TweenService:Create(TabButton, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.7}):Play()
-            TweenService:Create(TabButton.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0.2}):Play()
-            TweenService:Create(TabButton.Image, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0.2}):Play()
-            TweenService:Create(TabButton.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+            TS:Create(TabButton, TINew(0.7, ESQuint), {BackgroundTransparency = 0.7}):Play()
+            TS:Create(TabButton.Title, TINew(0.7, ESQuint), {TextTransparency = 0.2}):Play()
+            TS:Create(TabButton.Image, TINew(0.7, ESQuint), {ImageTransparency = 0.2}):Play()
+            TS:Create(TabButton.UIStroke, TINew(0.7, ESQuint), {Transparency = 0}):Play()
 
-            TweenService:Create(TabButton.Shadow, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageTransparency = 0.7}):Play()
+            TS:Create(TabButton.Shadow, TINew(0.3, ESQuint), {ImageTransparency = 0.7}):Play()
         else
             FirstTab = Name
             TabButton.BackgroundColor3 = SelectedTheme.TabBackgroundSelected
             TabButton.Image.ImageColor3 = SelectedTheme.SelectedTabTextColor
             TabButton.Title.TextColor3 = SelectedTheme.SelectedTabTextColor
-            TweenService:Create(TabButton.Shadow, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageTransparency = 0.9}):Play()
-            TweenService:Create(TabButton.Image, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
-            TweenService:Create(TabButton, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-            TweenService:Create(TabButton.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+            TS:Create(TabButton.Shadow, TINew(0.3, ESQuint), {ImageTransparency = 0.9}):Play()
+            TS:Create(TabButton.Image, TINew(0.7, ESQuint), {ImageTransparency = 0}):Play()
+            TS:Create(TabButton, TINew(0.7, ESQuint), {BackgroundTransparency = 0}):Play()
+            TS:Create(TabButton.Title, TINew(0.7, ESQuint), {TextTransparency = 0}):Play()
         end
 
 
         TabButton.Interact.MouseButton1Click:Connect(function()
             if Minimised then return end
-            TweenService:Create(TabButton, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-            TweenService:Create(TabButton.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-            TweenService:Create(TabButton.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-            TweenService:Create(TabButton.Image, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
-            TweenService:Create(TabButton, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.TabBackgroundSelected}):Play()
-            TweenService:Create(TabButton.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextColor3 = SelectedTheme.SelectedTabTextColor}):Play()
-            TweenService:Create(TabButton.Image, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageColor3 = SelectedTheme.SelectedTabTextColor}):Play()
-            TweenService:Create(TabButton.Shadow, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageTransparency = 0.9}):Play()
+            TS:Create(TabButton, TINew(0.7, ESQuint), {BackgroundTransparency = 0}):Play()
+            TS:Create(TabButton.UIStroke, TINew(0.7, ESQuint), {Transparency = 1}):Play()
+            TS:Create(TabButton.Title, TINew(0.7, ESQuint), {TextTransparency = 0}):Play()
+            TS:Create(TabButton.Image, TINew(0.7, ESQuint), {ImageTransparency = 0}):Play()
+            TS:Create(TabButton, TINew(0.7, ESQuint), {BackgroundColor3 = SelectedTheme.TabBackgroundSelected}):Play()
+            TS:Create(TabButton.Title, TINew(0.7, ESQuint), {TextColor3 = SelectedTheme.SelectedTabTextColor}):Play()
+            TS:Create(TabButton.Image, TINew(0.7, ESQuint), {ImageColor3 = SelectedTheme.SelectedTabTextColor}):Play()
+            TS:Create(TabButton.Shadow, TINew(0.3, ESQuint), {ImageTransparency = 0.9}):Play()
 
             for _, OtherTabButton in ipairs(TabList:GetChildren()) do
                 if OtherTabButton.Name ~= "Template" and OtherTabButton.ClassName == "Frame" and OtherTabButton ~= TabButton and OtherTabButton.Name ~= "Placeholder" then
-                    TweenService:Create(OtherTabButton, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.TabBackground}):Play()
-                    TweenService:Create(OtherTabButton.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextColor3 = SelectedTheme.TabTextColor}):Play()
-                    TweenService:Create(OtherTabButton.Image, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageColor3 = SelectedTheme.TabTextColor}):Play()
-                    TweenService:Create(OtherTabButton, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.7}):Play()
-                    TweenService:Create(OtherTabButton.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0.2}):Play()
-                    TweenService:Create(OtherTabButton.Image, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0.2}):Play()
-                    TweenService:Create(OtherTabButton.Shadow, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageTransparency = 0.7}):Play()
-                    TweenService:Create(OtherTabButton.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+                    TS:Create(OtherTabButton, TINew(0.7, ESQuint), {BackgroundColor3 = SelectedTheme.TabBackground}):Play()
+                    TS:Create(OtherTabButton.Title, TINew(0.7, ESQuint), {TextColor3 = SelectedTheme.TabTextColor}):Play()
+                    TS:Create(OtherTabButton.Image, TINew(0.7, ESQuint), {ImageColor3 = SelectedTheme.TabTextColor}):Play()
+                    TS:Create(OtherTabButton, TINew(0.7, ESQuint), {BackgroundTransparency = 0.7}):Play()
+                    TS:Create(OtherTabButton.Title, TINew(0.7, ESQuint), {TextTransparency = 0.2}):Play()
+                    TS:Create(OtherTabButton.Image, TINew(0.7, ESQuint), {ImageTransparency = 0.2}):Play()
+                    TS:Create(OtherTabButton.Shadow, TINew(0.3, ESQuint), {ImageTransparency = 0.7}):Play()
+                    TS:Create(OtherTabButton.UIStroke, TINew(0.7, ESQuint), {Transparency = 0}):Play()
                 end
             end
             if Elements.UIPageLayout.CurrentPage ~= TabPage then
-                TweenService:Create(Elements, TweenInfo.new(1, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 460,0, 330)}):Play()
+                TS:Create(Elements, TINew(1, ESQuint), {Size = UDim2.new(0, 460,0, 330)}):Play()
                 Elements.UIPageLayout:JumpTo(TabPage)
-                wait(0.2)
-                TweenService:Create(Elements, TweenInfo.new(0.8, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 475,0, 366)}):Play()
+                task.wait(0.2)
+                TS:Create(Elements, TINew(0.8, ESQuint), {Size = UDim2.new(0, 475,0, 366)}):Play()
             end
 
         end)
@@ -1295,44 +1299,44 @@ function NSUILibrary:CreateWindow(Settings)
             Button.UIStroke.Transparency = 1
             Button.Title.TextTransparency = 1
 
-            TweenService:Create(Button, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-            TweenService:Create(Button.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-            TweenService:Create(Button.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()	
+            TS:Create(Button, TINew(0.7, ESQuint), {BackgroundTransparency = 0}):Play()
+            TS:Create(Button.UIStroke, TINew(0.7, ESQuint), {Transparency = 0}):Play()
+            TS:Create(Button.Title, TINew(0.7, ESQuint), {TextTransparency = 0}):Play()	
 
 
             Button.Interact.MouseButton1Click:Connect(function()
                 local Success, Response = pcall(ButtonSettings.Callback)
                 if not Success then
-                    TweenService:Create(Button, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(85, 0, 0)}):Play()
-                    TweenService:Create(Button.ElementIndicator, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-                    TweenService:Create(Button.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
+                    TS:Create(Button, TINew(0.6, ESQuint), {BackgroundColor3 = fRGB(85, 0, 0)}):Play()
+                    TS:Create(Button.ElementIndicator, TINew(0.6, ESQuint), {TextTransparency = 1}):Play()
+                    TS:Create(Button.UIStroke, TINew(0.6, ESQuint), {Transparency = 1}):Play()
                     Button.Title.Text = "Callback Error"
                     print("NSUI | "..ButtonSettings.Name.." Callback Error " ..tostring(Response))
-                    wait(0.5)
+                    task.wait(0.5)
                     Button.Title.Text = ButtonSettings.Name
-                    TweenService:Create(Button, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
-                    TweenService:Create(Button.ElementIndicator, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 0.9}):Play()
-                    TweenService:Create(Button.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+                    TS:Create(Button, TINew(0.6, ESQuint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
+                    TS:Create(Button.ElementIndicator, TINew(0.6, ESQuint), {TextTransparency = 0.9}):Play()
+                    TS:Create(Button.UIStroke, TINew(0.6, ESQuint), {Transparency = 0}):Play()
                 else
                     SaveConfiguration()
-                    TweenService:Create(Button, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
-                    TweenService:Create(Button.ElementIndicator, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-                    TweenService:Create(Button.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-                    wait(0.2)
-                    TweenService:Create(Button, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
-                    TweenService:Create(Button.ElementIndicator, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 0.9}):Play()
-                    TweenService:Create(Button.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+                    TS:Create(Button, TINew(0.6, ESQuint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
+                    TS:Create(Button.ElementIndicator, TINew(0.6, ESQuint), {TextTransparency = 1}):Play()
+                    TS:Create(Button.UIStroke, TINew(0.6, ESQuint), {Transparency = 1}):Play()
+                    task.wait(0.2)
+                    TS:Create(Button, TINew(0.6, ESQuint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
+                    TS:Create(Button.ElementIndicator, TINew(0.6, ESQuint), {TextTransparency = 0.9}):Play()
+                    TS:Create(Button.UIStroke, TINew(0.6, ESQuint), {Transparency = 0}):Play()
                 end
             end)
 
             Button.MouseEnter:Connect(function()
-                TweenService:Create(Button, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
-                TweenService:Create(Button.ElementIndicator, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 0.7}):Play()
+                TS:Create(Button, TINew(0.6, ESQuint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
+                TS:Create(Button.ElementIndicator, TINew(0.6, ESQuint), {TextTransparency = 0.7}):Play()
             end)
 
             Button.MouseLeave:Connect(function()
-                TweenService:Create(Button, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
-                TweenService:Create(Button.ElementIndicator, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 0.9}):Play()
+                TS:Create(Button, TINew(0.6, ESQuint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
+                TS:Create(Button.ElementIndicator, TINew(0.6, ESQuint), {TextTransparency = 0.9}):Play()
             end)
 
             function ButtonValue:Set(NewButton)
@@ -1377,28 +1381,28 @@ function NSUILibrary:CreateWindow(Settings)
             ColorPicker.Interact.MouseButton1Down:Connect(function()
                 if not opened then
                     opened = true 
-                    TweenService:Create(ColorPicker, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Size = UDim2.new(1, -10, 0.224, 40)}):Play()
-                    TweenService:Create(Background, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 173, 0, 86)}):Play()
-                    TweenService:Create(Display, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-                    TweenService:Create(ColorPicker.Interact, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Position = UDim2.new(0.289, 0, 0.5, 0)}):Play()
-                    TweenService:Create(ColorPicker.RGB, TweenInfo.new(0.8, Enum.EasingStyle.Quint), {Position = UDim2.new(0, 17, 0, 40)}):Play()
-                    TweenService:Create(ColorPicker.HexInput, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Position = UDim2.new(0, 17, 0, 73)}):Play()
-                    TweenService:Create(ColorPicker.Interact, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Size = UDim2.new(0.574, 0, 1, 0)}):Play()
-                    TweenService:Create(Main.MainPoint, TweenInfo.new(0.2, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
-                    TweenService:Create(Main, TweenInfo.new(0.2, Enum.EasingStyle.Quint), {ImageTransparency = 0.1}):Play()
-                    TweenService:Create(Background, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
+                    TS:Create(ColorPicker, TINew(0.6, ESQuint), {Size = UDim2.new(1, -10, 0.224, 40)}):Play()
+                    TS:Create(Background, TINew(0.6, ESQuint), {Size = UDim2.new(0, 173, 0, 86)}):Play()
+                    TS:Create(Display, TINew(0.6, ESQuint), {BackgroundTransparency = 1}):Play()
+                    TS:Create(ColorPicker.Interact, TINew(0.6, ESQuint), {Position = UDim2.new(0.289, 0, 0.5, 0)}):Play()
+                    TS:Create(ColorPicker.RGB, TINew(0.8, ESQuint), {Position = UDim2.new(0, 17, 0, 40)}):Play()
+                    TS:Create(ColorPicker.HexInput, TINew(0.5, ESQuint), {Position = UDim2.new(0, 17, 0, 73)}):Play()
+                    TS:Create(ColorPicker.Interact, TINew(0.6, ESQuint), {Size = UDim2.new(0.574, 0, 1, 0)}):Play()
+                    TS:Create(Main.MainPoint, TINew(0.2, ESQuint), {ImageTransparency = 0}):Play()
+                    TS:Create(Main, TINew(0.2, ESQuint), {ImageTransparency = 0.1}):Play()
+                    TS:Create(Background, TINew(0.6, ESQuint), {BackgroundTransparency = 0}):Play()
                 else
                     opened = false
-                    TweenService:Create(ColorPicker, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Size = UDim2.new(1, -10, 0.028, 35)}):Play()
-                    TweenService:Create(Background, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 39, 0, 22)}):Play()
-                    TweenService:Create(ColorPicker.Interact, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Size = UDim2.new(1, 0, 1, 0)}):Play()
-                    TweenService:Create(ColorPicker.Interact, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Position = UDim2.new(0.5, 0, 0.5, 0)}):Play()
-                    TweenService:Create(ColorPicker.RGB, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Position = UDim2.new(0, 17, 0, 70)}):Play()
-                    TweenService:Create(ColorPicker.HexInput, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Position = UDim2.new(0, 17, 0, 90)}):Play()
-                    TweenService:Create(Display, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-                    TweenService:Create(Main.MainPoint, TweenInfo.new(0.2, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
-                    TweenService:Create(Main, TweenInfo.new(0.2, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
-                    TweenService:Create(Background, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
+                    TS:Create(ColorPicker, TINew(0.6, ESQuint), {Size = UDim2.new(1, -10, 0.028, 35)}):Play()
+                    TS:Create(Background, TINew(0.6, ESQuint), {Size = UDim2.new(0, 39, 0, 22)}):Play()
+                    TS:Create(ColorPicker.Interact, TINew(0.6, ESQuint), {Size = UDim2.new(1, 0, 1, 0)}):Play()
+                    TS:Create(ColorPicker.Interact, TINew(0.6, ESQuint), {Position = UDim2.new(0.5, 0, 0.5, 0)}):Play()
+                    TS:Create(ColorPicker.RGB, TINew(0.6, ESQuint), {Position = UDim2.new(0, 17, 0, 70)}):Play()
+                    TS:Create(ColorPicker.HexInput, TINew(0.5, ESQuint), {Position = UDim2.new(0, 17, 0, 90)}):Play()
+                    TS:Create(Display, TINew(0.6, ESQuint), {BackgroundTransparency = 0}):Play()
+                    TS:Create(Main.MainPoint, TINew(0.2, ESQuint), {ImageTransparency = 1}):Play()
+                    TS:Create(Main, TINew(0.2, ESQuint), {ImageTransparency = 1}):Play()
+                    TS:Create(Background, TINew(0.6, ESQuint), {BackgroundTransparency = 1}):Play()
                 end
             end)
 
@@ -1448,7 +1452,7 @@ function NSUILibrary:CreateWindow(Settings)
             ColorPicker.HexInput.InputBox.FocusLost:Connect(function()
                 if not pcall(function()
                         local r, g, b = string.match(ColorPicker.HexInput.InputBox.Text, "^#?(%w%w)(%w%w)(%w%w)$")
-                        local rgbColor = Color3.fromRGB(tonumber(r, 16),tonumber(g, 16), tonumber(b, 16))
+                        local rgbColor = fRGB(tonumber(r, 16),tonumber(g, 16), tonumber(b, 16))
                         h,s,v = rgbColor:ToHSV()
                         hex = ColorPicker.HexInput.InputBox.Text
                         setDisplay()
@@ -1459,7 +1463,7 @@ function NSUILibrary:CreateWindow(Settings)
                 end
                 pcall(function()ColorPickerSettings.Callback(Color3.fromHSV(h,s,v))end)
                 local r,g,b = math.floor((h*255)+0.5),math.floor((s*255)+0.5),math.floor((v*255)+0.5)
-                ColorPickerSettings.Color = Color3.fromRGB(r,g,b)
+                ColorPickerSettings.Color = fRGB(r,g,b)
                 SaveConfiguration()
             end)
             --RGB
@@ -1471,14 +1475,14 @@ function NSUILibrary:CreateWindow(Settings)
                 if toChange == "R" then save = oldR;oldR = value elseif toChange == "G" then save = oldG;oldG = value else save = oldB;oldB = value end
                 if value then 
                     value = math.clamp(value,0,255)
-                    h,s,v = Color3.fromRGB(oldR,oldG,oldB):ToHSV()
+                    h,s,v = fRGB(oldR,oldG,oldB):ToHSV()
 
                     setDisplay()
                 else 
                     box.Text = tostring(save)
                 end
                 local r,g,b = math.floor((h*255)+0.5),math.floor((s*255)+0.5),math.floor((v*255)+0.5)
-                ColorPickerSettings.Color = Color3.fromRGB(r,g,b)
+                ColorPickerSettings.Color = fRGB(r,g,b)
                 SaveConfiguration()
             end
             ColorPicker.RGB.RInput.InputBox.FocusLost:connect(function()
@@ -1511,7 +1515,7 @@ function NSUILibrary:CreateWindow(Settings)
                     ColorPicker.RGB.BInput.InputBox.Text = tostring(b)
                     ColorPicker.HexInput.InputBox.Text = string.format("#%02X%02X%02X",color.R*0xFF,color.G*0xFF,color.B*0xFF)
                     pcall(function()ColorPickerSettings.Callback(Color3.fromHSV(h,s,v))end)
-                    ColorPickerSettings.Color = Color3.fromRGB(r,g,b)
+                    ColorPickerSettings.Color = fRGB(r,g,b)
                     SaveConfiguration()
                 end
                 if sliderDragging then 
@@ -1529,7 +1533,7 @@ function NSUILibrary:CreateWindow(Settings)
                     ColorPicker.RGB.BInput.InputBox.Text = tostring(b)
                     ColorPicker.HexInput.InputBox.Text = string.format("#%02X%02X%02X",color.R*0xFF,color.G*0xFF,color.B*0xFF)
                     pcall(function()ColorPickerSettings.Callback(Color3.fromHSV(h,s,v))end)
-                    ColorPickerSettings.Color = Color3.fromRGB(r,g,b)
+                    ColorPickerSettings.Color = fRGB(r,g,b)
                     SaveConfiguration()
                 end
             end)
@@ -1567,7 +1571,7 @@ function NSUILibrary:CreateWindow(Settings)
             Section.Parent = TabPage
 
             Section.Title.TextTransparency = 1
-            TweenService:Create(Section.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+            TS:Create(Section.Title, TINew(0.7, ESQuint), {TextTransparency = 0}):Play()
 
             function SectionValue:Set(NewSection)
                 Section.Title.Text = NewSection
@@ -1594,9 +1598,9 @@ function NSUILibrary:CreateWindow(Settings)
             Label.BackgroundColor3 = SelectedTheme.SecondaryElementBackground
             Label.UIStroke.Color = SelectedTheme.SecondaryElementStroke
 
-            TweenService:Create(Label, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-            TweenService:Create(Label.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-            TweenService:Create(Label.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()	
+            TS:Create(Label, TINew(0.7, ESQuint), {BackgroundTransparency = 0}):Play()
+            TS:Create(Label.UIStroke, TINew(0.7, ESQuint), {Transparency = 0}):Play()
+            TS:Create(Label.Title, TINew(0.7, ESQuint), {TextTransparency = 0}):Play()	
 
             function LabelValue:Set(NewLabel)
                 Label.Title.Text = NewLabel
@@ -1627,10 +1631,10 @@ function NSUILibrary:CreateWindow(Settings)
             Paragraph.BackgroundColor3 = SelectedTheme.SecondaryElementBackground
             Paragraph.UIStroke.Color = SelectedTheme.SecondaryElementStroke
 
-            TweenService:Create(Paragraph, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-            TweenService:Create(Paragraph.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-            TweenService:Create(Paragraph.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()	
-            TweenService:Create(Paragraph.Content, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()	
+            TS:Create(Paragraph, TINew(0.7, ESQuint), {BackgroundTransparency = 0}):Play()
+            TS:Create(Paragraph.UIStroke, TINew(0.7, ESQuint), {Transparency = 0}):Play()
+            TS:Create(Paragraph.Title, TINew(0.7, ESQuint), {TextTransparency = 0}):Play()	
+            TS:Create(Paragraph.Content, TINew(0.7, ESQuint), {TextTransparency = 0}):Play()	
 
             function ParagraphValue:Set(NewParagraphSettings)
                 Paragraph.Title.Text = NewParagraphSettings.Title
@@ -1655,9 +1659,9 @@ function NSUILibrary:CreateWindow(Settings)
             Input.InputFrame.BackgroundColor3 = SelectedTheme.InputBackground
             Input.InputFrame.UIStroke.Color = SelectedTheme.InputStroke
 
-            TweenService:Create(Input, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-            TweenService:Create(Input.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-            TweenService:Create(Input.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()	
+            TS:Create(Input, TINew(0.7, ESQuint), {BackgroundTransparency = 0}):Play()
+            TS:Create(Input.UIStroke, TINew(0.7, ESQuint), {Transparency = 0}):Play()
+            TS:Create(Input.Title, TINew(0.7, ESQuint), {TextTransparency = 0}):Play()	
 
             Input.InputFrame.InputBox.PlaceholderText = InputSettings.PlaceholderText
             Input.InputFrame.Size = UDim2.new(0, Input.InputFrame.InputBox.TextBounds.X + 24, 0, 30)
@@ -1669,14 +1673,14 @@ function NSUILibrary:CreateWindow(Settings)
                     InputSettings.Callback(Input.InputFrame.InputBox.Text)
                 end)
                 if not Success then
-                    TweenService:Create(Input, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(85, 0, 0)}):Play()
-                    TweenService:Create(Input.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
+                    TS:Create(Input, TINew(0.6, ESQuint), {BackgroundColor3 = fRGB(85, 0, 0)}):Play()
+                    TS:Create(Input.UIStroke, TINew(0.6, ESQuint), {Transparency = 1}):Play()
                     Input.Title.Text = "Callback Error"
                     print("NSUI | "..InputSettings.Name.." Callback Error " ..tostring(Response))
-                    wait(0.5)
+                    task.wait(0.5)
                     Input.Title.Text = InputSettings.Name
-                    TweenService:Create(Input, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
-                    TweenService:Create(Input.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+                    TS:Create(Input, TINew(0.6, ESQuint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
+                    TS:Create(Input.UIStroke, TINew(0.6, ESQuint), {Transparency = 0}):Play()
                 end
 
                 if InputSettings.RemoveTextAfterFocusLost then
@@ -1686,15 +1690,15 @@ function NSUILibrary:CreateWindow(Settings)
             end)
 
             Input.MouseEnter:Connect(function()
-                TweenService:Create(Input, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
+                TS:Create(Input, TINew(0.6, ESQuint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
             end)
 
             Input.MouseLeave:Connect(function()
-                TweenService:Create(Input, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
+                TS:Create(Input, TINew(0.6, ESQuint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
             end)
 
             Input.InputFrame.InputBox:GetPropertyChangedSignal("Text"):Connect(function()
-                TweenService:Create(Input.InputFrame, TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, Input.InputFrame.InputBox.TextBounds.X + 24, 0, 30)}):Play()
+                TS:Create(Input.InputFrame, TINew(0.55, ESQuint, Enum.EasingDirection.Out), {Size = UDim2.new(0, Input.InputFrame.InputBox.TextBounds.X + 24, 0, 30)}):Play()
             end)
         end
 
@@ -1739,9 +1743,9 @@ function NSUILibrary:CreateWindow(Settings)
 
             Dropdown.Size = UDim2.new(1, -10, 0, 45)
 
-            TweenService:Create(Dropdown, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-            TweenService:Create(Dropdown.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-            TweenService:Create(Dropdown.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()	
+            TS:Create(Dropdown, TINew(0.7, ESQuint), {BackgroundTransparency = 0}):Play()
+            TS:Create(Dropdown.UIStroke, TINew(0.7, ESQuint), {Transparency = 0}):Play()
+            TS:Create(Dropdown.Title, TINew(0.7, ESQuint), {TextTransparency = 0}):Play()	
 
             for _, ununusedoption in ipairs(Dropdown.List:GetChildren()) do
                 if ununusedoption.ClassName == "Frame" and ununusedoption.Name ~= "Placeholder" then
@@ -1752,37 +1756,37 @@ function NSUILibrary:CreateWindow(Settings)
             Dropdown.Toggle.Rotation = 180
 
             Dropdown.Interact.MouseButton1Click:Connect(function()
-                TweenService:Create(Dropdown, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
-                TweenService:Create(Dropdown.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-                wait(0.1)
-                TweenService:Create(Dropdown, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
-                TweenService:Create(Dropdown.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+                TS:Create(Dropdown, TINew(0.4, ESQuint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
+                TS:Create(Dropdown.UIStroke, TINew(0.4, ESQuint), {Transparency = 1}):Play()
+                task.wait(0.1)
+                TS:Create(Dropdown, TINew(0.4, ESQuint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
+                TS:Create(Dropdown.UIStroke, TINew(0.4, ESQuint), {Transparency = 0}):Play()
                 if Debounce then return end
                 if Dropdown.List.Visible then
                     Debounce = true
-                    TweenService:Create(Dropdown, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(1, -10, 0, 45)}):Play()
+                    TS:Create(Dropdown, TINew(0.5, ESQuint), {Size = UDim2.new(1, -10, 0, 45)}):Play()
                     for _, DropdownOpt in ipairs(Dropdown.List:GetChildren()) do
                         if DropdownOpt.ClassName == "Frame" and DropdownOpt.Name ~= "Placeholder" then
-                            TweenService:Create(DropdownOpt, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-                            TweenService:Create(DropdownOpt.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-                            TweenService:Create(DropdownOpt.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
+                            TS:Create(DropdownOpt, TINew(0.3, ESQuint), {BackgroundTransparency = 1}):Play()
+                            TS:Create(DropdownOpt.UIStroke, TINew(0.3, ESQuint), {Transparency = 1}):Play()
+                            TS:Create(DropdownOpt.Title, TINew(0.3, ESQuint), {TextTransparency = 1}):Play()
                         end
                     end
-                    TweenService:Create(Dropdown.List, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ScrollBarImageTransparency = 1}):Play()
-                    TweenService:Create(Dropdown.Toggle, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Rotation = 180}):Play()	
-                    wait(0.35)
+                    TS:Create(Dropdown.List, TINew(0.3, ESQuint), {ScrollBarImageTransparency = 1}):Play()
+                    TS:Create(Dropdown.Toggle, TINew(0.7, ESQuint), {Rotation = 180}):Play()	
+                    task.wait(0.35)
                     Dropdown.List.Visible = false
                     Debounce = false
                 else
-                    TweenService:Create(Dropdown, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(1, -10, 0, 180)}):Play()
+                    TS:Create(Dropdown, TINew(0.5, ESQuint), {Size = UDim2.new(1, -10, 0, 180)}):Play()
                     Dropdown.List.Visible = true
-                    TweenService:Create(Dropdown.List, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ScrollBarImageTransparency = 0.7}):Play()
-                    TweenService:Create(Dropdown.Toggle, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Rotation = 0}):Play()	
+                    TS:Create(Dropdown.List, TINew(0.3, ESQuint), {ScrollBarImageTransparency = 0.7}):Play()
+                    TS:Create(Dropdown.Toggle, TINew(0.7, ESQuint), {Rotation = 0}):Play()	
                     for _, DropdownOpt in ipairs(Dropdown.List:GetChildren()) do
                         if DropdownOpt.ClassName == "Frame" and DropdownOpt.Name ~= "Placeholder" then
-                            TweenService:Create(DropdownOpt, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-                            TweenService:Create(DropdownOpt.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-                            TweenService:Create(DropdownOpt.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+                            TS:Create(DropdownOpt, TINew(0.3, ESQuint), {BackgroundTransparency = 0}):Play()
+                            TS:Create(DropdownOpt.UIStroke, TINew(0.3, ESQuint), {Transparency = 0}):Play()
+                            TS:Create(DropdownOpt.Title, TINew(0.3, ESQuint), {TextTransparency = 0}):Play()
                         end
                     end
                 end
@@ -1790,12 +1794,12 @@ function NSUILibrary:CreateWindow(Settings)
 
             Dropdown.MouseEnter:Connect(function()
                 if not Dropdown.List.Visible then
-                    TweenService:Create(Dropdown, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
+                    TS:Create(Dropdown, TINew(0.6, ESQuint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
                 end
             end)
 
             Dropdown.MouseLeave:Connect(function()
-                TweenService:Create(Dropdown, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
+                TS:Create(Dropdown, TINew(0.6, ESQuint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
             end)
 
             for _, Option in ipairs(DropdownSettings.Options) do
@@ -1806,7 +1810,7 @@ function NSUILibrary:CreateWindow(Settings)
                 DropdownOption.Visible = true
 
                 if DropdownSettings.CurrentOption == Option then
-                    DropdownOption.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+                    DropdownOption.BackgroundColor3 = fRGB(40, 40, 40)
                 end
 
                 DropdownOption.BackgroundTransparency = 1
@@ -1860,11 +1864,11 @@ function NSUILibrary:CreateWindow(Settings)
                         else
                             Dropdown.Selected.Text = DropdownSettings.CurrentOption[1]
                         end
-                        TweenService:Create(DropdownOption.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-                        TweenService:Create(DropdownOption, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(40, 40, 40)}):Play()
+                        TS:Create(DropdownOption.UIStroke, TINew(0.3, ESQuint), {Transparency = 1}):Play()
+                        TS:Create(DropdownOption, TINew(0.3, ESQuint), {BackgroundColor3 = fRGB(40, 40, 40)}):Play()
                         Debounce = true
-                        wait(0.2)
-                        TweenService:Create(DropdownOption.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+                        task.wait(0.2)
+                        TS:Create(DropdownOption.UIStroke, TINew(0.3, ESQuint), {Transparency = 0}):Play()
                     end
 
 
@@ -1873,34 +1877,34 @@ function NSUILibrary:CreateWindow(Settings)
                     end)
 
                     if not Success then
-                        TweenService:Create(Dropdown, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(85, 0, 0)}):Play()
-                        TweenService:Create(Dropdown.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
+                        TS:Create(Dropdown, TINew(0.6, ESQuint), {BackgroundColor3 = fRGB(85, 0, 0)}):Play()
+                        TS:Create(Dropdown.UIStroke, TINew(0.6, ESQuint), {Transparency = 1}):Play()
                         Dropdown.Title.Text = "Callback Error"
                         print("NSUI | "..DropdownSettings.Name.." Callback Error " ..tostring(Response))
-                        wait(0.5)
+                        task.wait(0.5)
                         Dropdown.Title.Text = DropdownSettings.Name
-                        TweenService:Create(Dropdown, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
-                        TweenService:Create(Dropdown.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+                        TS:Create(Dropdown, TINew(0.6, ESQuint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
+                        TS:Create(Dropdown.UIStroke, TINew(0.6, ESQuint), {Transparency = 0}):Play()
                     end
 
                     for _, droption in ipairs(Dropdown.List:GetChildren()) do
                         if droption.ClassName == "Frame" and droption.Name ~= "Placeholder" and not table.find(DropdownSettings.CurrentOption, droption.Name) then
-                            TweenService:Create(droption, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(30, 30, 30)}):Play()
+                            TS:Create(droption, TINew(0.3, ESQuint), {BackgroundColor3 = fRGB(30, 30, 30)}):Play()
                         end
                     end
                     if not DropdownSettings.MultipleOptions then
-                        wait(0.1)
-                        TweenService:Create(Dropdown, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(1, -10, 0, 45)}):Play()
+                        task.wait(0.1)
+                        TS:Create(Dropdown, TINew(0.5, ESQuint), {Size = UDim2.new(1, -10, 0, 45)}):Play()
                         for _, DropdownOpt in ipairs(Dropdown.List:GetChildren()) do
                             if DropdownOpt.ClassName == "Frame" and DropdownOpt.Name ~= "Placeholder" then
-                                TweenService:Create(DropdownOpt, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-                                TweenService:Create(DropdownOpt.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-                                TweenService:Create(DropdownOpt.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
+                                TS:Create(DropdownOpt, TINew(0.3, ESQuint), {BackgroundTransparency = 1}):Play()
+                                TS:Create(DropdownOpt.UIStroke, TINew(0.3, ESQuint), {Transparency = 1}):Play()
+                                TS:Create(DropdownOpt.Title, TINew(0.3, ESQuint), {TextTransparency = 1}):Play()
                             end
                         end
-                        TweenService:Create(Dropdown.List, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ScrollBarImageTransparency = 1}):Play()
-                        TweenService:Create(Dropdown.Toggle, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Rotation = 180}):Play()	
-                        wait(0.35)
+                        TS:Create(Dropdown.List, TINew(0.3, ESQuint), {ScrollBarImageTransparency = 1}):Play()
+                        TS:Create(Dropdown.Toggle, TINew(0.7, ESQuint), {Rotation = 180}):Play()	
+                        task.wait(0.35)
                         Dropdown.List.Visible = false
                     end
                     Debounce = false	
@@ -1911,9 +1915,9 @@ function NSUILibrary:CreateWindow(Settings)
             for _, droption in ipairs(Dropdown.List:GetChildren()) do
                 if droption.ClassName == "Frame" and droption.Name ~= "Placeholder" then
                     if not table.find(DropdownSettings.CurrentOption, droption.Name) then
-                        droption.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+                        droption.BackgroundColor3 = fRGB(30, 30, 30)
                     else
-                        droption.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+                        droption.BackgroundColor3 = fRGB(40, 40, 40)
                     end
                 end
             end
@@ -1946,22 +1950,22 @@ function NSUILibrary:CreateWindow(Settings)
                     DropdownSettings.Callback(NewOption)
                 end)
                 if not Success then
-                    TweenService:Create(Dropdown, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(85, 0, 0)}):Play()
-                    TweenService:Create(Dropdown.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
+                    TS:Create(Dropdown, TINew(0.6, ESQuint), {BackgroundColor3 = fRGB(85, 0, 0)}):Play()
+                    TS:Create(Dropdown.UIStroke, TINew(0.6, ESQuint), {Transparency = 1}):Play()
                     Dropdown.Title.Text = "Callback Error"
                     print("NSUI | "..DropdownSettings.Name.." Callback Error " ..tostring(Response))
-                    wait(0.5)
+                    task.wait(0.5)
                     Dropdown.Title.Text = DropdownSettings.Name
-                    TweenService:Create(Dropdown, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
-                    TweenService:Create(Dropdown.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+                    TS:Create(Dropdown, TINew(0.6, ESQuint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
+                    TS:Create(Dropdown.UIStroke, TINew(0.6, ESQuint), {Transparency = 0}):Play()
                 end
 
                 for _, droption in ipairs(Dropdown.List:GetChildren()) do
                     if droption.ClassName == "Frame" and droption.Name ~= "Placeholder" then
                         if not table.find(DropdownSettings.CurrentOption, droption.Name) then
-                            droption.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+                            droption.BackgroundColor3 = fRGB(30, 30, 30)
                         else
-                            droption.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+                            droption.BackgroundColor3 = fRGB(40, 40, 40)
                         end
                     end
                 end
@@ -1993,9 +1997,9 @@ function NSUILibrary:CreateWindow(Settings)
             Keybind.KeybindFrame.BackgroundColor3 = SelectedTheme.InputBackground
             Keybind.KeybindFrame.UIStroke.Color = SelectedTheme.InputStroke
 
-            TweenService:Create(Keybind, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-            TweenService:Create(Keybind.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-            TweenService:Create(Keybind.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()	
+            TS:Create(Keybind, TINew(0.7, ESQuint), {BackgroundTransparency = 0}):Play()
+            TS:Create(Keybind.UIStroke, TINew(0.7, ESQuint), {Transparency = 0}):Play()
+            TS:Create(Keybind.Title, TINew(0.7, ESQuint), {TextTransparency = 0}):Play()	
 
             Keybind.KeybindFrame.KeybindBox.Text = KeybindSettings.CurrentKeybind
             Keybind.KeybindFrame.Size = UDim2.new(0, Keybind.KeybindFrame.KeybindBox.TextBounds.X + 24, 0, 30)
@@ -2013,11 +2017,11 @@ function NSUILibrary:CreateWindow(Settings)
             end)
 
             Keybind.MouseEnter:Connect(function()
-                TweenService:Create(Keybind, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
+                TS:Create(Keybind, TINew(0.6, ESQuint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
             end)
 
             Keybind.MouseLeave:Connect(function()
-                TweenService:Create(Keybind, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
+                TS:Create(Keybind, TINew(0.6, ESQuint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
             end)
 
             UserInputService.InputBegan:Connect(function(input, processed)
@@ -2044,17 +2048,17 @@ function NSUILibrary:CreateWindow(Settings)
                     if not KeybindSettings.HoldToInteract then
                         local Success, Response = pcall(KeybindSettings.Callback)
                         if not Success then
-                            TweenService:Create(Keybind, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(85, 0, 0)}):Play()
-                            TweenService:Create(Keybind.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
+                            TS:Create(Keybind, TINew(0.6, ESQuint), {BackgroundColor3 = fRGB(85, 0, 0)}):Play()
+                            TS:Create(Keybind.UIStroke, TINew(0.6, ESQuint), {Transparency = 1}):Play()
                             Keybind.Title.Text = "Callback Error"
                             print("NSUI | "..KeybindSettings.Name.." Callback Error " ..tostring(Response))
-                            wait(0.5)
+                            task.wait(0.5)
                             Keybind.Title.Text = KeybindSettings.Name
-                            TweenService:Create(Keybind, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
-                            TweenService:Create(Keybind.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+                            TS:Create(Keybind, TINew(0.6, ESQuint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
+                            TS:Create(Keybind.UIStroke, TINew(0.6, ESQuint), {Transparency = 0}):Play()
                         end
                     else
-                        wait(0.25)
+                        task.wait(0.25)
                         if Held then
                             local Loop; Loop = RunService.Stepped:Connect(function()
                                 if not Held then
@@ -2070,7 +2074,7 @@ function NSUILibrary:CreateWindow(Settings)
             end)
 
             Keybind.KeybindFrame.KeybindBox:GetPropertyChangedSignal("Text"):Connect(function()
-                TweenService:Create(Keybind.KeybindFrame, TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, Keybind.KeybindFrame.KeybindBox.TextBounds.X + 24, 0, 30)}):Play()
+                TS:Create(Keybind.KeybindFrame, TINew(0.55, ESQuint, Enum.EasingDirection.Out), {Size = UDim2.new(0, Keybind.KeybindFrame.KeybindBox.TextBounds.X + 24, 0, 30)}):Play()
             end)
 
             function KeybindSettings:Set(NewKeybind)
@@ -2112,9 +2116,9 @@ function NSUILibrary:CreateWindow(Settings)
                 Toggle.Switch.Shadow.Visible = false
             end
 
-            TweenService:Create(Toggle, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-            TweenService:Create(Toggle.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-            TweenService:Create(Toggle.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()	
+            TS:Create(Toggle, TINew(0.7, ESQuint), {BackgroundTransparency = 0}):Play()
+            TS:Create(Toggle.UIStroke, TINew(0.7, ESQuint), {Transparency = 0}):Play()
+            TS:Create(Toggle.Title, TINew(0.7, ESQuint), {TextTransparency = 0}):Play()	
 
             if not ToggleSettings.CurrentValue then
                 Toggle.Switch.Indicator.Position = UDim2.new(1, -40, 0.5, 0)
@@ -2129,56 +2133,56 @@ function NSUILibrary:CreateWindow(Settings)
             end
 
             Toggle.MouseEnter:Connect(function()
-                TweenService:Create(Toggle, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
+                TS:Create(Toggle, TINew(0.6, ESQuint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
             end)
 
             Toggle.MouseLeave:Connect(function()
-                TweenService:Create(Toggle, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
+                TS:Create(Toggle, TINew(0.6, ESQuint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
             end)
 
             Toggle.Interact.MouseButton1Click:Connect(function()
                 if ToggleSettings.CurrentValue then
                     ToggleSettings.CurrentValue = false
-                    TweenService:Create(Toggle, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
-                    TweenService:Create(Toggle.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-                    TweenService:Create(Toggle.Switch.Indicator, TweenInfo.new(0.45, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Position = UDim2.new(1, -40, 0.5, 0)}):Play()
-                    TweenService:Create(Toggle.Switch.Indicator, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0,12,0,12)}):Play()
-                    TweenService:Create(Toggle.Switch.Indicator.UIStroke, TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Color = SelectedTheme.ToggleDisabledStroke}):Play()
-                    TweenService:Create(Toggle.Switch.Indicator, TweenInfo.new(0.8, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = SelectedTheme.ToggleDisabled}):Play()
-                    TweenService:Create(Toggle.Switch.UIStroke, TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Color = SelectedTheme.ToggleDisabledOuterStroke}):Play()
-                    wait(0.05)
-                    TweenService:Create(Toggle.Switch.Indicator, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0,17,0,17)}):Play()
-                    wait(0.15)
-                    TweenService:Create(Toggle, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
-                    TweenService:Create(Toggle.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 0}):Play()	
+                    TS:Create(Toggle, TINew(0.6, ESQuint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
+                    TS:Create(Toggle.UIStroke, TINew(0.6, ESQuint), {Transparency = 1}):Play()
+                    TS:Create(Toggle.Switch.Indicator, TINew(0.45, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Position = UDim2.new(1, -40, 0.5, 0)}):Play()
+                    TS:Create(Toggle.Switch.Indicator, TINew(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0,12,0,12)}):Play()
+                    TS:Create(Toggle.Switch.Indicator.UIStroke, TINew(0.55, ESQuint, Enum.EasingDirection.Out), {Color = SelectedTheme.ToggleDisabledStroke}):Play()
+                    TS:Create(Toggle.Switch.Indicator, TINew(0.8, ESQuint, Enum.EasingDirection.Out), {BackgroundColor3 = SelectedTheme.ToggleDisabled}):Play()
+                    TS:Create(Toggle.Switch.UIStroke, TINew(0.55, ESQuint, Enum.EasingDirection.Out), {Color = SelectedTheme.ToggleDisabledOuterStroke}):Play()
+                    task.wait(0.05)
+                    TS:Create(Toggle.Switch.Indicator, TINew(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0,17,0,17)}):Play()
+                    task.wait(0.15)
+                    TS:Create(Toggle, TINew(0.6, ESQuint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
+                    TS:Create(Toggle.UIStroke, TINew(0.6, ESQuint), {Transparency = 0}):Play()	
                 else
                     ToggleSettings.CurrentValue = true
-                    TweenService:Create(Toggle, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
-                    TweenService:Create(Toggle.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-                    TweenService:Create(Toggle.Switch.Indicator, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Position = UDim2.new(1, -20, 0.5, 0)}):Play()
-                    TweenService:Create(Toggle.Switch.Indicator, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0,12,0,12)}):Play()
-                    TweenService:Create(Toggle.Switch.Indicator.UIStroke, TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Color = SelectedTheme.ToggleEnabledStroke}):Play()
-                    TweenService:Create(Toggle.Switch.Indicator, TweenInfo.new(0.8, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = SelectedTheme.ToggleEnabled}):Play()
-                    TweenService:Create(Toggle.Switch.UIStroke, TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Color = SelectedTheme.ToggleEnabledOuterStroke}):Play()
-                    wait(0.05)
-                    TweenService:Create(Toggle.Switch.Indicator, TweenInfo.new(0.45, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0,17,0,17)}):Play()	
-                    wait(0.15)
-                    TweenService:Create(Toggle, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
-                    TweenService:Create(Toggle.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 0}):Play()		
+                    TS:Create(Toggle, TINew(0.6, ESQuint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
+                    TS:Create(Toggle.UIStroke, TINew(0.6, ESQuint), {Transparency = 1}):Play()
+                    TS:Create(Toggle.Switch.Indicator, TINew(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Position = UDim2.new(1, -20, 0.5, 0)}):Play()
+                    TS:Create(Toggle.Switch.Indicator, TINew(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0,12,0,12)}):Play()
+                    TS:Create(Toggle.Switch.Indicator.UIStroke, TINew(0.55, ESQuint, Enum.EasingDirection.Out), {Color = SelectedTheme.ToggleEnabledStroke}):Play()
+                    TS:Create(Toggle.Switch.Indicator, TINew(0.8, ESQuint, Enum.EasingDirection.Out), {BackgroundColor3 = SelectedTheme.ToggleEnabled}):Play()
+                    TS:Create(Toggle.Switch.UIStroke, TINew(0.55, ESQuint, Enum.EasingDirection.Out), {Color = SelectedTheme.ToggleEnabledOuterStroke}):Play()
+                    task.wait(0.05)
+                    TS:Create(Toggle.Switch.Indicator, TINew(0.45, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0,17,0,17)}):Play()	
+                    task.wait(0.15)
+                    TS:Create(Toggle, TINew(0.6, ESQuint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
+                    TS:Create(Toggle.UIStroke, TINew(0.6, ESQuint), {Transparency = 0}):Play()		
                 end
 
                 local Success, Response = pcall(function()
                     ToggleSettings.Callback(ToggleSettings.CurrentValue)
                 end)
                 if not Success then
-                    TweenService:Create(Toggle, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(85, 0, 0)}):Play()
-                    TweenService:Create(Toggle.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
+                    TS:Create(Toggle, TINew(0.6, ESQuint), {BackgroundColor3 = fRGB(85, 0, 0)}):Play()
+                    TS:Create(Toggle.UIStroke, TINew(0.6, ESQuint), {Transparency = 1}):Play()
                     Toggle.Title.Text = "Callback Error"
                     print("NSUI | "..ToggleSettings.Name.." Callback Error " ..tostring(Response))
-                    wait(0.5)
+                    task.wait(0.5)
                     Toggle.Title.Text = ToggleSettings.Name
-                    TweenService:Create(Toggle, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
-                    TweenService:Create(Toggle.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+                    TS:Create(Toggle, TINew(0.6, ESQuint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
+                    TS:Create(Toggle.UIStroke, TINew(0.6, ESQuint), {Transparency = 0}):Play()
                 end
 
 
@@ -2188,45 +2192,45 @@ function NSUILibrary:CreateWindow(Settings)
             function ToggleSettings:Set(NewToggleValue)
                 if NewToggleValue then
                     ToggleSettings.CurrentValue = true
-                    TweenService:Create(Toggle, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
-                    TweenService:Create(Toggle.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-                    TweenService:Create(Toggle.Switch.Indicator, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Position = UDim2.new(1, -20, 0.5, 0)}):Play()
-                    TweenService:Create(Toggle.Switch.Indicator, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0,12,0,12)}):Play()
-                    TweenService:Create(Toggle.Switch.Indicator.UIStroke, TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Color = SelectedTheme.ToggleEnabledStroke}):Play()
-                    TweenService:Create(Toggle.Switch.Indicator, TweenInfo.new(0.8, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = SelectedTheme.ToggleEnabled}):Play()
-                    TweenService:Create(Toggle.Switch.UIStroke, TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Color = Color3.fromRGB(100,100,100)}):Play()
-                    wait(0.05)
-                    TweenService:Create(Toggle.Switch.Indicator, TweenInfo.new(0.45, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0,17,0,17)}):Play()	
-                    wait(0.15)
-                    TweenService:Create(Toggle, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
-                    TweenService:Create(Toggle.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 0}):Play()	
+                    TS:Create(Toggle, TINew(0.6, ESQuint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
+                    TS:Create(Toggle.UIStroke, TINew(0.6, ESQuint), {Transparency = 1}):Play()
+                    TS:Create(Toggle.Switch.Indicator, TINew(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Position = UDim2.new(1, -20, 0.5, 0)}):Play()
+                    TS:Create(Toggle.Switch.Indicator, TINew(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0,12,0,12)}):Play()
+                    TS:Create(Toggle.Switch.Indicator.UIStroke, TINew(0.55, ESQuint, Enum.EasingDirection.Out), {Color = SelectedTheme.ToggleEnabledStroke}):Play()
+                    TS:Create(Toggle.Switch.Indicator, TINew(0.8, ESQuint, Enum.EasingDirection.Out), {BackgroundColor3 = SelectedTheme.ToggleEnabled}):Play()
+                    TS:Create(Toggle.Switch.UIStroke, TINew(0.55, ESQuint, Enum.EasingDirection.Out), {Color = fRGB(100,100,100)}):Play()
+                    task.wait(0.05)
+                    TS:Create(Toggle.Switch.Indicator, TINew(0.45, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0,17,0,17)}):Play()	
+                    task.wait(0.15)
+                    TS:Create(Toggle, TINew(0.6, ESQuint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
+                    TS:Create(Toggle.UIStroke, TINew(0.6, ESQuint), {Transparency = 0}):Play()	
                 else
                     ToggleSettings.CurrentValue = false
-                    TweenService:Create(Toggle, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
-                    TweenService:Create(Toggle.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-                    TweenService:Create(Toggle.Switch.Indicator, TweenInfo.new(0.45, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Position = UDim2.new(1, -40, 0.5, 0)}):Play()
-                    TweenService:Create(Toggle.Switch.Indicator, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0,12,0,12)}):Play()
-                    TweenService:Create(Toggle.Switch.Indicator.UIStroke, TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Color = SelectedTheme.ToggleDisabledStroke}):Play()
-                    TweenService:Create(Toggle.Switch.Indicator, TweenInfo.new(0.8, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = SelectedTheme.ToggleDisabled}):Play()
-                    TweenService:Create(Toggle.Switch.UIStroke, TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Color = Color3.fromRGB(65,65,65)}):Play()
-                    wait(0.05)
-                    TweenService:Create(Toggle.Switch.Indicator, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0,17,0,17)}):Play()
-                    wait(0.15)
-                    TweenService:Create(Toggle, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
-                    TweenService:Create(Toggle.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 0}):Play()	
+                    TS:Create(Toggle, TINew(0.6, ESQuint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
+                    TS:Create(Toggle.UIStroke, TINew(0.6, ESQuint), {Transparency = 1}):Play()
+                    TS:Create(Toggle.Switch.Indicator, TINew(0.45, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Position = UDim2.new(1, -40, 0.5, 0)}):Play()
+                    TS:Create(Toggle.Switch.Indicator, TINew(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0,12,0,12)}):Play()
+                    TS:Create(Toggle.Switch.Indicator.UIStroke, TINew(0.55, ESQuint, Enum.EasingDirection.Out), {Color = SelectedTheme.ToggleDisabledStroke}):Play()
+                    TS:Create(Toggle.Switch.Indicator, TINew(0.8, ESQuint, Enum.EasingDirection.Out), {BackgroundColor3 = SelectedTheme.ToggleDisabled}):Play()
+                    TS:Create(Toggle.Switch.UIStroke, TINew(0.55, ESQuint, Enum.EasingDirection.Out), {Color = fRGB(65,65,65)}):Play()
+                    task.wait(0.05)
+                    TS:Create(Toggle.Switch.Indicator, TINew(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0,17,0,17)}):Play()
+                    task.wait(0.15)
+                    TS:Create(Toggle, TINew(0.6, ESQuint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
+                    TS:Create(Toggle.UIStroke, TINew(0.6, ESQuint), {Transparency = 0}):Play()	
                 end
                 local Success, Response = pcall(function()
                     ToggleSettings.Callback(ToggleSettings.CurrentValue)
                 end)
                 if not Success then
-                    TweenService:Create(Toggle, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(85, 0, 0)}):Play()
-                    TweenService:Create(Toggle.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
+                    TS:Create(Toggle, TINew(0.6, ESQuint), {BackgroundColor3 = fRGB(85, 0, 0)}):Play()
+                    TS:Create(Toggle.UIStroke, TINew(0.6, ESQuint), {Transparency = 1}):Play()
                     Toggle.Title.Text = "Callback Error"
                     print("NSUI | "..ToggleSettings.Name.." Callback Error " ..tostring(Response))
-                    wait(0.5)
+                    task.wait(0.5)
                     Toggle.Title.Text = ToggleSettings.Name
-                    TweenService:Create(Toggle, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
-                    TweenService:Create(Toggle.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+                    TS:Create(Toggle, TINew(0.6, ESQuint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
+                    TS:Create(Toggle.UIStroke, TINew(0.6, ESQuint), {Transparency = 0}):Play()
                 end
                 SaveConfiguration()
             end
@@ -2261,9 +2265,9 @@ function NSUILibrary:CreateWindow(Settings)
             Slider.Main.UIStroke.Color = SelectedTheme.SliderStroke
             Slider.Main.Progress.BackgroundColor3 = SelectedTheme.SliderProgress
 
-            TweenService:Create(Slider, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-            TweenService:Create(Slider.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-            TweenService:Create(Slider.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()	
+            TS:Create(Slider, TINew(0.7, ESQuint), {BackgroundTransparency = 0}):Play()
+            TS:Create(Slider.UIStroke, TINew(0.7, ESQuint), {Transparency = 0}):Play()
+            TS:Create(Slider.Title, TINew(0.7, ESQuint), {TextTransparency = 0}):Play()	
 
             Slider.Main.Progress.Size =	UDim2.new(0, Slider.Main.AbsoluteSize.X * ((SliderSettings.CurrentValue + SliderSettings.Range[1]) / (SliderSettings.Range[2] - SliderSettings.Range[1])) > 5 and Slider.Main.AbsoluteSize.X * (SliderSettings.CurrentValue / (SliderSettings.Range[2] - SliderSettings.Range[1])) or 5, 1, 0)
 
@@ -2275,11 +2279,11 @@ function NSUILibrary:CreateWindow(Settings)
 
 
             Slider.MouseEnter:Connect(function()
-                TweenService:Create(Slider, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
+                TS:Create(Slider, TINew(0.6, ESQuint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
             end)
 
             Slider.MouseLeave:Connect(function()
-                TweenService:Create(Slider, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
+                TS:Create(Slider, TINew(0.6, ESQuint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
             end)
 
             Slider.Main.Interact.InputBegan:Connect(function(Input)
@@ -2319,7 +2323,7 @@ function NSUILibrary:CreateWindow(Settings)
                         elseif Current >= Location and (Location - Start) > 0 then
                             Start = Location
                         end
-                        TweenService:Create(Slider.Main.Progress, TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, Current - Slider.Main.AbsolutePosition.X, 1, 0)}):Play()
+                        TS:Create(Slider.Main.Progress, TINew(0.45, ESQuint, Enum.EasingDirection.Out), {Size = UDim2.new(0, Current - Slider.Main.AbsolutePosition.X, 1, 0)}):Play()
                         local NewValue = SliderSettings.Range[1] + (Location - Slider.Main.AbsolutePosition.X) / Slider.Main.AbsoluteSize.X * (SliderSettings.Range[2] - SliderSettings.Range[1])
 
                         NewValue = math.floor(NewValue / SliderSettings.Increment + 0.5) * (SliderSettings.Increment * 10000000) / 10000000
@@ -2334,41 +2338,41 @@ function NSUILibrary:CreateWindow(Settings)
                                 SliderSettings.Callback(NewValue)
                             end)
                             if not Success then
-                                TweenService:Create(Slider, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(85, 0, 0)}):Play()
-                                TweenService:Create(Slider.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
+                                TS:Create(Slider, TINew(0.6, ESQuint), {BackgroundColor3 = fRGB(85, 0, 0)}):Play()
+                                TS:Create(Slider.UIStroke, TINew(0.6, ESQuint), {Transparency = 1}):Play()
                                 Slider.Title.Text = "Callback Error"
                                 print("NSUI | "..SliderSettings.Name.." Callback Error " ..tostring(Response))
-                                wait(0.5)
+                                task.wait(0.5)
                                 Slider.Title.Text = SliderSettings.Name
-                                TweenService:Create(Slider, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
-                                TweenService:Create(Slider.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+                                TS:Create(Slider, TINew(0.6, ESQuint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
+                                TS:Create(Slider.UIStroke, TINew(0.6, ESQuint), {Transparency = 0}):Play()
                             end
 
                             SliderSettings.CurrentValue = NewValue
                             SaveConfiguration()
                         end
                     else
-                        TweenService:Create(Slider.Main.Progress, TweenInfo.new(0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, Location - Slider.Main.AbsolutePosition.X > 5 and Location - Slider.Main.AbsolutePosition.X or 5, 1, 0)}):Play()
+                        TS:Create(Slider.Main.Progress, TINew(0.3, ESQuint, Enum.EasingDirection.Out), {Size = UDim2.new(0, Location - Slider.Main.AbsolutePosition.X > 5 and Location - Slider.Main.AbsolutePosition.X or 5, 1, 0)}):Play()
                         Loop:Disconnect()
                     end
                 end)
             end)
 
             function SliderSettings:Set(NewVal)
-                TweenService:Create(Slider.Main.Progress, TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, Slider.Main.AbsoluteSize.X * ((NewVal + SliderSettings.Range[1]) / (SliderSettings.Range[2] - SliderSettings.Range[1])) > 5 and Slider.Main.AbsoluteSize.X * (NewVal / (SliderSettings.Range[2] - SliderSettings.Range[1])) or 5, 1, 0)}):Play()
+                TS:Create(Slider.Main.Progress, TINew(0.45, ESQuint, Enum.EasingDirection.Out), {Size = UDim2.new(0, Slider.Main.AbsoluteSize.X * ((NewVal + SliderSettings.Range[1]) / (SliderSettings.Range[2] - SliderSettings.Range[1])) > 5 and Slider.Main.AbsoluteSize.X * (NewVal / (SliderSettings.Range[2] - SliderSettings.Range[1])) or 5, 1, 0)}):Play()
                 Slider.Main.Information.Text = tostring(NewVal) .. " " .. SliderSettings.Suffix
                 local Success, Response = pcall(function()
                     SliderSettings.Callback(NewVal)
                 end)
                 if not Success then
-                    TweenService:Create(Slider, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(85, 0, 0)}):Play()
-                    TweenService:Create(Slider.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
+                    TS:Create(Slider, TINew(0.6, ESQuint), {BackgroundColor3 = fRGB(85, 0, 0)}):Play()
+                    TS:Create(Slider.UIStroke, TINew(0.6, ESQuint), {Transparency = 1}):Play()
                     Slider.Title.Text = "Callback Error"
                     print("NSUI | "..SliderSettings.Name.." Callback Error " ..tostring(Response))
-                    wait(0.5)
+                    task.wait(0.5)
                     Slider.Title.Text = SliderSettings.Name
-                    TweenService:Create(Slider, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
-                    TweenService:Create(Slider.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+                    TS:Create(Slider, TINew(0.6, ESQuint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
+                    TS:Create(Slider.UIStroke, TINew(0.6, ESQuint), {Transparency = 0}):Play()
                 end
                 SliderSettings.CurrentValue = NewVal
                 SaveConfiguration()
@@ -2387,13 +2391,13 @@ function NSUILibrary:CreateWindow(Settings)
 
     Elements.Visible = true
 
-    wait(0.7)
-    TweenService:Create(LoadingFrame.Title, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-    TweenService:Create(LoadingFrame.Subtitle, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-    TweenService:Create(LoadingFrame.Version, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-    wait(0.2)
-    TweenService:Create(Main, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 500, 0, 475)}):Play()
-    TweenService:Create(Main.Shadow.Image, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0.4}):Play()
+    task.wait(0.7)
+    TS:Create(LoadingFrame.Title, TINew(0.5, ESQuint), {TextTransparency = 1}):Play()
+    TS:Create(LoadingFrame.Subtitle, TINew(0.5, ESQuint), {TextTransparency = 1}):Play()
+    TS:Create(LoadingFrame.Version, TINew(0.5, ESQuint), {TextTransparency = 1}):Play()
+    task.wait(0.2)
+    TS:Create(Main, TINew(0.7, ESQuint), {Size = UDim2.new(0, 500, 0, 475)}):Play()
+    TS:Create(Main.Shadow.Image, TINew(0.7, ESQuint), {ImageTransparency = 0.4}):Play()
 
     Topbar.BackgroundTransparency = 1
     Topbar.Divider.Size = UDim2.new(0, 0, 0, 1)
@@ -2403,21 +2407,21 @@ function NSUILibrary:CreateWindow(Settings)
     Topbar.ChangeSize.ImageTransparency = 1
     Topbar.Hide.ImageTransparency = 1
 
-    wait(0.5)
+    task.wait(0.5)
     Topbar.Visible = true
-    TweenService:Create(Topbar, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-    TweenService:Create(Topbar.CornerRepair, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-    wait(0.1)
-    TweenService:Create(Topbar.Divider, TweenInfo.new(1, Enum.EasingStyle.Quint), {Size = UDim2.new(1, 0, 0, 1)}):Play()
-    wait(0.1)
-    TweenService:Create(Topbar.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-    wait(0.1)
-    TweenService:Create(Topbar.Theme, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0.8}):Play()
-    wait(0.1)
-    TweenService:Create(Topbar.ChangeSize, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0.8}):Play()
-    wait(0.1)
-    TweenService:Create(Topbar.Hide, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0.8}):Play()
-    wait(0.3)
+    TS:Create(Topbar, TINew(0.7, ESQuint), {BackgroundTransparency = 0}):Play()
+    TS:Create(Topbar.CornerRepair, TINew(0.7, ESQuint), {BackgroundTransparency = 0}):Play()
+    task.wait(0.1)
+    TS:Create(Topbar.Divider, TINew(1, ESQuint), {Size = UDim2.new(1, 0, 0, 1)}):Play()
+    task.wait(0.1)
+    TS:Create(Topbar.Title, TINew(0.7, ESQuint), {TextTransparency = 0}):Play()
+    task.wait(0.1)
+    TS:Create(Topbar.Theme, TINew(0.7, ESQuint), {ImageTransparency = 0.8}):Play()
+    task.wait(0.1)
+    TS:Create(Topbar.ChangeSize, TINew(0.7, ESQuint), {ImageTransparency = 0.8}):Play()
+    task.wait(0.1)
+    TS:Create(Topbar.Hide, TINew(0.7, ESQuint), {ImageTransparency = 0.8}):Play()
+    task.wait(0.3)
 
     return Window
 end
@@ -2466,15 +2470,15 @@ end)
 for _, TopbarButton in ipairs(Topbar:GetChildren()) do
     if TopbarButton.ClassName == "ImageButton" then
         TopbarButton.MouseEnter:Connect(function()
-            TweenService:Create(TopbarButton, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
+            TS:Create(TopbarButton, TINew(0.7, ESQuint), {ImageTransparency = 0}):Play()
         end)
 
         TopbarButton.MouseLeave:Connect(function()
-            TweenService:Create(TopbarButton, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0.8}):Play()
+            TS:Create(TopbarButton, TINew(0.7, ESQuint), {ImageTransparency = 0.8}):Play()
         end)
 
         TopbarButton.MouseButton1Click:Connect(function()
-            TweenService:Create(TopbarButton, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0.8}):Play()
+            TS:Create(TopbarButton, TINew(0.7, ESQuint), {ImageTransparency = 0.8}):Play()
         end)
     end
 end
@@ -2492,15 +2496,15 @@ function NSUILibrary:LoadConfiguration()
 end
 
 function NSUILibrary:GetPlayerHeadShot(UserId)
-      return Players:GetUserThumbnailAsync(UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size420x420)
+    return Players:GetUserThumbnailAsync(UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size420x420)
 end
 
 function NSUILibrary:GetPlayerAvatarBust(UserId)
-      return Players:GetUserThumbnailAsync(UserId, Enum.ThumbnailType.AvatarBust, Enum.ThumbnailSize.Size420x420)
+    return Players:GetUserThumbnailAsync(UserId, Enum.ThumbnailType.AvatarBust, Enum.ThumbnailSize.Size420x420)
 end
 
 function NSUILibrary:GetPlayerAvatarThumbnail(UserId)
-      return Players:GetUserThumbnailAsync(UserId, Enum.ThumbnailType.AvatarThumbnail, Enum.ThumbnailSize.Size420x420)
+    return Players:GetUserThumbnailAsync(UserId, Enum.ThumbnailType.AvatarThumbnail, Enum.ThumbnailSize.Size420x420)
 end
 
 task.delay(3.5, NSUILibrary.LoadConfiguration, NSUILibrary)
