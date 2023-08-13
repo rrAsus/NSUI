@@ -12,6 +12,8 @@ local ESQuint = Enum.EasingStyle.Quint
 local TINew = TweenInfo.new
 local fRGB = Color3.fromRGB
 
+local ESQuart, EDOut = Enum.EasingStyle.Quart, Enum.EasingDirection.Out
+
 local NSUILibrary = {
     Flags = {},
     Theme = {
@@ -220,7 +222,7 @@ local function AddDraggingFunctionality(DragPoint, Main)
         UserInputService.InputChanged:Connect(function(Input)
             if Input == DragInput and Dragging then
                 local Delta = Input.Position - MousePos
-                TS:Create(Main, TINew(0.45, ESQuint, Enum.EasingDirection.Out), {Position  = UDim2.new(FramePos.X.Scale,FramePos.X.Offset + Delta.X, FramePos.Y.Scale, FramePos.Y.Offset + Delta.Y)}):Play()
+                TS:Create(Main, TINew(0.45, ESQuint, EDOut), {Position  = UDim2.new(FramePos.X.Scale,FramePos.X.Offset + Delta.X, FramePos.Y.Scale, FramePos.Y.Offset + Delta.Y)}):Play()
             end
         end)
     end)
@@ -1698,7 +1700,7 @@ function NSUILibrary:CreateWindow(Settings)
             end)
 
             Input.InputFrame.InputBox:GetPropertyChangedSignal("Text"):Connect(function()
-                TS:Create(Input.InputFrame, TINew(0.55, ESQuint, Enum.EasingDirection.Out), {Size = UDim2.new(0, Input.InputFrame.InputBox.TextBounds.X + 24, 0, 30)}):Play()
+                TS:Create(Input.InputFrame, TINew(0.55, ESQuint, EDOut), {Size = UDim2.new(0, Input.InputFrame.InputBox.TextBounds.X + 24, 0, 30)}):Play()
             end)
         end
 
@@ -2074,7 +2076,7 @@ function NSUILibrary:CreateWindow(Settings)
             end)
 
             Keybind.KeybindFrame.KeybindBox:GetPropertyChangedSignal("Text"):Connect(function()
-                TS:Create(Keybind.KeybindFrame, TINew(0.55, ESQuint, Enum.EasingDirection.Out), {Size = UDim2.new(0, Keybind.KeybindFrame.KeybindBox.TextBounds.X + 24, 0, 30)}):Play()
+                TS:Create(Keybind.KeybindFrame, TINew(0.55, ESQuint, EDOut), {Size = UDim2.new(0, Keybind.KeybindFrame.KeybindBox.TextBounds.X + 24, 0, 30)}):Play()
             end)
 
             function KeybindSettings:Set(NewKeybind)
@@ -2145,13 +2147,13 @@ function NSUILibrary:CreateWindow(Settings)
                     ToggleSettings.CurrentValue = false
                     TS:Create(Toggle, TINew(0.6, ESQuint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
                     TS:Create(Toggle.UIStroke, TINew(0.6, ESQuint), {Transparency = 1}):Play()
-                    TS:Create(Toggle.Switch.Indicator, TINew(0.45, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Position = UDim2.new(1, -40, 0.5, 0)}):Play()
-                    TS:Create(Toggle.Switch.Indicator, TINew(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0,12,0,12)}):Play()
-                    TS:Create(Toggle.Switch.Indicator.UIStroke, TINew(0.55, ESQuint, Enum.EasingDirection.Out), {Color = SelectedTheme.ToggleDisabledStroke}):Play()
-                    TS:Create(Toggle.Switch.Indicator, TINew(0.8, ESQuint, Enum.EasingDirection.Out), {BackgroundColor3 = SelectedTheme.ToggleDisabled}):Play()
-                    TS:Create(Toggle.Switch.UIStroke, TINew(0.55, ESQuint, Enum.EasingDirection.Out), {Color = SelectedTheme.ToggleDisabledOuterStroke}):Play()
+                    TS:Create(Toggle.Switch.Indicator, TINew(0.45, ESQuart, EDOut), {Position = UDim2.new(1, -40, 0.5, 0)}):Play()
+                    TS:Create(Toggle.Switch.Indicator, TINew(0.4, ESQuart, EDOut), {Size = UDim2.new(0,12,0,12)}):Play()
+                    TS:Create(Toggle.Switch.Indicator.UIStroke, TINew(0.55, ESQuint, EDOut), {Color = SelectedTheme.ToggleDisabledStroke}):Play()
+                    TS:Create(Toggle.Switch.Indicator, TINew(0.8, ESQuint, EDOut), {BackgroundColor3 = SelectedTheme.ToggleDisabled}):Play()
+                    TS:Create(Toggle.Switch.UIStroke, TINew(0.55, ESQuint, EDOut), {Color = SelectedTheme.ToggleDisabledOuterStroke}):Play()
                     task.wait(0.05)
-                    TS:Create(Toggle.Switch.Indicator, TINew(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0,17,0,17)}):Play()
+                    TS:Create(Toggle.Switch.Indicator, TINew(0.4, ESQuart, EDOut), {Size = UDim2.new(0,17,0,17)}):Play()
                     task.wait(0.15)
                     TS:Create(Toggle, TINew(0.6, ESQuint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
                     TS:Create(Toggle.UIStroke, TINew(0.6, ESQuint), {Transparency = 0}):Play()	
@@ -2159,13 +2161,13 @@ function NSUILibrary:CreateWindow(Settings)
                     ToggleSettings.CurrentValue = true
                     TS:Create(Toggle, TINew(0.6, ESQuint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
                     TS:Create(Toggle.UIStroke, TINew(0.6, ESQuint), {Transparency = 1}):Play()
-                    TS:Create(Toggle.Switch.Indicator, TINew(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Position = UDim2.new(1, -20, 0.5, 0)}):Play()
-                    TS:Create(Toggle.Switch.Indicator, TINew(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0,12,0,12)}):Play()
-                    TS:Create(Toggle.Switch.Indicator.UIStroke, TINew(0.55, ESQuint, Enum.EasingDirection.Out), {Color = SelectedTheme.ToggleEnabledStroke}):Play()
-                    TS:Create(Toggle.Switch.Indicator, TINew(0.8, ESQuint, Enum.EasingDirection.Out), {BackgroundColor3 = SelectedTheme.ToggleEnabled}):Play()
-                    TS:Create(Toggle.Switch.UIStroke, TINew(0.55, ESQuint, Enum.EasingDirection.Out), {Color = SelectedTheme.ToggleEnabledOuterStroke}):Play()
+                    TS:Create(Toggle.Switch.Indicator, TINew(0.5, ESQuart, EDOut), {Position = UDim2.new(1, -20, 0.5, 0)}):Play()
+                    TS:Create(Toggle.Switch.Indicator, TINew(0.4, ESQuart, EDOut), {Size = UDim2.new(0,12,0,12)}):Play()
+                    TS:Create(Toggle.Switch.Indicator.UIStroke, TINew(0.55, ESQuint, EDOut), {Color = SelectedTheme.ToggleEnabledStroke}):Play()
+                    TS:Create(Toggle.Switch.Indicator, TINew(0.8, ESQuint, EDOut), {BackgroundColor3 = SelectedTheme.ToggleEnabled}):Play()
+                    TS:Create(Toggle.Switch.UIStroke, TINew(0.55, ESQuint, EDOut), {Color = SelectedTheme.ToggleEnabledOuterStroke}):Play()
                     task.wait(0.05)
-                    TS:Create(Toggle.Switch.Indicator, TINew(0.45, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0,17,0,17)}):Play()	
+                    TS:Create(Toggle.Switch.Indicator, TINew(0.45, ESQuart, EDOut), {Size = UDim2.new(0,17,0,17)}):Play()	
                     task.wait(0.15)
                     TS:Create(Toggle, TINew(0.6, ESQuint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
                     TS:Create(Toggle.UIStroke, TINew(0.6, ESQuint), {Transparency = 0}):Play()		
@@ -2194,13 +2196,13 @@ function NSUILibrary:CreateWindow(Settings)
                     ToggleSettings.CurrentValue = true
                     TS:Create(Toggle, TINew(0.6, ESQuint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
                     TS:Create(Toggle.UIStroke, TINew(0.6, ESQuint), {Transparency = 1}):Play()
-                    TS:Create(Toggle.Switch.Indicator, TINew(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Position = UDim2.new(1, -20, 0.5, 0)}):Play()
-                    TS:Create(Toggle.Switch.Indicator, TINew(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0,12,0,12)}):Play()
-                    TS:Create(Toggle.Switch.Indicator.UIStroke, TINew(0.55, ESQuint, Enum.EasingDirection.Out), {Color = SelectedTheme.ToggleEnabledStroke}):Play()
-                    TS:Create(Toggle.Switch.Indicator, TINew(0.8, ESQuint, Enum.EasingDirection.Out), {BackgroundColor3 = SelectedTheme.ToggleEnabled}):Play()
-                    TS:Create(Toggle.Switch.UIStroke, TINew(0.55, ESQuint, Enum.EasingDirection.Out), {Color = fRGB(100,100,100)}):Play()
+                    TS:Create(Toggle.Switch.Indicator, TINew(0.5, ESQuart, EDOut), {Position = UDim2.new(1, -20, 0.5, 0)}):Play()
+                    TS:Create(Toggle.Switch.Indicator, TINew(0.4, ESQuart, EDOut), {Size = UDim2.new(0,12,0,12)}):Play()
+                    TS:Create(Toggle.Switch.Indicator.UIStroke, TINew(0.55, ESQuint, EDOut), {Color = SelectedTheme.ToggleEnabledStroke}):Play()
+                    TS:Create(Toggle.Switch.Indicator, TINew(0.8, ESQuint, EDOut), {BackgroundColor3 = SelectedTheme.ToggleEnabled}):Play()
+                    TS:Create(Toggle.Switch.UIStroke, TINew(0.55, ESQuint, EDOut), {Color = fRGB(100,100,100)}):Play()
                     task.wait(0.05)
-                    TS:Create(Toggle.Switch.Indicator, TINew(0.45, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0,17,0,17)}):Play()	
+                    TS:Create(Toggle.Switch.Indicator, TINew(0.45, ESQuart, EDOut), {Size = UDim2.new(0,17,0,17)}):Play()	
                     task.wait(0.15)
                     TS:Create(Toggle, TINew(0.6, ESQuint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
                     TS:Create(Toggle.UIStroke, TINew(0.6, ESQuint), {Transparency = 0}):Play()	
@@ -2208,13 +2210,13 @@ function NSUILibrary:CreateWindow(Settings)
                     ToggleSettings.CurrentValue = false
                     TS:Create(Toggle, TINew(0.6, ESQuint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
                     TS:Create(Toggle.UIStroke, TINew(0.6, ESQuint), {Transparency = 1}):Play()
-                    TS:Create(Toggle.Switch.Indicator, TINew(0.45, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Position = UDim2.new(1, -40, 0.5, 0)}):Play()
-                    TS:Create(Toggle.Switch.Indicator, TINew(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0,12,0,12)}):Play()
-                    TS:Create(Toggle.Switch.Indicator.UIStroke, TINew(0.55, ESQuint, Enum.EasingDirection.Out), {Color = SelectedTheme.ToggleDisabledStroke}):Play()
-                    TS:Create(Toggle.Switch.Indicator, TINew(0.8, ESQuint, Enum.EasingDirection.Out), {BackgroundColor3 = SelectedTheme.ToggleDisabled}):Play()
-                    TS:Create(Toggle.Switch.UIStroke, TINew(0.55, ESQuint, Enum.EasingDirection.Out), {Color = fRGB(65,65,65)}):Play()
+                    TS:Create(Toggle.Switch.Indicator, TINew(0.45, ESQuart, EDOut), {Position = UDim2.new(1, -40, 0.5, 0)}):Play()
+                    TS:Create(Toggle.Switch.Indicator, TINew(0.4, ESQuart, EDOut), {Size = UDim2.new(0,12,0,12)}):Play()
+                    TS:Create(Toggle.Switch.Indicator.UIStroke, TINew(0.55, ESQuint, EDOut), {Color = SelectedTheme.ToggleDisabledStroke}):Play()
+                    TS:Create(Toggle.Switch.Indicator, TINew(0.8, ESQuint, EDOut), {BackgroundColor3 = SelectedTheme.ToggleDisabled}):Play()
+                    TS:Create(Toggle.Switch.UIStroke, TINew(0.55, ESQuint, EDOut), {Color = fRGB(65,65,65)}):Play()
                     task.wait(0.05)
-                    TS:Create(Toggle.Switch.Indicator, TINew(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0,17,0,17)}):Play()
+                    TS:Create(Toggle.Switch.Indicator, TINew(0.4, ESQuart, EDOut), {Size = UDim2.new(0,17,0,17)}):Play()
                     task.wait(0.15)
                     TS:Create(Toggle, TINew(0.6, ESQuint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
                     TS:Create(Toggle.UIStroke, TINew(0.6, ESQuint), {Transparency = 0}):Play()	
@@ -2323,7 +2325,7 @@ function NSUILibrary:CreateWindow(Settings)
                         elseif Current >= Location and (Location - Start) > 0 then
                             Start = Location
                         end
-                        TS:Create(Slider.Main.Progress, TINew(0.45, ESQuint, Enum.EasingDirection.Out), {Size = UDim2.new(0, Current - Slider.Main.AbsolutePosition.X, 1, 0)}):Play()
+                        TS:Create(Slider.Main.Progress, TINew(0.45, ESQuint, EDOut), {Size = UDim2.new(0, Current - Slider.Main.AbsolutePosition.X, 1, 0)}):Play()
                         local NewValue = SliderSettings.Range[1] + (Location - Slider.Main.AbsolutePosition.X) / Slider.Main.AbsoluteSize.X * (SliderSettings.Range[2] - SliderSettings.Range[1])
 
                         NewValue = math.floor(NewValue / SliderSettings.Increment + 0.5) * (SliderSettings.Increment * 10000000) / 10000000
@@ -2352,14 +2354,14 @@ function NSUILibrary:CreateWindow(Settings)
                             SaveConfiguration()
                         end
                     else
-                        TS:Create(Slider.Main.Progress, TINew(0.3, ESQuint, Enum.EasingDirection.Out), {Size = UDim2.new(0, Location - Slider.Main.AbsolutePosition.X > 5 and Location - Slider.Main.AbsolutePosition.X or 5, 1, 0)}):Play()
+                        TS:Create(Slider.Main.Progress, TINew(0.3, ESQuint, EDOut), {Size = UDim2.new(0, Location - Slider.Main.AbsolutePosition.X > 5 and Location - Slider.Main.AbsolutePosition.X or 5, 1, 0)}):Play()
                         Loop:Disconnect()
                     end
                 end)
             end)
 
             function SliderSettings:Set(NewVal)
-                TS:Create(Slider.Main.Progress, TINew(0.45, ESQuint, Enum.EasingDirection.Out), {Size = UDim2.new(0, Slider.Main.AbsoluteSize.X * ((NewVal + SliderSettings.Range[1]) / (SliderSettings.Range[2] - SliderSettings.Range[1])) > 5 and Slider.Main.AbsoluteSize.X * (NewVal / (SliderSettings.Range[2] - SliderSettings.Range[1])) or 5, 1, 0)}):Play()
+                TS:Create(Slider.Main.Progress, TINew(0.45, ESQuint, EDOut), {Size = UDim2.new(0, Slider.Main.AbsoluteSize.X * ((NewVal + SliderSettings.Range[1]) / (SliderSettings.Range[2] - SliderSettings.Range[1])) > 5 and Slider.Main.AbsoluteSize.X * (NewVal / (SliderSettings.Range[2] - SliderSettings.Range[1])) or 5, 1, 0)}):Play()
                 Slider.Main.Information.Text = tostring(NewVal) .. " " .. SliderSettings.Suffix
                 local Success, Response = pcall(function()
                     SliderSettings.Callback(NewVal)
