@@ -1,12 +1,13 @@
--- CREDIT TO SIRIUS
--- WEBSITE https://docs.sirius.menu
--- CLONE OF RAYFIELD https://docs.sirius.menu/rayfield
+-- CREDIT TO SIRIUS (and rightful creators), https://docs.sirius.menu/rayfield (THEIR .gg/ANzAye2S)
+-- This is an improved forked version that fixes a few issues and adds more functionality.
+-- edited and forked by painot (thanks to fellas in baseplate game as well)
 
 local Release = "Beta 8"
 local NotificationDuration = 6.5
 local NSUIFolder = "NSUI"
 local ConfigurationFolder = NSUIFolder.."/Configurations"
 local ConfigurationExtension = ".nsui"
+local ThresholdForLDA = nil
 
 local NSUILibrary = {
 	Flags = {},
