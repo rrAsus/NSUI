@@ -199,7 +199,7 @@ function HDXLib:DoImage(data)
         else
             id = 0
         end
-    elseif tonumber(data) then
+    elseif typeof(data) == "number" then
         if Players[Players:GetNameFromUserIdAsync(data)] then -- user id check
             id = HDXLib:GetPlayerHeadShot(data)
         else
