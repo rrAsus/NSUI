@@ -95,8 +95,6 @@ local HDXLib = {
     }
 }
 
-
-
 -- Services
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
@@ -109,11 +107,12 @@ local LocalPlayer = game:GetService("Players").LocalPlayer
 -- Interface Management
 local HDX = game:GetObjects("rbxassetid://13853811008")[1]
 HDX.Enabled = false
+
 local spawn = task.spawn
 local delay = task.delay
 
 --Studio
-if game["Run Service"]:IsStudio() then
+if game:GetService("RunService"):IsStudio() then
     function gethui() return HDX end local http_request = nil local syn = {protect_gui = false,request = false,}local http = nil function writefile(tt,t,ttt)end function isfolder(t)end function makefolder(t)end function isfile(r)end function readfile(t)end
 end
 
@@ -121,6 +120,7 @@ pcall(function()
     _G.LastNSUI.Name = "Old HDX"
     _G.LastNSUI.Enabled = false
 end)
+
 local ParentObject = function(Gui)
     local success, failure = pcall(function()
         if get_hidden_gui or gethui then
