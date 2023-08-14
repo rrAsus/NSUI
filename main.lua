@@ -2450,7 +2450,7 @@ Topbar.Hide.MouseButton1Click:Connect(function()
 end)
 
 UserInputService.InputBegan:Connect(function(input, processed)
-	if ((input.KeyCode == Enum.KeyCode.RightAlt) and not processed) then
+	if ((input.KeyCode == Enum.KeyCode.LeftAlt) and not processed) then
 		if Debounce then return end
 		if Hidden then
 			Hidden = false
