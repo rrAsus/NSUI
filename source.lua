@@ -112,8 +112,17 @@ local spawn = task.spawn
 local delay = task.delay
 
 --Studio
-if game:GetService("RunService"):IsStudio() then
-    function gethui() return HDX end local http_request = nil local syn = {protect_gui = false,request = false,}local http = nil function writefile(tt,t,ttt)end function isfolder(t)end function makefolder(t)end function isfile(r)end function readfile(t)end
+if RunService:IsStudio() then
+    local http_request, http = nil , nil
+    
+    local syn = { protect_gui = false, request = false }
+    
+    function writefile(tt,t,ttt) end
+    function isfolder(t) end
+    function makefolder(t) end
+    function isfile(r) end
+    function readfile(t) end
+    function gethui() return HDX end
 end
 
 pcall(function()
@@ -1567,6 +1576,11 @@ function HDXLib:CreateWindow(Settings)
     local FirstTab = false
     HDXQuality.Window = {Tabs = {}}
     local Window = HDXQuality.Window
+    
+    function Window:SetTopbarTitle(text)
+        Topbar.Title.Text = text
+    end
+    
     function Window:CreateTab(Name,Image)
         Window.Tabs[Name]={Elements = {}}
         local Tab = Window.Tabs[Name]
