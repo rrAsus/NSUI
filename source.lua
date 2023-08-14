@@ -183,16 +183,22 @@ end
 
 function HDXLib:DoImage(data)
     local id = 0
-    if type(data) == "string" then -- rbxassetid or plrname check
+    if type(data) == "string" then -- rbxassetid check
         if data:sub(1, 3):lower() == "rbx" then
             id = data:sub(4)
-        elseif Players[tostring(data)] then
-            id = HDXLib:GetPlayerHeadShot(Players[data].UserId)
+        elseif Players[tostring(data)] then -- playername check
+            id = HDXLib:GetPlayerHeadShot(Players:GetUserIdFromNameAsync(data))
+        else
+            id = 0
         end
-    elseif typeof(data) == "Instance" and data:IsA("Player") then -- player instance check
-        id = HDXLib:GetPlayerHeadShot(data.UserId)
-    elseif typeof(data) == "Instance" and data:IsA("ImageLabel") or data:IsA("ImageLButton") then -- image instance check
-        id = data.Image
+    elseif typeof(data) == "Instance" then
+        if data:IsA("Player") then -- player instance check
+            id = HDXLib:GetPlayerHeadShot(data.UserId)
+        elseif data:IsA("ImageLabel") or data:IsA("ImageButton") then -- image instance check
+            id = data.Image
+        else
+            id = 0
+        end
     elseif tonumber(data) then
         if Players[Players:GetNameFromUserIdAsync(data)] then -- user id check
             id = HDXLib:GetPlayerHeadShot(data)
