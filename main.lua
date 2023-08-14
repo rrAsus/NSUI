@@ -18,82 +18,82 @@ local NSUILibrary = {
     Flags = {},
     Theme = {
         Default = {
-            TextFont = "Default",
-            TextColor = Color3.fromRGB(240, 240, 240),
+            TextFont = "Default", -- Default will use the various font faces used across NSUI
+            TextColor = fRGB(240, 240, 240),
 
-            Background = Color3.fromRGB(25, 25, 25),
-            Topbar = Color3.fromRGB(34, 34, 34),
-            Shadow = Color3.fromRGB(20, 20, 20),
+            Background = fRGB(25, 25, 25),
+            Topbar = fRGB(34, 34, 34),
+            Shadow = fRGB(20, 20, 20),
 
-            NotificationBackground = Color3.fromRGB(20, 20, 20),
-            NotificationActionsBackground = Color3.fromRGB(230, 230, 230),
+            NotificationBackground = fRGB(20, 20, 20),
+            NotificationActionsBackground = fRGB(230, 230, 230),
 
-            TabBackground = Color3.fromRGB(80, 80, 80),
-            TabStroke = Color3.fromRGB(85, 85, 85),
-            TabBackgroundSelected = Color3.fromRGB(210, 210, 210),
-            TabTextColor = Color3.fromRGB(240, 240, 240),
-            SelectedTabTextColor = Color3.fromRGB(50, 50, 50),
+            TabBackground = fRGB(80, 80, 80),
+            TabStroke = fRGB(85, 85, 85),
+            TabBackgroundSelected = fRGB(210, 210, 210),
+            TabTextColor = fRGB(240, 240, 240),
+            SelectedTabTextColor = fRGB(50, 50, 50),
 
-            ElementBackground = Color3.fromRGB(35, 35, 35),
-            ElementBackgroundHover = Color3.fromRGB(40, 40, 40),
-            SecondaryElementBackground = Color3.fromRGB(25, 25, 25),
-            ElementStroke = Color3.fromRGB(50, 50, 50),
-            SecondaryElementStroke = Color3.fromRGB(40, 40, 40), 
+            ElementBackground = fRGB(35, 35, 35),
+            ElementBackgroundHover = fRGB(40, 40, 40),
+            SecondaryElementBackground = fRGB(25, 25, 25), -- For labels and paragraphs
+            ElementStroke = fRGB(50, 50, 50),
+            SecondaryElementStroke = fRGB(40, 40, 40), -- For labels and paragraphs
 
-            SliderBackground = Color3.fromRGB(43, 105, 159),
-            SliderProgress = Color3.fromRGB(43, 105, 159),
-            SliderStroke = Color3.fromRGB(48, 119, 177),
+            SliderBackground = fRGB(43, 105, 159),
+            SliderProgress = fRGB(43, 105, 159),
+            SliderStroke = fRGB(48, 119, 177),
 
-            ToggleBackground = Color3.fromRGB(30, 30, 30),
-            ToggleEnabled = Color3.fromRGB(0, 146, 214),
-            ToggleDisabled = Color3.fromRGB(100, 100, 100),
-            ToggleEnabledStroke = Color3.fromRGB(0, 170, 255),
-            ToggleDisabledStroke = Color3.fromRGB(125, 125, 125),
-            ToggleEnabledOuterStroke = Color3.fromRGB(100, 100, 100),
-            ToggleDisabledOuterStroke = Color3.fromRGB(65, 65, 65),
+            ToggleBackground = fRGB(30, 30, 30),
+            ToggleEnabled = fRGB(0, 146, 214),
+            ToggleDisabled = fRGB(100, 100, 100),
+            ToggleEnabledStroke = fRGB(0, 170, 255),
+            ToggleDisabledStroke = fRGB(125, 125, 125),
+            ToggleEnabledOuterStroke = fRGB(100, 100, 100),
+            ToggleDisabledOuterStroke = fRGB(65, 65, 65),
 
-            InputBackground = Color3.fromRGB(30, 30, 30),
-            InputStroke = Color3.fromRGB(65, 65, 65),
-            PlaceholderColor = Color3.fromRGB(178, 178, 178)
+            InputBackground = fRGB(30, 30, 30),
+            InputStroke = fRGB(65, 65, 65),
+            PlaceholderColor = fRGB(178, 178, 178)
         },
         Light = {
-            TextFont = "Gotham",
-            TextColor = Color3.fromRGB(50, 50, 50),
+            TextFont = "Gotham", -- Default will use the various font faces used across NSUI
+            TextColor = fRGB(50, 50, 50), -- i need to make all text 240, 240, 240 and base gray on transparency not color to do this
 
-            Background = Color3.fromRGB(255, 255, 255),
-            Topbar = Color3.fromRGB(217, 217, 217),
-            Shadow = Color3.fromRGB(223, 223, 223),
+            Background = fRGB(255, 255, 255),
+            Topbar = fRGB(217, 217, 217),
+            Shadow = fRGB(223, 223, 223),
 
-            NotificationBackground = Color3.fromRGB(20, 20, 20),
-            NotificationActionsBackground = Color3.fromRGB(230, 230, 230),
+            NotificationBackground = fRGB(20, 20, 20),
+            NotificationActionsBackground = fRGB(230, 230, 230),
 
-            TabBackground = Color3.fromRGB(220, 220, 220),
-            TabStroke = Color3.fromRGB(112, 112, 112),
-            TabBackgroundSelected = Color3.fromRGB(0, 142, 208),
-            TabTextColor = Color3.fromRGB(240, 240, 240),
-            SelectedTabTextColor = Color3.fromRGB(50, 50, 50),
+            TabBackground = fRGB(220, 220, 220),
+            TabStroke = fRGB(112, 112, 112),
+            TabBackgroundSelected = fRGB(0, 142, 208),
+            TabTextColor = fRGB(240, 240, 240),
+            SelectedTabTextColor = fRGB(50, 50, 50),
 
-            ElementBackground = Color3.fromRGB(198, 198, 198),
-            ElementBackgroundHover = Color3.fromRGB(230, 230, 230),
-            SecondaryElementBackground = Color3.fromRGB(136, 136, 136),
-            ElementStroke = Color3.fromRGB(180, 199, 97),
-            SecondaryElementStroke = Color3.fromRGB(40, 40, 40),
+            ElementBackground = fRGB(198, 198, 198),
+            ElementBackgroundHover = fRGB(230, 230, 230),
+            SecondaryElementBackground = fRGB(136, 136, 136), -- For labels and paragraphs
+            ElementStroke = fRGB(180, 199, 97),
+            SecondaryElementStroke = fRGB(40, 40, 40), -- For labels and paragraphs
 
-            SliderBackground = Color3.fromRGB(31, 159, 71),
-            SliderProgress = Color3.fromRGB(31, 159, 71),
-            SliderStroke = Color3.fromRGB(42, 216, 94),
+            SliderBackground = fRGB(31, 159, 71),
+            SliderProgress = fRGB(31, 159, 71),
+            SliderStroke = fRGB(42, 216, 94),
 
-            ToggleBackground = Color3.fromRGB(170, 203, 60),
-            ToggleEnabled = Color3.fromRGB(32, 214, 29),
-            ToggleDisabled = Color3.fromRGB(100, 22, 23),
-            ToggleEnabledStroke = Color3.fromRGB(17, 255, 0),
-            ToggleDisabledStroke = Color3.fromRGB(65, 8, 8),
-            ToggleEnabledOuterStroke = Color3.fromRGB(0, 170, 0),
-            ToggleDisabledOuterStroke = Color3.fromRGB(170, 0, 0),
+            ToggleBackground = fRGB(170, 203, 60),
+            ToggleEnabled = fRGB(32, 214, 29),
+            ToggleDisabled = fRGB(100, 22, 23),
+            ToggleEnabledStroke = fRGB(17, 255, 0),
+            ToggleDisabledStroke = fRGB(65, 8, 8),
+            ToggleEnabledOuterStroke = fRGB(0, 170, 0),
+            ToggleDisabledOuterStroke = fRGB(170, 0, 0),
 
-            InputBackground = Color3.fromRGB(31, 159, 71),
-            InputStroke = Color3.fromRGB(19, 65, 31),
-            PlaceholderColor = Color3.fromRGB(178, 178, 178)
+            InputBackground = fRGB(31, 159, 71),
+            InputStroke = fRGB(19, 65, 31),
+            PlaceholderColor = fRGB(178, 178, 178)
         }
     }
 }
@@ -1001,7 +1001,7 @@ function NSUILibrary:CreateWindow(Settings)
         end
 
         if not Passthrough then
-            local AttemptsRemaining = math.random(2,6)
+            local AttemptsRemaining = Settings.KeySettings.Attempts or 6
             NSUI.Enabled = false
             local KeyUI = game:GetObjects("rbxassetid://11380036235")[1]
 
@@ -2507,6 +2507,66 @@ end
 
 function NSUILibrary:GetPlayerAvatarThumbnail(UserId)
     return Players:GetUserThumbnailAsync(UserId, Enum.ThumbnailType.AvatarThumbnail, Enum.ThumbnailSize.Size420x420)
+end
+
+function NSUILibrary:IsR15(plr)
+    return NSUILibrary:FFCOC(plr.Character, "Humanoid").RigType == R15RigType
+end
+
+function NSUILibrary:FFC(instance, name) -- find first child eg (FFC(game, "workspace"))
+    return instance:FindFirstChild(tostring(name))
+end
+
+function NSUILibrary:FFCOC(instance, class) -- find first child of class eg (FFCOC(game, "Terrain"))
+    return instance:FindFirstChildOfClass(tostring(class))
+end
+
+function NSUILibrary:AllTrue(conditions) -- if AllTrue({5 == 5, true = not false}) then x() end
+    local count = 0
+    for _, condition in ipairs(conditions) do
+        if condition == true then
+            count = count + 1
+        end
+    end
+    return count == #conditions
+end
+
+function NSUILibrary:FindPlayer(playername) -- get player name by PARTIAL input
+	if playername == "me" then 
+		return Player
+	else 
+		for index, player in Players:GetPlayers() do
+			if player.Name:lower():find(playername:lower()) then
+				-- print("Found player: " .. player.Name)
+				return player
+			end
+		end
+	end
+end
+
+function  NSUILibrary:ActivateAntiAFK()
+    Player.DevEnableMouseLock = true
+    Player.Idled:Connect(function()
+        VirtualUser:Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+        task.wait(1)
+        VirtualUser:Button2Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+    end)
+
+    for _, v in pairs(getconnections(Player.Idled)) do
+        v:Disable()
+    end
+end
+
+function NSUILibrary:IsNumeric(data)
+    return tonumber(data)
+end
+
+function NSUILibrary:IsAlpha(data)
+    return not tonumber(data)
+end
+
+function NSUILibrary:IsAlphaAndOrNumeric(data)
+    return sIn:match("[^%w]") == nil
 end
 
 task.delay(3.5, NSUILibrary.LoadConfiguration, NSUILibrary)
