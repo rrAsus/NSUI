@@ -7,7 +7,10 @@ local NotificationDuration = 6.5
 local NSUIFolder = "NSUI"
 local ConfigurationFolder = NSUIFolder.."/Configurations"
 local ConfigurationExtension = ".nsui"
-
+local mouse = game.Players.LocalPlayer:GetMouse();
+repeat
+	wait();
+until mouse 
 local NSUILibrary = {
 	Flags = {},
 	Theme = {
@@ -2448,9 +2451,8 @@ Topbar.Hide.MouseButton1Click:Connect(function()
 		Hide()
 	end
 end)
-
-UserInputService.InputBegan:Connect(function(input, processed)
-	if ((input.KeyCode == Enum.KeyCode.LeftAlt) and not processed) then
+	mouse.KeyDown:connect(function(key)
+		if (key:lower() == "LeftAlt") then
 		if Debounce then return end
 		if Hidden then
 			Hidden = false
