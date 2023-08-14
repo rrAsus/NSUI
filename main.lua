@@ -2452,7 +2452,7 @@ Topbar.Hide.MouseButton1Click:Connect(function()
 	end
 end)
 	mouse.KeyDown:connect(function(key)
-		if (key:lower() == "'") then
+		if (key:lower() == "k") then
 		if Debounce then return end
 		if Hidden then
 			Hidden = false
