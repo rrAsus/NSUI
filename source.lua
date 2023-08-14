@@ -190,20 +190,21 @@ function HDXLib:DoImage(data)
     if type(data) == "string" then -- rbxassetid check
         if data:sub(1, 3):lower() == "rbx" then
             id = data:sub(4)
-        elseif Players[tostring(data)] then -- playername check
+        end
+        if Players[tostring(data)] then -- playername check
             id = HDXLib:GetPlayerHeadShot(Players:GetUserIdFromNameAsync(data))
         end
     elseif typeof(data) == "Instance" then
         if data:IsA("Player") then -- player instance check
             id = HDXLib:GetPlayerHeadShot(data.UserId)
-        elseif data:IsA("ImageLabel") or data:IsA("ImageButton") then -- image instance check
+        end
+        if data:IsA("ImageLabel") or data:IsA("ImageButton") then -- image instance check
             id = data.Image
         end
     elseif typeof(data) == "number" then
+        id = tonumber(data) -- image id check
         if table.find(players, Players:GetNameFromUserIdAsync(data)) then -- user id check
             id = HDXLib:GetPlayerHeadShot(data)
-        else
-            id = tonumber(data) -- image id check
         end
     end
     return id
