@@ -358,7 +358,7 @@ local neon = (function()  --Open sourced neon module
         end
         local continued = IsNotNaN(Camera:ScreenPointToRay(0,0).Origin.x)
         while not continued do
-            RunService.RenderStepped:task.wait()
+            RunService.RenderStepped:wait()
             continued = IsNotNaN(Camera:ScreenPointToRay(0,0).Origin.x)
         end
     end
