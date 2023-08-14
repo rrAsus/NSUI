@@ -1,3 +1,5 @@
+-- THIS IS NO LONGER UPDATED!
+
 -- CREDIT TO SIRIUS (and rightful creators), https://docs.sirius.menu/rayfield (THEIR .gg/ANzAye2S)
 -- This is an improved forked version that fixes a few issues and adds more functionality.
 -- edited and forked by painot (thanks to fellas in baseplate game as well)
