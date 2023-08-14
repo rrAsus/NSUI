@@ -1,2 +1,2 @@
 # NSUI
-Remake of Rayfield's Lib, extra features and fixes
+Remake of ARRAYFIELDS's Lib, extra features and fixes
