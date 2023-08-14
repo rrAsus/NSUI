@@ -192,16 +192,12 @@ function HDXLib:DoImage(data)
             id = data:sub(4)
         elseif Players[tostring(data)] then -- playername check
             id = HDXLib:GetPlayerHeadShot(Players:GetUserIdFromNameAsync(data))
-        else
-            id = 0
         end
     elseif typeof(data) == "Instance" then
         if data:IsA("Player") then -- player instance check
             id = HDXLib:GetPlayerHeadShot(data.UserId)
         elseif data:IsA("ImageLabel") or data:IsA("ImageButton") then -- image instance check
             id = data.Image
-        else
-            id = 0
         end
     elseif typeof(data) == "number" then
         if table.find(players, Players:GetNameFromUserIdAsync(data)) then -- user id check
