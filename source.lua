@@ -7,7 +7,7 @@ local Release = "Release 2A"
 local NotificationDuration = 6.5
 local HDXFolder = "HDX"
 local ConfigurationFolder = HDXFolder.."/Configurations"
-local ConfigurationExtension = ".rfld"
+local ConfigurationExtension = ".hdx"
 local HDXQuality = {}
 
 local HDXLib = {
