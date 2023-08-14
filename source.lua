@@ -177,6 +177,32 @@ local Notifications = HDX.Notifications
 
 local SelectedTheme = HDXLib.Theme.Default
 
+function HDXLib:GetPlayerHeadShot(UserId)
+    return Players:GetUserThumbnailAsync(UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size420x420)
+end
+
+function HDXLib:DoImage(data)
+    local id = 0
+    if type(data) == "string" then -- rbxassetid or plrname check
+        if data:sub(1, 3):lower() == "rbx" then
+            id = data:sub(4)
+        elseif Players[tostring(data)] then
+            id = HDXLib:GetPlayerHeadShot(Players[data].UserId)
+        end
+    elseif typeof(data) == "Instance" and data:IsA("Player") then -- player instance check
+        id = HDXLib:GetPlayerHeadShot(data.UserId)
+    elseif typeof(data) == "Instance" and data:IsA("ImageLabel") or data:IsA("ImageLButton") then -- image instance check
+        id = data.Image
+    elseif tonumber(data) then
+        if Players[Players:GetNameFromUserIdAsync(data)] then -- user id check
+            id = HDXLib:GetPlayerHeadShot(data)
+        else
+            id = tonumber(data) -- image id check
+        end
+    end
+    return id
+end
+
 function ChangeTheme(ThemeName)
     SelectedTheme = HDX.Theme[ThemeName]
     for _, obj in ipairs(HDX:GetDescendants()) do
@@ -274,7 +300,7 @@ local function FadeDescription(Infos,type,Out:boolean?)
             InfoPrompt.Description.Position = InfoPrompt.ImageLabel.Position
         else
             InfoPrompt.ImageLabel.Visible = true
-            InfoPrompt.ImageLabel.Image = "rbxassetid://"..Infos.Info.Image
+            InfoPrompt.ImageLabel.Image = HDXLib:DoImage(Infos.Info.Image)
             InfoPrompt.Description.Position = UDim2.new(.5,0,0,160)
         end
 
@@ -610,7 +636,7 @@ function qNotePrompt(PromptSettings)
     --Settings
     NotePrompt.Title.Text = PromptSettings.Title or ""
     NotePrompt.Description.Text = PromptSettings.Description or ""
-    NotePrompt.Icon.Image = PromptSettings.Icon or "rbxassetid://4483362748"
+    NotePrompt.Icon.Image = PromptSettings.Icon or HDXLib:DoImage(4483362748)
     NotePrompt.Load.BackgroundColor3 = PromptSettings.Color or Color3.fromRGB(90, 90, 90)
     NotePrompt.Load.MouseButton1Down:Once(function(x,y)
         CloseNPrompt()
@@ -714,9 +740,9 @@ function HDXLib:Notify(NotificationSettings)
         Notification.Description.TextColor3 = SelectedTheme.TextColor
         Notification.Icon.ImageColor3 = SelectedTheme.TextColor
         if NotificationSettings.Image then
-            Notification.Icon.Image = "rbxassetid://"..tostring(NotificationSettings.Image) 
+            Notification.Icon.Image = HDXLib:DoImage(NotificationSettings.Image)
         else
-            Notification.Icon.Image = "rbxassetid://3944680095"
+            Notification.Icon.Image = HDXLib:DoImage(3944680095)
         end
 
         Notification.Icon.ImageTransparency = 1
@@ -1006,7 +1032,7 @@ end)
 
 function Maximise()
     Debounce = true
-    Topbar.ChangeSize.Image = "rbxassetid://"..10137941941
+    Topbar.ChangeSize.Image = HDXLib:DoImage(10137941941)
 
     TweenService:Create(Topbar.UIStroke, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
     TweenService:Create(Main.Shadow.Image, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {ImageTransparency = 0.4}):Play()
@@ -1108,7 +1134,7 @@ function OpenSideBar()
 end
 function Minimise()
     Debounce = true
-    Topbar.ChangeSize.Image = "rbxassetid://"..11036884234
+    Topbar.ChangeSize.Image = HDXLib:DoImage(11036884234)
     if not SearchHided then
         spawn(CloseSearch)
     end
@@ -1196,7 +1222,7 @@ function HDXLib:CreateWindow(Settings)
             Settings.ConfigurationSaving.FileName = tostring(game.PlaceId)
         end
         if not isfolder(HDXFolder.."/Configuration Folders") then
-            
+
         end
         if Settings.ConfigurationSaving.Enabled == nil then
             Settings.ConfigurationSaving.Enabled = false
@@ -1545,8 +1571,8 @@ function HDXLib:CreateWindow(Settings)
         TopTabButton.Size = UDim2.new(0, TopTabButton.Title.TextBounds.X + 30, 0, 30)
 
         if Image then
-            TopTabButton.Image.Image = "rbxassetid://"..Image
-            SideTabButton.Image.Image = "rbxassetid://"..Image
+            TopTabButton.Image.Image = HDXLib:DoImage(Image)
+            SideTabButton.Image.Image = HDXLib:DoImage(Image)
 
             TopTabButton.Title.AnchorPoint = Vector2.new(0, 0.5)
             TopTabButton.Title.Position = UDim2.new(0, 37, 0.5, 0)
@@ -3389,10 +3415,10 @@ end)
 Topbar.Type.MouseButton1Click:Connect(function()
     if Debounce or Minimised then return end
     if SideBarClosed then
-        Topbar.Type.Image = "rbxassetid://"..6023565894
+        Topbar.Type.Image = HDXLib:DoImage(6023565894)
         OpenSideBar()
     else
-        Topbar.Type.Image = "rbxassetid://"..6023565896
+        Topbar.Type.Image = HDXLib:DoImage(6023565896)
         CloseSideBar()
     end
 end)
@@ -3457,6 +3483,62 @@ function HDXLib:LoadConfiguration()
             end
         end)
     end
+end
+
+-- own
+
+function HDXLib:IsNumeric(data)
+    return tonumber(data)
+end
+
+function HDXLib:IsAlpha(data)
+    return not tonumber(data)
+end
+
+function HDXLib:IsAlphaAndOrNumeric(data)
+    return data:match("[^%w]") == nil
+end
+
+function HDXLib:FindPlayerByPartial(playername)
+    if playername == "me" then 
+        return LocalPlayer
+    else 
+        for index, player in Players:GetPlayers() do
+            if player.Name:lower():find(playername:lower()) then
+                return player
+            end
+        end
+    end
+end
+
+function HDXLib:GetPlayerAvatarBust(UserId)
+    return Players:GetUserThumbnailAsync(UserId, Enum.ThumbnailType.AvatarBust, Enum.ThumbnailSize.Size420x420)
+end
+
+function HDXLib:GetPlayerAvatarThumbnail(UserId)
+    return Players:GetUserThumbnailAsync(UserId, Enum.ThumbnailType.AvatarThumbnail, Enum.ThumbnailSize.Size420x420)
+end
+
+function HDXLib:IsR15(plr)
+    return HDXLib:FFCOC(plr.Character, "Humanoid").RigType == Enum.RigType.R15
+end
+
+function HDXLib:FFC(instance, name)
+    return instance:FindFirstChild(tostring(name))
+end
+
+function HDXLib:FFCOC(instance, class)
+    return instance:FindFirstChildOfClass(tostring(class))
+end
+
+function HDXLib:AllTrue(conditions)
+    local count = 0
+    for _, condition in ipairs(conditions) do
+        if condition == true then
+            count = count + 1
+        end
+    end
+    return count == #conditions
 end
 
 task.delay(9, HDXLib.LoadConfiguration, HDXLib)
