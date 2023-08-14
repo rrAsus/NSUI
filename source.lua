@@ -118,8 +118,8 @@ if game["Run Service"]:IsStudio() then
 end
 
 pcall(function()
-    _G.LastRayField.Name = "Old HDX"
-    _G.LastRayField.Enabled = false
+    _G.LastNSUI.Name = "Old HDX"
+    _G.LastNSUI.Enabled = false
 end)
 local ParentObject = function(Gui)
     local success, failure = pcall(function()
@@ -136,7 +136,7 @@ local ParentObject = function(Gui)
     if not success and failure then
         Gui.Parent = LocalPlayer:FindFirstChildWhichIsA("PlayerGui")
     end
-    _G.LastRayField = HDX
+    _G.LastNSUI = HDX
 end
 ParentObject(HDX)
 
