@@ -189,7 +189,7 @@ function HDXLib:DoImage(data)
         players[#players + 1] = v.Name
     end
     
-    if table.find(players, Players:GetNameFromUserIdAsync(data)) then -- user id check
+    if table.find(players, Players:GetNameFromUserIdAsync(data)) then -- plrname/userid check
         id = HDXLib:GetPlayerHeadShot(data)
     end
     
@@ -210,7 +210,7 @@ function HDXLib:DoImage(data)
     end
     
     if typeof(data) == "number" then
-        id = tonumber(data) -- image id check
+        id = tonumber(data) -- normal image asset id check
     end
     
     return id
