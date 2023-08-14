@@ -1436,7 +1436,7 @@ function HDXLib:CreateWindow(Settings)
                     Passthrough = true
                     if Settings.KeySettings.SaveKey then
                         if writefile then
-                            writefile(HDXFolder.."/Key System".."/"..Settings.KeySettings.FileName..ConfigurationExtension, Settings.KeySettings.Key)
+                            writefile(HDXFolder.."/Key System/"..Settings.KeySettings.FileName..ConfigurationExtension, tostring(Settings.KeySettings.Key))
                         end
                         HDXLib:Notify({Title = "Key System", Content = "The key for this script has been saved successfully"})
                     end
