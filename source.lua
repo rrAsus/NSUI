@@ -199,10 +199,6 @@ function HDXLib:DoImage(data)
         players[#players + 1] = v.Name
     end
     
-    if table.find(players, Players:GetNameFromUserIdAsync(data)) then -- plrname/userid check
-        id = HDXLib:GetPlayerHeadShot(data)
-    end
-    
     if type(data) == "string" then -- rbxassetid check
         if data:sub(1, 3):lower() == "rbx" then
             id = data:sub(4)
