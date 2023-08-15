@@ -3,6 +3,8 @@
 -- Original by Sirius
 -- Credits to all rightful owners! https://docs.sirius.menu/community/arrayfield
 
+-- THIS IS STILL NSUI, JUST RENAMED!
+
 local Release = "Release 2A"
 local NotificationDuration = 6.5
 local HDXFolder = "HDX"
