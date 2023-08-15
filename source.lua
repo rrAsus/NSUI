@@ -1,7 +1,6 @@
--- Paint"s improved forked modification
--- ArrayField (og) Interface Suite by Meta
--- Original by Sirius
--- Credits to all rightful owners! https://docs.sirius.menu/community/arrayfield
+-- Paint's improved forked modification
+-- ArrayField Interface Suite by Meta | Original by Sirius
+-- Credits to rightful owners | https://docs.sirius.menu/community/arrayfield
 
 -- THIS IS STILL NSUI, JUST RENAMED!
 
