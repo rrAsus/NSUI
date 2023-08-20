@@ -1731,7 +1731,7 @@ function HDXLib:CreateWindow(Settings)
                 element = Section
             }
 
-            Section.Icon.Visible = true
+            Section.Icon.Visible = false
             if not Icon or Icon == nil then
                 Section.Icon.Visible = false
                 Section.Title.Position = UDim2.new(0, 10, 0, 8)
