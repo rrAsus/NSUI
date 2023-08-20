@@ -1,21 +1,28 @@
--- Paint's improved forked modification
--- ArrayField Interface Suite by Meta | Original by Sirius
--- Credits to rightful owners | https://docs.sirius.menu/community/arrayfield
+--[[
 
--- THIS IS STILL NSUI, JUST RENAMED!
+ArrayField Interface Suite
+by Arrays
 
-local Release = "Release 2A"
+Original by Sirius
+
+-------------------------------
+Arrays  | Designing + Programming + New Features
+and Rafa =D
+
+]]
+
+local Release = "Rafa Edition"
 local NotificationDuration = 6.5
-local HDXFolder = "HDX"
-local ConfigurationFolder = HDXFolder.."/Configurations"
-local ConfigurationExtension = ".hdx"
-local HDXQuality = {}
+local RayfieldFolder = "Rayfield"
+local ConfigurationFolder = RayfieldFolder .. "/Configurations"
+local ConfigurationExtension = ".rfld"
+local RayFieldQuality = {}
 
-local HDXLib = {
+local RayfieldLibrary = {
     Flags = {},
     Theme = {
         Default = {
-            TextFont = "Default", -- Default will use the various font faces used across HDX
+            TextFont = "Default", -- Default will use the various font faces used across Rayfield
             TextColor = Color3.fromRGB(240, 240, 240),
 
             Background = Color3.fromRGB(25, 25, 25),
@@ -35,7 +42,7 @@ local HDXLib = {
             ElementBackgroundHover = Color3.fromRGB(40, 40, 40),
             SecondaryElementBackground = Color3.fromRGB(25, 25, 25), -- For labels and paragraphs
             ElementStroke = Color3.fromRGB(50, 50, 50),
-            SecondaryElementStroke = Color3.fromRGB(40, 40, 40), -- For labels and paragraphs
+            SecondaryElementStroke = Color3.fromRGB(40, 40, 40),     -- For labels and paragraphs
 
             SliderBackground = Color3.fromRGB(43, 105, 159),
             SliderProgress = Color3.fromRGB(43, 105, 159),
@@ -54,10 +61,10 @@ local HDXLib = {
             PlaceholderColor = Color3.fromRGB(178, 178, 178)
         },
         Light = {
-            TextFont = "Gotham",  -- Default will use the various font faces used across HDX
+            TextFont = "Default",                   -- Default will use the various font faces used across Rayfield
             TextColor = Color3.fromRGB(50, 50, 50), -- i need to make all text 240, 240, 240 and base gray on transparency not color to do this
 
-            Background = Color3.fromRGB(255, 255, 255),
+            Background = Color3.fromRGB(250, 250, 250),
             Topbar = Color3.fromRGB(217, 217, 217),
             Shadow = Color3.fromRGB(223, 223, 223),
 
@@ -74,7 +81,7 @@ local HDXLib = {
             ElementBackgroundHover = Color3.fromRGB(230, 230, 230),
             SecondaryElementBackground = Color3.fromRGB(136, 136, 136), -- For labels and paragraphs
             ElementStroke = Color3.fromRGB(180, 199, 97),
-            SecondaryElementStroke = Color3.fromRGB(40, 40, 40),  --For labels and paragraphs
+            SecondaryElementStroke = Color3.fromRGB(40, 40, 40),        --For labels and paragraphs
 
             SliderBackground = Color3.fromRGB(31, 159, 71),
             SliderProgress = Color3.fromRGB(31, 159, 71),
@@ -96,39 +103,26 @@ local HDXLib = {
     }
 }
 
+
+
 -- Services
+
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local HttpService = game:GetService("HttpService")
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 local CoreGui = game:GetService("CoreGui")
-local LocalPlayer = game:GetService("Players").LocalPlayer
+local LocalPlayer = game:GetService('Players').LocalPlayer
+local ContentProvider = game:GetService("ContentProvider")
+-- local TextService = game:GetService("TextService")
 
 -- Interface Management
-local HDX = game:GetObjects("rbxassetid://13853811008")[1]
-HDX.Enabled = false
-
-local spawn = task.spawn
-local delay = task.delay
-
---Studio
-if RunService:IsStudio() then
-    local http_request, http = nil , nil
-    
-    local syn = { protect_gui = false, request = false }
-    
-    function writefile(tt,t,ttt) end
-    function isfolder(t) end
-    function makefolder(t) end
-    function isfile(r) end
-    function readfile(t) end
-    function gethui() return HDX end
-end
-
+local Rayfield = game:GetObjects("rbxassetid://13067385695")[1]
+Rayfield.Enabled = false
 pcall(function()
-    _G.LastNSUI.Name = "Old HDX"
-    _G.LastNSUI.Enabled = false
+    _G.LastRayField.Name = 'Old Arrayfield'
+    _G.LastRayField.Enabled = false
 end)
 
 local ParentObject = function(Gui)
@@ -146,14 +140,14 @@ local ParentObject = function(Gui)
     if not success and failure then
         Gui.Parent = LocalPlayer:FindFirstChildWhichIsA("PlayerGui")
     end
-    _G.LastNSUI = HDX
+    _G.LastRayField = Rayfield
 end
-ParentObject(HDX)
+ParentObject(Rayfield)
 
 --Object Variables
 
 local Camera = workspace.CurrentCamera
-local Main = HDX.Main
+local Main = Rayfield.Main
 local Topbar = Main.Topbar
 local Elements = Main.Elements
 local LoadingFrame = Main.LoadingFrame
@@ -164,13 +158,13 @@ local SearchBar = Main.Searchbar
 local Filler = SearchBar.CanvasGroup.Filler
 local Prompt = Main.Prompt
 local NotePrompt = Main.NotePrompt
-local InfoPrompt = HDX.Info
 
-HDX.DisplayOrder = 100
+Rayfield.DisplayOrder = 100
 LoadingFrame.Version.Text = Release
 
 
 --Variables
+
 local request = (syn and syn.request) or (http and http.request) or http_request
 local CFileName = nil
 local CEnabled = false
@@ -180,46 +174,45 @@ local Debounce = false
 local clicked = false
 local SearchHided = true
 local SideBarClosed = true
-local InfoPromptOpen = false
-local BarType = "Side"
+local BarType = 'Top'
 local HoverTime = 0.3
-local Notifications = HDX.Notifications
+local Notifications = Rayfield.Notifications
 
-local SelectedTheme = HDXLib.Theme.Default
+local SelectedTheme = RayfieldLibrary.Theme.Default
 
 function ChangeTheme(ThemeName)
-    SelectedTheme = HDX.Theme[ThemeName]
-    for _, obj in ipairs(HDX:GetDescendants()) do
+    SelectedTheme = RayfieldLibrary.Theme[ThemeName]
+    for _, obj in ipairs(Rayfield:GetDescendants()) do
         if obj.ClassName == "TextLabel" or obj.ClassName == "TextBox" or obj.ClassName == "TextButton" then
-            if SelectedTheme.TextFont ~= "Default" then 
+            if SelectedTheme.TextFont ~= "Default" then
                 obj.TextColor3 = SelectedTheme.TextColor
                 obj.Font = SelectedTheme.TextFont
             end
         end
     end
 
-    HDX.Main.BackgroundColor3 = SelectedTheme.Background
-    HDX.Main.Topbar.BackgroundColor3 = SelectedTheme.Topbar
-    HDX.Main.Topbar.CornerRepair.BackgroundColor3 = SelectedTheme.Topbar
-    HDX.Main.Shadow.Image.ImageColor3 = SelectedTheme.Shadow
+    Rayfield.Main.BackgroundColor3 = SelectedTheme.Background
+    Rayfield.Main.Topbar.BackgroundColor3 = SelectedTheme.Topbar
+    Rayfield.Main.Topbar.CornerRepair.BackgroundColor3 = SelectedTheme.Topbar
+    Rayfield.Main.Shadow.Image.ImageColor3 = SelectedTheme.Shadow
 
-    HDX.Main.Topbar.ChangeSize.ImageColor3 = SelectedTheme.TextColor
-    HDX.Main.Topbar.Hide.ImageColor3 = SelectedTheme.TextColor
-    HDX.Main.Topbar.Theme.ImageColor3 = SelectedTheme.TextColor
+    Rayfield.Main.Topbar.ChangeSize.ImageColor3 = SelectedTheme.TextColor
+    Rayfield.Main.Topbar.Hide.ImageColor3 = SelectedTheme.TextColor
+    Rayfield.Main.Topbar.Theme.ImageColor3 = SelectedTheme.TextColor
 
     for _, TabPage in ipairs(Elements:GetChildren()) do
         for _, Element in ipairs(TabPage:GetChildren()) do
-            if Element.ClassName == "Frame" and Element.Name ~= "Placeholder" and Element.Name ~= "SectionSpacing" and Element.Name ~= ""  then
+            if Element.ClassName == "Frame" and Element.Name ~= "Placeholder" and Element.Name ~= "SectionSpacing" and Element.Name ~= "" and Element.Name ~= "SectionTitle" then
                 Element.BackgroundColor3 = SelectedTheme.ElementBackground
                 Element.UIStroke.Color = SelectedTheme.ElementStroke
             end
         end
     end
-
 end
+
 local function AddDraggingFunctionality(DragPoint, Main)
     pcall(function()
-        local Dragging, DragInput, MousePos, FramePos = false,false,false,false
+        local Dragging, DragInput, MousePos, FramePos = false, false, false, false
         DragPoint.InputBegan:Connect(function(Input)
             if Input.UserInputType == Enum.UserInputType.MouseButton1 then
                 Dragging = true
@@ -241,23 +234,21 @@ local function AddDraggingFunctionality(DragPoint, Main)
         UserInputService.InputChanged:Connect(function(Input)
             if Input == DragInput and Dragging then
                 local Delta = Input.Position - MousePos
-                TweenService:Create(Main, TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Position  = UDim2.new(FramePos.X.Scale,FramePos.X.Offset + Delta.X, FramePos.Y.Scale, FramePos.Y.Offset + Delta.Y)}):Play()
-                TweenService:Create(InfoPrompt, TweenInfo.new(0.6, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Position  = UDim2.new(FramePos.X.Scale,FramePos.X.Offset + Delta.X+ 370, FramePos.Y.Scale, FramePos.Y.Offset + Delta.Y)}):Play()
+                TweenService:Create(Main, TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
+                    {
+                        Position = UDim2.new(FramePos.X.Scale, FramePos.X.Offset + Delta.X, FramePos.Y.Scale,
+                            FramePos.Y.Offset + Delta.Y)
+                    }):Play()
             end
         end)
     end)
 end
+local function FadeDescription(Infos)
 
-function BoolToText(Bool)
-    if Bool == true then
-        return "ENABLED",Color3.fromRGB(44, 186, 44)
-    else
-        return "DISABLED",Color3.fromRGB(186, 44, 44)
-    end
 end
 local function PackColor(Color)
-    return {R = Color.R * 255, G = Color.G * 255, B = Color.B * 255}
-end    
+    return { R = Color.R * 255, G = Color.G * 255, B = Color.B * 255 }
+end
 
 local function UnpackColor(Color)
     return Color3.fromRGB(Color.R, Color.G, Color.B)
@@ -266,44 +257,50 @@ end
 local function LoadConfiguration(Configuration)
     local Data = HttpService:JSONDecode(Configuration)
     for FlagName, FlagValue in next, Data do
-        if HDXLib.Flags[FlagName] then
-            spawn(function() 
-                if HDXLib.Flags[FlagName].Type == "ColorPicker" then
-                    HDXLib.Flags[FlagName]:Set(UnpackColor(FlagValue))
+        if RayfieldLibrary.Flags[FlagName] then
+            spawn(function()
+                if RayfieldLibrary.Flags[FlagName].Type == "ColorPicker" then
+                    RayfieldLibrary.Flags[FlagName]:Set(UnpackColor(FlagValue))
                 else
-                    if HDXLib.Flags[FlagName].CurrentValue or HDXLib.Flags[FlagName].CurrentKeybind or HDXLib.Flags[FlagName].CurrentOption or HDXLib.Flags[FlagName].Color ~= FlagValue then HDXLib.Flags[FlagName]:Set(FlagValue) end
-                end    
+                    if RayfieldLibrary.Flags[FlagName].CurrentValue or RayfieldLibrary.Flags[FlagName].CurrentKeybind or RayfieldLibrary.Flags[FlagName].CurrentOption or RayfieldLibrary.Flags[FlagName].Color ~= FlagValue then
+                        RayfieldLibrary.Flags[FlagName]:Set(FlagValue)
+                    end
+                end
             end)
         else
-            HDXLib:Notify({Title = "Flag Error", Content = "HDX was unable to find "..FlagName.. " in the current script"})
+            RayfieldLibrary:Notify({
+                Title = "Flag Error",
+                Content = "Rayfield was unable to find '" .. FlagName .. "'' in the current script"
+            })
         end
     end
 end
 
 local function SaveConfiguration()
     if not CEnabled then return end
+    -- print(debug.traceback())
     local Data = {}
-    for i,v in pairs(HDXLib.Flags) do
+    for i, v in pairs(RayfieldLibrary.Flags) do
         if v.Type == "ColorPicker" then
             Data[i] = PackColor(v.Color)
         else
             Data[i] = v.CurrentValue or v.CurrentKeybind or v.Color or v.CurrentOption
         end
-    end	
+    end
     writefile(ConfigurationFolder .. "/" .. CFileName .. ConfigurationExtension, tostring(HttpService:JSONEncode(Data)))
 end
 
-local neon = (function()  --Open sourced neon module
+local neon = (function() --Open sourced neon module
     local module = {}
 
     do
         local function IsNotNaN(x)
             return x == x
         end
-        local continued = IsNotNaN(Camera:ScreenPointToRay(0,0).Origin.x)
+        local continued = IsNotNaN(Camera:ScreenPointToRay(0, 0).Origin.x)
         while not continued do
             RunService.RenderStepped:wait()
-            continued = IsNotNaN(Camera:ScreenPointToRay(0,0).Origin.x)
+            continued = IsNotNaN(Camera:ScreenPointToRay(0, 0).Origin.x)
         end
     end
     local RootParent = Camera
@@ -312,22 +309,22 @@ local neon = (function()  --Open sourced neon module
     else
         if not false then
             RootParent = Camera
-        else 
+        else
             RootParent = nil
         end
     end
 
 
     local binds = {}
-    local root = Instance.new("Folder", RootParent)
-    root.Name = "neon"
+    local root = Instance.new('Folder', RootParent)
+    root.Name = 'neon'
 
 
     local GenUid; do
         local id = 0
         function GenUid()
             id = id + 1
-            return "neon::"..tostring(id)
+            return 'neon::' .. tostring(id)
         end
     end
 
@@ -349,54 +346,54 @@ local neon = (function()  --Open sourced neon module
                 A, B, C = v3, v1, v2
             end
 
-            local para = ( (B-A).x*(C-A).x + (B-A).y*(C-A).y + (B-A).z*(C-A).z ) / (A-B).magnitude
-            local perp = sqrt((C-A).magnitude^2 - para*para)
+            local para = ((B - A).x * (C - A).x + (B - A).y * (C - A).y + (B - A).z * (C - A).z) / (A - B).magnitude
+            local perp = sqrt((C - A).magnitude ^ 2 - para * para)
             local dif_para = (A - B).magnitude - para
 
             local st = CFrame.new(B, A)
-            local za = CFrame.Angles(pi/2,0,0)
+            local za = CFrame.Angles(pi / 2, 0, 0)
 
             local cf0 = st
 
             local Top_Look = (cf0 * za).lookVector
             local Mid_Point = A + CFrame.new(A, B).LookVector * para
             local Needed_Look = CFrame.new(Mid_Point, C).LookVector
-            local dot = Top_Look.x*Needed_Look.x + Top_Look.y*Needed_Look.y + Top_Look.z*Needed_Look.z
+            local dot = Top_Look.x * Needed_Look.x + Top_Look.y * Needed_Look.y + Top_Look.z * Needed_Look.z
 
             local ac = CFrame.Angles(0, 0, acos(dot))
 
             cf0 = cf0 * ac
             if ((cf0 * za).lookVector - Needed_Look).magnitude > 0.01 then
-                cf0 = cf0 * CFrame.Angles(0, 0, -2*acos(dot))
+                cf0 = cf0 * CFrame.Angles(0, 0, -2 * acos(dot))
             end
-            cf0 = cf0 * CFrame.new(0, perp/2, -(dif_para + para/2))
+            cf0 = cf0 * CFrame.new(0, perp / 2, -(dif_para + para / 2))
 
             local cf1 = st * ac * CFrame.Angles(0, pi, 0)
             if ((cf1 * za).lookVector - Needed_Look).magnitude > 0.01 then
-                cf1 = cf1 * CFrame.Angles(0, 0, 2*acos(dot))
+                cf1 = cf1 * CFrame.Angles(0, 0, 2 * acos(dot))
             end
-            cf1 = cf1 * CFrame.new(0, perp/2, dif_para/2)
+            cf1 = cf1 * CFrame.new(0, perp / 2, dif_para / 2)
 
             if not p0 then
-                p0 = Instance.new("Part")
-                p0.FormFactor = "Custom"
+                p0 = Instance.new('Part')
+                p0.FormFactor = 'Custom'
                 p0.TopSurface = 0
                 p0.BottomSurface = 0
                 p0.Anchored = true
                 p0.CanCollide = false
-                p0.Material = "Glass"
+                p0.Material = 'Glass'
                 p0.Size = Vector3.new(sz, sz, sz)
-                local mesh = Instance.new("SpecialMesh", p0)
+                local mesh = Instance.new('SpecialMesh', p0)
                 mesh.MeshType = 2
-                mesh.Name = "WedgeMesh"
+                mesh.Name = 'WedgeMesh'
             end
-            p0.WedgeMesh.Scale = Vector3.new(0, perp/sz, para/sz)
+            p0.WedgeMesh.Scale = Vector3.new(0, perp / sz, para / sz)
             p0.CFrame = cf0
 
             if not p1 then
                 p1 = p0:clone()
             end
-            p1.WedgeMesh.Scale = Vector3.new(0, perp/sz, dif_para/sz)
+            p1.WedgeMesh.Scale = Vector3.new(0, perp / sz, dif_para / sz)
             p1.CFrame = cf1
 
             return p0, p1
@@ -416,13 +413,13 @@ local neon = (function()  --Open sourced neon module
 
         local uid = GenUid()
         local parts = {}
-        local f = Instance.new("Folder", root)
+        local f = Instance.new('Folder', root)
         f.Name = frame.Name
 
         local parents = {}
         do
             local function add(child)
-                if child:IsA"GuiObject" then
+                if child:IsA 'GuiObject' then
                     parents[#parents + 1] = child
                     add(child.Parent)
                 end
@@ -431,7 +428,7 @@ local neon = (function()  --Open sourced neon module
         end
 
         local function UpdateOrientation(fetchProps)
-            local zIndex = 1 - 0.05*frame.ZIndex
+            local zIndex = 1 - 0.05 * frame.ZIndex
             local tl, br = frame.AbsolutePosition, frame.AbsolutePosition + frame.AbsoluteSize
             local tr, bl = Vector2.new(br.x, tl.y), Vector2.new(tl.x, br.y)
             do
@@ -439,21 +436,25 @@ local neon = (function()  --Open sourced neon module
                 for _, v in ipairs(parents) do
                     rot = rot + v.Rotation
                 end
-                if rot ~= 0 and rot%180 ~= 0 then
+                if rot ~= 0 and rot % 180 ~= 0 then
                     local mid = tl:lerp(br, 0.5)
                     local s, c = math.sin(math.rad(rot)), math.cos(math.rad(rot))
                     local vec = tl
-                    tl = Vector2.new(c*(tl.x - mid.x) - s*(tl.y - mid.y), s*(tl.x - mid.x) + c*(tl.y - mid.y)) + mid
-                    tr = Vector2.new(c*(tr.x - mid.x) - s*(tr.y - mid.y), s*(tr.x - mid.x) + c*(tr.y - mid.y)) + mid
-                    bl = Vector2.new(c*(bl.x - mid.x) - s*(bl.y - mid.y), s*(bl.x - mid.x) + c*(bl.y - mid.y)) + mid
-                    br = Vector2.new(c*(br.x - mid.x) - s*(br.y - mid.y), s*(br.x - mid.x) + c*(br.y - mid.y)) + mid
+                    tl = Vector2.new(c * (tl.x - mid.x) - s * (tl.y - mid.y), s * (tl.x - mid.x) + c * (tl.y - mid.y)) +
+                        mid
+                    tr = Vector2.new(c * (tr.x - mid.x) - s * (tr.y - mid.y), s * (tr.x - mid.x) + c * (tr.y - mid.y)) +
+                        mid
+                    bl = Vector2.new(c * (bl.x - mid.x) - s * (bl.y - mid.y), s * (bl.x - mid.x) + c * (bl.y - mid.y)) +
+                        mid
+                    br = Vector2.new(c * (br.x - mid.x) - s * (br.y - mid.y), s * (br.x - mid.x) + c * (br.y - mid.y)) +
+                        mid
                 end
             end
             DrawQuad(
-                Camera:ScreenPointToRay(tl.x, tl.y, zIndex).Origin, 
-                Camera:ScreenPointToRay(tr.x, tr.y, zIndex).Origin, 
-                Camera:ScreenPointToRay(bl.x, bl.y, zIndex).Origin, 
-                Camera:ScreenPointToRay(br.x, br.y, zIndex).Origin, 
+                Camera:ScreenPointToRay(tl.x, tl.y, zIndex).Origin,
+                Camera:ScreenPointToRay(tr.x, tr.y, zIndex).Origin,
+                Camera:ScreenPointToRay(bl.x, bl.y, zIndex).Origin,
+                Camera:ScreenPointToRay(br.x, br.y, zIndex).Origin,
                 parts
             )
             if fetchProps then
@@ -472,8 +473,8 @@ local neon = (function()  --Open sourced neon module
         RunService:BindToRenderStep(uid, 2000, UpdateOrientation)
 
         binds[frame] = {
-            uid = uid;
-            parts = parts;
+            uid = uid,
+            parts = parts,
         }
         return binds[frame].parts
     end
@@ -509,33 +510,33 @@ local neon = (function()  --Open sourced neon module
         return binds[frame] and binds[frame].parts
     end
 
-
     return module
-
 end)()
 function CloseNPrompt()
-    local Infos= TweenInfo.new(.2,Enum.EasingStyle.Quad,Enum.EasingDirection.Out)
-    TweenService:Create(NotePrompt,Infos,{BackgroundTransparency = 1,Size = UDim2.fromOffset(436,92),Position = UDim2.fromScale(0.5,0.19)}):Play()
-    TweenService:Create(NotePrompt.UIStroke,Infos,{Transparency = 1}):Play()
-    TweenService:Create(NotePrompt.Shadow.Image,Infos,{ImageTransparency = 1}):Play()
+    local Infos = TweenInfo.new(.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+    TweenService:Create(NotePrompt, Infos,
+        { BackgroundTransparency = 1, Size = UDim2.fromOffset(436, 92), Position = UDim2.fromScale(0.5, 0.19) }):Play()
+    TweenService:Create(NotePrompt.UIStroke, Infos, { Transparency = 1 }):Play()
+    TweenService:Create(NotePrompt.Shadow.Image, Infos, { ImageTransparency = 1 }):Play()
 
-    TweenService:Create(NotePrompt.Close,Infos,{ImageTransparency = .1}):Play()
-    TweenService:Create(NotePrompt.Icon,Infos,{ImageTransparency = 1}):Play()
-    TweenService:Create(NotePrompt.Title,Infos,{TextTransparency = 1}):Play()
+    TweenService:Create(NotePrompt.Close, Infos, { ImageTransparency = .1 }):Play()
+    TweenService:Create(NotePrompt.Icon, Infos, { ImageTransparency = 1 }):Play()
+    TweenService:Create(NotePrompt.Title, Infos, { TextTransparency = 1 }):Play()
 
-    TweenService:Create(NotePrompt.Description,Infos,{TextTransparency = 1}):Play()
-    TweenService:Create(NotePrompt.Load,Infos,{TextTransparency = 1,BackgroundTransparency = 1}):Play()
-    TweenService:Create(NotePrompt.Load.UIStroke,Infos,{Transparency = 1}):Play()
-    TweenService:Create(NotePrompt.Load.Shadow,Infos,{ImageTransparency = 1}):Play()
-    task.wait(0.21)
+    TweenService:Create(NotePrompt.Description, Infos, { TextTransparency = 1 }):Play()
+    TweenService:Create(NotePrompt.Load, Infos, { TextTransparency = 1, BackgroundTransparency = 1 }):Play()
+    TweenService:Create(NotePrompt.Load.UIStroke, Infos, { Transparency = 1 }):Play()
+    TweenService:Create(NotePrompt.Load.Shadow, Infos, { ImageTransparency = 1 }):Play()
+    wait(0.21)
     NotePrompt.Visible = false
 end
+
 function qNotePrompt(PromptSettings)
-    local Infos= TweenInfo.new(.4,Enum.EasingStyle.Quad,Enum.EasingDirection.Out)
+    local Infos = TweenInfo.new(.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
     NotePrompt.Visible = false
     --Setup
-    NotePrompt.Size = UDim2.fromOffset(436,92)
-    NotePrompt.Position = UDim2.fromScale(0.5,0.19)
+    NotePrompt.Size = UDim2.fromOffset(436, 92)
+    NotePrompt.Position = UDim2.fromScale(0.5, 0.19)
     NotePrompt.BackgroundTransparency = 1
     NotePrompt.UIStroke.Transparency = 1
 
@@ -552,11 +553,11 @@ function qNotePrompt(PromptSettings)
     NotePrompt.Load.TextTransparency = 1
     NotePrompt.Load.Shadow.ImageTransparency = 1
     --Settings
-    NotePrompt.Title.Text = PromptSettings.Title or ""
-    NotePrompt.Description.Text = PromptSettings.Description or ""
-    NotePrompt.Icon.Image = PromptSettings.Icon or 'rbxassetid://'..4483362748
+    NotePrompt.Title.Text = PromptSettings.Title or ''
+    NotePrompt.Description.Text = PromptSettings.Description or ''
+    NotePrompt.Icon.Image = PromptSettings.Icon or 'rbxassetid://4483362748'
     NotePrompt.Load.BackgroundColor3 = PromptSettings.Color or Color3.fromRGB(90, 90, 90)
-    NotePrompt.Load.MouseButton1Down:Once(function(x,y)
+    NotePrompt.Load.MouseButton1Down:Once(function(x, y)
         CloseNPrompt()
         if PromptSettings.Callback then
             PromptSettings.Callback()
@@ -568,42 +569,47 @@ function qNotePrompt(PromptSettings)
     end)
     NotePrompt.Visible = true
     --Opening
-    TweenService:Create(NotePrompt,Infos,{BackgroundTransparency = .1,Size = UDim2.fromOffset(474,100),Position = UDim2.fromScale(0.5,0.21)}):Play()
-    TweenService:Create(NotePrompt.UIStroke,Infos,{Transparency = 0}):Play()
-    TweenService:Create(NotePrompt.Shadow.Image,Infos,{ImageTransparency = .2}):Play()
-    task.wait(.3)
-    TweenService:Create(NotePrompt.Close,Infos,{ImageTransparency = .8}):Play()
-    TweenService:Create(NotePrompt.Icon,Infos,{ImageTransparency = 0}):Play()
-    TweenService:Create(NotePrompt.Title,Infos,{TextTransparency = 0}):Play()
-    task.wait(.1)
-    TweenService:Create(NotePrompt.Description,Infos,{TextTransparency = 0}):Play()
-    task.wait(.2)
-    TweenService:Create(NotePrompt.Load,Infos,{TextTransparency = 0,BackgroundTransparency = .2}):Play()
-    TweenService:Create(NotePrompt.Load.UIStroke,Infos,{Transparency = 0}):Play()
-    TweenService:Create(NotePrompt.Load.Shadow,Infos,{ImageTransparency = .8}):Play()
+    TweenService:Create(NotePrompt, Infos,
+        { BackgroundTransparency = .1, Size = UDim2.fromOffset(474, 100), Position = UDim2.fromScale(0.5, 0.21) }):Play()
+    TweenService:Create(NotePrompt.UIStroke, Infos, { Transparency = 0 }):Play()
+    TweenService:Create(NotePrompt.Shadow.Image, Infos, { ImageTransparency = .2 }):Play()
+    wait(.3)
+    TweenService:Create(NotePrompt.Close, Infos, { ImageTransparency = .8 }):Play()
+    TweenService:Create(NotePrompt.Icon, Infos, { ImageTransparency = 0 }):Play()
+    TweenService:Create(NotePrompt.Title, Infos, { TextTransparency = 0 }):Play()
+    wait(.1)
+    TweenService:Create(NotePrompt.Description, Infos, { TextTransparency = 0 }):Play()
+    wait(.2)
+    TweenService:Create(NotePrompt.Load, Infos, { TextTransparency = 0, BackgroundTransparency = .2 }):Play()
+    TweenService:Create(NotePrompt.Load.UIStroke, Infos, { Transparency = 0 }):Play()
+    TweenService:Create(NotePrompt.Load.Shadow, Infos, { ImageTransparency = .8 }):Play()
 end
+
 function ClosePrompt()
     local PromptUI = Prompt.Prompt
     clicked = false
-    TweenService:Create(Prompt, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-    TweenService:Create(PromptUI, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 1,Size = UDim2.new(0,340,0,140)}):Play()
-    TweenService:Create(PromptUI.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-    TweenService:Create(PromptUI.Title, TweenInfo.new(0.45, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-    TweenService:Create(PromptUI.Content, TweenInfo.new(0.45, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-    TweenService:Create(PromptUI.Sub, TweenInfo.new(0.45, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-    for _,button in pairs(PromptUI.Buttons:GetChildren()) do
-        if button.Name ~= "Template" and button:IsA("Frame") then
-            TweenService:Create(button.UIStroke,TweenInfo.new(0.2, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-            TweenService:Create(button.TextLabel,TweenInfo.new(0.2, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-            delay(.2,function()
+    TweenService:Create(Prompt, TweenInfo.new(0.3, Enum.EasingStyle.Quint), { BackgroundTransparency = 1 }):Play()
+    TweenService:Create(PromptUI, TweenInfo.new(0.4, Enum.EasingStyle.Quint),
+        { BackgroundTransparency = 1, Size = UDim2.new(0, 340, 0, 140) }):Play()
+    TweenService:Create(PromptUI.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint), { Transparency = 1 }):Play()
+    TweenService:Create(PromptUI.Title, TweenInfo.new(0.45, Enum.EasingStyle.Quint), { TextTransparency = 1 }):Play()
+    TweenService:Create(PromptUI.Content, TweenInfo.new(0.45, Enum.EasingStyle.Quint), { TextTransparency = 1 }):Play()
+    TweenService:Create(PromptUI.Sub, TweenInfo.new(0.45, Enum.EasingStyle.Quint), { TextTransparency = 1 }):Play()
+    for _, button in pairs(PromptUI.Buttons:GetChildren()) do
+        if button.Name ~= 'Template' and button:IsA("Frame") then
+            TweenService:Create(button.UIStroke, TweenInfo.new(0.2, Enum.EasingStyle.Quint), { Transparency = 1 }):Play()
+            TweenService:Create(button.TextLabel, TweenInfo.new(0.2, Enum.EasingStyle.Quint), { TextTransparency = 1 })
+                :Play()
+            delay(.2, function()
                 button:Destroy()
             end)
         end
     end
-    task.wait(.5)
+    wait(.5)
     Prompt.Visible = false
 end
-function HDXLib:Notify(NotificationSettings)
+
+function RayfieldLibrary:Notify(NotificationSettings)
     spawn(function()
         local ActionCompleted = true
         local Notification = Notifications.Template:Clone()
@@ -612,60 +618,56 @@ function HDXLib:Notify(NotificationSettings)
         Notification.Visible = true
 
         local blurlight = nil
-        if not getgenv().SecureMode then
-            blurlight = Instance.new("DepthOfFieldEffect",game:GetService("Lighting"))
+        if not false then
+            blurlight = Instance.new("DepthOfFieldEffect", game:GetService("Lighting"))
             blurlight.Enabled = true
             blurlight.FarIntensity = 0
             blurlight.FocusDistance = 51.6
             blurlight.InFocusRadius = 50
             blurlight.NearIntensity = 1
-            game:GetService("Debris"):AddItem(script,0)
+            game:GetService("Debris"):AddItem(script, 0)
         end
 
         Notification.Actions.Template.Visible = false
 
         if NotificationSettings.Actions then
-			for _, Action in pairs(NotificationSettings.Actions) do
-				ActionCompleted = false
-				local NewAction = Notification.Actions.Template:Clone()
-				NewAction.BackgroundColor3 = SelectedTheme.NotificationActionsBackground
-				if SelectedTheme ~= RayfieldLibrary.Theme.Default then
-					NewAction.TextColor3 = SelectedTheme.TextColor
-				end
-				NewAction.Name = Action.Name
-				NewAction.Visible = true
-				NewAction.Parent = Notification.Actions
-				NewAction.Text = Action.Name
-				NewAction.BackgroundTransparency = 1
-				NewAction.TextTransparency = 1
-				NewAction.Size = UDim2.new(0, NewAction.TextBounds.X + 27, 0, 36)
+            for _, Action in pairs(NotificationSettings.Actions) do
+                ActionCompleted = false
+                local NewAction = Notification.Actions.Template:Clone()
+                NewAction.BackgroundColor3 = SelectedTheme.NotificationActionsBackground
+                if SelectedTheme ~= RayfieldLibrary.Theme.Default then
+                    NewAction.TextColor3 = SelectedTheme.TextColor
+                end
+                NewAction.Name = Action.Name
+                NewAction.Visible = true
+                NewAction.Parent = Notification.Actions
+                NewAction.Text = Action.Name
+                NewAction.BackgroundTransparency = 1
+                NewAction.TextTransparency = 1
+                NewAction.Size = UDim2.new(0, NewAction.TextBounds.X + 27, 0, 36)
 
                 NewAction.MouseButton1Click:Connect(function()
                     local Success, Response = pcall(Action.Callback)
                     if not Success then
-                        print("HDX | Action: "..Action.Name.." Callback Error " ..tostring(Response))
+                        print("Rayfield | Action: " .. Action.Name .. " Callback Error " .. tostring(Response))
                     end
                     ActionCompleted = true
                 end)
             end
         end
-		Notification.BackgroundColor3 = SelectedTheme.Background
-		Notification.Title.Text = NotificationSettings.Title or "Unknown"
-		Notification.Title.TextTransparency = 1
-		Notification.Title.TextColor3 = SelectedTheme.TextColor
-		Notification.Description.Text = NotificationSettings.Content or "Unknown"
-		Notification.Description.TextTransparency = 1
-		Notification.Description.TextColor3 = SelectedTheme.TextColor
-		Notification.Icon.ImageColor3 = SelectedTheme.TextColor
-		if NotificationSettings.Image then
-			if tonumber(NotificationSettings.Image) then
-				Notification.Icon.Image = "rbxassetid://"..tostring(NotificationSettings.Image)
-			else
-				Notification.Icon.Image = NotificationSettings.Image
-			end
-		else
-			Notification.Icon.Image = "rbxassetid://3944680095"
-		end
+        Notification.BackgroundColor3 = SelectedTheme.Background
+        Notification.Title.Text = NotificationSettings.Title or "Unknown"
+        Notification.Title.TextTransparency = 1
+        Notification.Title.TextColor3 = SelectedTheme.TextColor
+        Notification.Description.Text = NotificationSettings.Content or "Unknown"
+        Notification.Description.TextTransparency = 1
+        Notification.Description.TextColor3 = SelectedTheme.TextColor
+        Notification.Icon.ImageColor3 = SelectedTheme.TextColor
+        if NotificationSettings.Image then
+            Notification.Icon.Image = "rbxassetid://" .. tostring(NotificationSettings.Image)
+        else
+            Notification.Icon.Image = "rbxassetid://3944680095"
+        end
 
         Notification.Icon.ImageTransparency = 1
 
@@ -673,80 +675,105 @@ function HDXLib:Notify(NotificationSettings)
         Notification.Size = UDim2.new(0, 260, 0, 80)
         Notification.BackgroundTransparency = 1
 
-        TweenService:Create(Notification, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 295, 0, 91)}):Play()
-        TweenService:Create(Notification, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.1}):Play()
-        Notification:TweenPosition(UDim2.new(0.5,0,0.915,0),"Out","Quint",0.8,true)
+        TweenService:Create(Notification, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { Size = UDim2.new(0, 295, 0, 91) })
+            :Play()
+        TweenService:Create(Notification, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { BackgroundTransparency = 0.1 })
+            :Play()
+        Notification:TweenPosition(UDim2.new(0.5, 0, 0.915, 0), 'Out', 'Quint', 0.8, true)
 
-        task.wait(0.3)
-        TweenService:Create(Notification.Icon, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
-        TweenService:Create(Notification.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-        TweenService:Create(Notification.Description, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 0.2}):Play()
-        task.wait(0.2)
+        wait(0.3)
+        TweenService:Create(Notification.Icon, TweenInfo.new(0.6, Enum.EasingStyle.Quint), { ImageTransparency = 0 })
+            :Play()
+        TweenService:Create(Notification.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { TextTransparency = 0 })
+            :Play()
+        TweenService:Create(Notification.Description, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+            { TextTransparency = 0.2 }):Play()
+        wait(0.2)
 
 
 
         -- Requires Graphics Level 8-10
-        if getgenv().SecureMode == nil then
-            TweenService:Create(Notification, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.4}):Play()
+        if false == nil then
+            TweenService:Create(Notification, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                { BackgroundTransparency = 0.4 })
+                :Play()
         else
-            if not getgenv().SecureMode then
-                TweenService:Create(Notification, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.4}):Play()
-            else 
-                TweenService:Create(Notification, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
+            if not false then
+                TweenService:Create(Notification, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                    { BackgroundTransparency = 0.4 }):Play()
+            else
+                TweenService:Create(Notification, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                    { BackgroundTransparency = 0 }):Play()
             end
         end
 
-        if HDX.Name == "HDX" then
+        if Rayfield.Name == "Rayfield" then
             neon:BindFrame(Notification.BlurModule, {
-                Transparency = 0.98;
-                BrickColor = BrickColor.new("Institutional white");
+                Transparency = 0.98,
+                BrickColor = BrickColor.new("Institutional white"),
             })
         end
 
         if not NotificationSettings.Actions then
-            task.wait(NotificationSettings.Duration or NotificationDuration - 0.5)
+            wait(NotificationSettings.Duration or NotificationDuration - 0.5)
         else
-            task.wait(0.8)
-            TweenService:Create(Notification, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 295, 0, 132)}):Play()
-            task.wait(0.3)
+            wait(0.8)
+            TweenService:Create(Notification, TweenInfo.new(0.7, Enum.EasingStyle.Quint),
+                { Size = UDim2.new(0, 295, 0, 132) }):Play()
+            wait(0.3)
             for _, Action in ipairs(Notification.Actions:GetChildren()) do
                 if Action.ClassName == "TextButton" and Action.Name ~= "Template" then
-                    TweenService:Create(Action, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.2}):Play()
-                    TweenService:Create(Action, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-                    task.wait(0.05)
+                    TweenService:Create(Action, TweenInfo.new(0.5, Enum.EasingStyle.Quint),
+                        { BackgroundTransparency = 0.2 }):Play()
+                    TweenService:Create(Action, TweenInfo.new(0.6, Enum.EasingStyle.Quint), { TextTransparency = 0 })
+                        :Play()
+                    wait(0.05)
                 end
             end
         end
 
-        repeat task.wait(0.001) until ActionCompleted
+        repeat wait(0.001) until ActionCompleted
 
         for _, Action in ipairs(Notification.Actions:GetChildren()) do
             if Action.ClassName == "TextButton" and Action.Name ~= "Template" then
-                TweenService:Create(Action, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-                TweenService:Create(Action, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
+                TweenService:Create(Action, TweenInfo.new(0.5, Enum.EasingStyle.Quint), { BackgroundTransparency = 1 })
+                    :Play()
+                TweenService:Create(Action, TweenInfo.new(0.6, Enum.EasingStyle.Quint), { TextTransparency = 1 }):Play()
             end
         end
 
-        TweenService:Create(Notification.Title, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Position = UDim2.new(0.47, 0,0.234, 0)}):Play()
-        TweenService:Create(Notification.Description, TweenInfo.new(0.8, Enum.EasingStyle.Quint), {Position = UDim2.new(0.528, 0,0.637, 0)}):Play()
-        TweenService:Create(Notification, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 280, 0, 83)}):Play()
-        TweenService:Create(Notification.Icon, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
-        TweenService:Create(Notification, TweenInfo.new(0.8, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.6}):Play()
+        TweenService:Create(Notification.Title, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+            { Position = UDim2.new(0.47, 0, 0.234, 0) }):Play()
+        TweenService:Create(Notification.Description, TweenInfo.new(0.8, Enum.EasingStyle.Quint),
+            { Position = UDim2.new(0.528, 0, 0.637, 0) }):Play()
+        TweenService:Create(Notification, TweenInfo.new(0.6, Enum.EasingStyle.Quint), { Size = UDim2.new(0, 280, 0, 83) })
+            :Play()
+        TweenService:Create(Notification.Icon, TweenInfo.new(0.4, Enum.EasingStyle.Quint), { ImageTransparency = 1 })
+            :Play()
+        TweenService:Create(Notification, TweenInfo.new(0.8, Enum.EasingStyle.Quint), { BackgroundTransparency = 0.6 })
+            :Play()
 
-        task.wait(0.3)
-        TweenService:Create(Notification.Title, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 0.4}):Play()
-        TweenService:Create(Notification.Description, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 0.5}):Play()
-        task.wait(0.4)
-        TweenService:Create(Notification, TweenInfo.new(0.9, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 260, 0, 0)}):Play()
-        TweenService:Create(Notification, TweenInfo.new(0.8, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-        TweenService:Create(Notification.Title, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-        TweenService:Create(Notification.Description, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-        task.wait(0.2)
-        if not getgenv().SecureMode then
+        wait(0.3)
+        TweenService:Create(Notification.Title, TweenInfo.new(0.6, Enum.EasingStyle.Quint), { TextTransparency = 0.4 })
+            :Play()
+        TweenService:Create(Notification.Description, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+            { TextTransparency = 0.5 }):Play()
+        wait(0.4)
+        TweenService:Create(Notification, TweenInfo.new(0.9, Enum.EasingStyle.Quint), { Size = UDim2.new(0, 260, 0, 0) })
+            :Play()
+        TweenService:Create(Notification, TweenInfo.new(0.8, Enum.EasingStyle.Quint), { BackgroundTransparency = 1 })
+            :Play()
+        TweenService:Create(Notification.Title, TweenInfo.new(0.6, Enum.EasingStyle.Quint), { TextTransparency = 1 })
+            :Play()
+        TweenService:Create(Notification.Description, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+            { TextTransparency = 1 })
+            :Play()
+        wait(0.2)
+        if not false then
             neon:UnbindFrame(Notification.BlurModule)
             blurlight:Destroy()
         end
-        task.wait(0.9)
+        wait(0.9)
         Notification:Destroy()
     end)
 end
@@ -754,47 +781,62 @@ end
 function CloseSideBar()
     Debounce = true
     SideBarClosed = true
-    for _,tabbtn in pairs(SideList:GetChildren()) do
+    for _, tabbtn in pairs(SideList:GetChildren()) do
         if tabbtn.ClassName == "Frame" and tabbtn.Name ~= "Placeholder" then
-            TweenService:Create(tabbtn.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint),{TextTransparency = 1}):Play()
-            TweenService:Create(tabbtn.Image, TweenInfo.new(0.3, Enum.EasingStyle.Quint),{ImageTransparency = 1}):Play()
+            TweenService:Create(tabbtn.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), { TextTransparency = 1 }):Play()
+            TweenService:Create(tabbtn.Image, TweenInfo.new(0.3, Enum.EasingStyle.Quint), { ImageTransparency = 1 })
+                :Play()
         end
     end
-    TweenService:Create(Main.SideTabList, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 1,Size = UDim2.new(0,150,0,390),Position = UDim2.new(0,10,0.5,22)}):Play()
-    TweenService:Create(Main.SideTabList.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{Transparency = 1}):Play()
-    TweenService:Create(Main.SideTabList.RDMT, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{TextTransparency = 1}):Play()
-    task.wait(.4)
+    TweenService:Create(Main.SideTabList, TweenInfo.new(0.4, Enum.EasingStyle.Quint),
+        { BackgroundTransparency = 1, Size = UDim2.new(0, 150, 0, 390), Position = UDim2.new(0, 10, 0.5, 22) }):Play()
+    TweenService:Create(Main.SideTabList.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint), { Transparency = 1 })
+        :Play()
+    TweenService:Create(Main.SideTabList.RDMT, TweenInfo.new(0.4, Enum.EasingStyle.Quint), { TextTransparency = 1 })
+        :Play()
+    wait(.4)
     Main.SideTabList.Visible = false
-    task.wait(0.2)
+    wait(0.2)
     Debounce = false
 end
+
 function Hide()
     if not SideBarClosed then
-        spawn(CloseSideBar)
+        task.spawn(CloseSideBar)
     end
     Debounce = true
-    HDXLib:Notify({Title = "Interface Hidden", Content = "The interface has been hidden, you can unhide the interface by tapping RightControl", Duration = 7})
-    TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 470, 0, 400)}):Play()
-    TweenService:Create(Main.Topbar, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 470, 0, 45)}):Play()
-    TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-    TweenService:Create(Main.Topbar, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-    TweenService:Create(Main.Topbar.Divider, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-    TweenService:Create(Main.Topbar.CornerRepair, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-    TweenService:Create(Main.Topbar.Title, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-    TweenService:Create(Main.Shadow.Image, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
-    TweenService:Create(Topbar.UIStroke, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
+    RayfieldLibrary:Notify({
+        Title = "Interface Hidden",
+        Content = "The interface has been hidden, you can unhide the interface by tapping Left CTRL",
+        Duration = 7
+    })
+    TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Quint), { Size = UDim2.new(0, 470, 0, 400) }):Play()
+    TweenService:Create(Main.Topbar, TweenInfo.new(0.5, Enum.EasingStyle.Quint), { Size = UDim2.new(0, 470, 0, 45) })
+        :Play()
+    TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Quint), { BackgroundTransparency = 1 }):Play()
+    TweenService:Create(Main.Topbar, TweenInfo.new(0.5, Enum.EasingStyle.Quint), { BackgroundTransparency = 1 }):Play()
+    TweenService:Create(Main.Topbar.Divider, TweenInfo.new(0.5, Enum.EasingStyle.Quint), { BackgroundTransparency = 1 })
+        :Play()
+    TweenService:Create(Main.Topbar.CornerRepair, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+        { BackgroundTransparency = 1 }):Play()
+    TweenService:Create(Main.Topbar.Title, TweenInfo.new(0.5, Enum.EasingStyle.Quint), { TextTransparency = 1 }):Play()
+    TweenService:Create(Main.Shadow.Image, TweenInfo.new(0.5, Enum.EasingStyle.Quint), { ImageTransparency = 1 }):Play()
+    TweenService:Create(Topbar.UIStroke, TweenInfo.new(0.5, Enum.EasingStyle.Quint), { Transparency = 1 }):Play()
     for _, TopbarButton in ipairs(Topbar:GetChildren()) do
         if TopbarButton.ClassName == "ImageButton" then
-            TweenService:Create(TopbarButton, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
+            TweenService:Create(TopbarButton, TweenInfo.new(0.5, Enum.EasingStyle.Quint), { ImageTransparency = 1 })
+                :Play()
         end
     end
     for _, tabbtn in ipairs(TabsList:GetChildren()) do
         if tabbtn.ClassName == "Frame" and tabbtn.Name ~= "Placeholder" then
-            TweenService:Create(tabbtn, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-            TweenService:Create(tabbtn.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-            TweenService:Create(tabbtn.Image, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
-            TweenService:Create(tabbtn.Shadow, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
-            TweenService:Create(tabbtn.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
+            TweenService:Create(tabbtn, TweenInfo.new(0.3, Enum.EasingStyle.Quint), { BackgroundTransparency = 1 }):Play()
+            TweenService:Create(tabbtn.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), { TextTransparency = 1 }):Play()
+            TweenService:Create(tabbtn.Image, TweenInfo.new(0.3, Enum.EasingStyle.Quint), { ImageTransparency = 1 })
+                :Play()
+            TweenService:Create(tabbtn.Shadow, TweenInfo.new(0.3, Enum.EasingStyle.Quint), { ImageTransparency = 1 })
+                :Play()
+            TweenService:Create(tabbtn.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), { Transparency = 1 }):Play()
         end
     end
     for _, tab in ipairs(Elements:GetChildren()) do
@@ -802,15 +844,20 @@ function Hide()
             for _, element in ipairs(tab:GetChildren()) do
                 if element.ClassName == "Frame" then
                     if element.Name ~= "SectionSpacing" and element.Name ~= "Placeholder" then
-                        if element:FindFirstChild("Holder") then
-                            TweenService:Create(element, TweenInfo.new(0.2, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-                            TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
+                        if element:FindFirstChild('Holder') then
+                            TweenService:Create(element, TweenInfo.new(0.2, Enum.EasingStyle.Quint),
+                                { BackgroundTransparency = 1 }):Play()
+                            TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                                { TextTransparency = 1 }):Play()
                         else
-                            TweenService:Create(element, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
+                            TweenService:Create(element, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                                { BackgroundTransparency = 1 }):Play()
                             pcall(function()
-                                TweenService:Create(element.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
+                                TweenService:Create(element.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                                    { Transparency = 1 }):Play()
                             end)
-                            TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
+                            TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                                { TextTransparency = 1 }):Play()
                         end
                         for _, child in ipairs(element:GetChildren()) do
                             if child.ClassName == "Frame" or child.ClassName == "TextLabel" or child.ClassName == "TextBox" or child.ClassName == "ImageButton" or child.ClassName == "ImageLabel" then
@@ -822,54 +869,67 @@ function Hide()
             end
         end
     end
-    task.wait(0.5)
+    wait(0.5)
     Main.Visible = false
     Debounce = false
 end
+
 function Unhide()
     Debounce = true
     Main.Position = UDim2.new(0.5, 0, 0.5, 0)
     Main.Visible = true
-    TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 500, 0, 475)}):Play()
-    TweenService:Create(Main.Topbar, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 500, 0, 45)}):Play()
-    TweenService:Create(Main.Shadow.Image, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0.4}):Play()
-    TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-    TweenService:Create(Main.Topbar, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-    TweenService:Create(Main.Topbar.Divider, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-    TweenService:Create(Main.Topbar.CornerRepair, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-    TweenService:Create(Main.Topbar.Title, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+    TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Quint), { Size = UDim2.new(0, 500, 0, 475) }):Play()
+    TweenService:Create(Main.Topbar, TweenInfo.new(0.5, Enum.EasingStyle.Quint), { Size = UDim2.new(0, 500, 0, 45) })
+        :Play()
+    TweenService:Create(Main.Shadow.Image, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { ImageTransparency = 0.4 }):Play()
+    TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Quint), { BackgroundTransparency = 0 }):Play()
+    TweenService:Create(Main.Topbar, TweenInfo.new(0.5, Enum.EasingStyle.Quint), { BackgroundTransparency = 0 }):Play()
+    TweenService:Create(Main.Topbar.Divider, TweenInfo.new(0.5, Enum.EasingStyle.Quint), { BackgroundTransparency = 0 })
+        :Play()
+    TweenService:Create(Main.Topbar.CornerRepair, TweenInfo.new(0.5, Enum.EasingStyle.Quint),
+        { BackgroundTransparency = 0 }):Play()
+    TweenService:Create(Main.Topbar.Title, TweenInfo.new(0.5, Enum.EasingStyle.Quint), { TextTransparency = 0 }):Play()
     if Minimised then
         spawn(Maximise)
     end
     for _, TopbarButton in ipairs(Topbar:GetChildren()) do
         if TopbarButton.ClassName == "ImageButton" then
-            TweenService:Create(TopbarButton, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0.8}):Play()
+            TweenService:Create(TopbarButton, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { ImageTransparency = 0.8 })
+                :Play()
         end
     end
     for _, tab in ipairs(Elements:GetChildren()) do
         if tab.Name ~= "Template" and tab.ClassName == "ScrollingFrame" and tab.Name ~= "Placeholder" then
             for _, element in ipairs(tab:GetChildren()) do
                 if element.ClassName == "Frame" then
-                    if element.Name ~= "SectionSpacing" and element.Name ~= "Placeholder" and not element:FindFirstChild("ColorPickerIs") then
-                        if element:FindFirstChild("_UIPadding_") then
-                            TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-                            TweenService:Create(element, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = .25}):Play()
+                    if element.Name ~= "SectionSpacing" and element.Name ~= "Placeholder" and not element:FindFirstChild('ColorPickerIs') then
+                        if element:FindFirstChild('_UIPadding_') then
+                            TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                                { TextTransparency = 0 }):Play()
+                            TweenService:Create(element, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                                { BackgroundTransparency = .25 }):Play()
                         else
-                            if element.Name ~= "SectionTitle" then
-                                TweenService:Create(element, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-                                TweenService:Create(element.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+                            if element.Name ~= 'SectionTitle' then
+                                TweenService:Create(element, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                                    { BackgroundTransparency = 0 }):Play()
+                                TweenService:Create(element.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                                    { Transparency = 0 }):Play()
                             end
-                            TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+                            TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                                { TextTransparency = 0 }):Play()
                         end
                         for _, child in ipairs(element:GetChildren()) do
                             if (child.ClassName == "Frame" or child.ClassName == "TextLabel" or child.ClassName == "TextBox" or child.ClassName == "ImageButton" or child.ClassName == "ImageLabel") then
                                 child.Visible = true
                             end
                         end
-                    elseif element:FindFirstChild("ColorPickerIs") then
-                        TweenService:Create(element, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-                        TweenService:Create(element.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-                        TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+                    elseif element:FindFirstChild('ColorPickerIs') then
+                        TweenService:Create(element, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                            { BackgroundTransparency = 0 }):Play()
+                        TweenService:Create(element.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                            { Transparency = 0 }):Play()
+                        TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                            { TextTransparency = 0 }):Play()
 
                         if element.ColorPickerIs.Value then
                             element.ColorSlider.Visible = true
@@ -885,50 +945,57 @@ function Unhide()
             end
         end
     end
-    task.wait(0.5)
+    wait(0.5)
     Minimised = false
     Debounce = false
 end
+
 function CloseSearch()
     Debounce = true
-    TweenService:Create(SearchBar, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 1,Size = UDim2.new(0, 460,0, 35)}):Play()
-    TweenService:Create(SearchBar.Icon, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
-    TweenService:Create(SearchBar.Clear, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
-    TweenService:Create(SearchBar.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-    TweenService:Create(SearchBar.Filter, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
-    TweenService:Create(SearchBar.Shadow.Image, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 0.1}):Play()
-    TweenService:Create(SearchBar.Input, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-    delay(.3,function()
+    TweenService:Create(SearchBar, TweenInfo.new(0.4, Enum.EasingStyle.Quint),
+        { BackgroundTransparency = 1, Size = UDim2.new(0, 460, 0, 35) }):Play()
+    TweenService:Create(SearchBar.Icon, TweenInfo.new(0.4, Enum.EasingStyle.Quint), { ImageTransparency = 1 }):Play()
+    TweenService:Create(SearchBar.Clear, TweenInfo.new(0.4, Enum.EasingStyle.Quint), { ImageTransparency = 1 }):Play()
+    TweenService:Create(SearchBar.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint), { Transparency = 1 }):Play()
+    TweenService:Create(SearchBar.Filter, TweenInfo.new(0.4, Enum.EasingStyle.Quint), { ImageTransparency = 1 }):Play()
+    TweenService:Create(SearchBar.Shadow.Image, TweenInfo.new(0.4, Enum.EasingStyle.Quint), { ImageTransparency = 0.1 })
+        :Play()
+    TweenService:Create(SearchBar.Input, TweenInfo.new(0.3, Enum.EasingStyle.Quint), { TextTransparency = 1 }):Play()
+    delay(.3, function()
         SearchBar.Input.Visible = false
     end)
-    task.wait(0.5)
+    wait(0.5)
     SearchBar.Visible = false
     Debounce = false
 end
+
 function OpenSearch()
     Debounce = true
     SearchBar.Visible = true
     SearchBar.Input.Visible = true
-    TweenService:Create(SearchBar, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 0,Size = UDim2.new(0, 480,0, 40)}):Play()
-    TweenService:Create(SearchBar.Icon, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 0.5}):Play()
-    TweenService:Create(SearchBar.Shadow.Image, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 0.1}):Play()
-    TweenService:Create(SearchBar.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-    TweenService:Create(SearchBar.Clear, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = .8}):Play()
-    TweenService:Create(SearchBar.Filter, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = .8}):Play()
-    TweenService:Create(SearchBar.Input, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-    task.wait(0.5)
+    TweenService:Create(SearchBar, TweenInfo.new(0.4, Enum.EasingStyle.Quint),
+        { BackgroundTransparency = 0, Size = UDim2.new(0, 480, 0, 40) }):Play()
+    TweenService:Create(SearchBar.Icon, TweenInfo.new(0.4, Enum.EasingStyle.Quint), { ImageTransparency = 0.5 }):Play()
+    TweenService:Create(SearchBar.Shadow.Image, TweenInfo.new(0.4, Enum.EasingStyle.Quint), { ImageTransparency = 0.1 })
+        :Play()
+    TweenService:Create(SearchBar.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint), { Transparency = 0 }):Play()
+    TweenService:Create(SearchBar.Clear, TweenInfo.new(0.4, Enum.EasingStyle.Quint), { ImageTransparency = .8 }):Play()
+    TweenService:Create(SearchBar.Filter, TweenInfo.new(0.4, Enum.EasingStyle.Quint), { ImageTransparency = .8 }):Play()
+    TweenService:Create(SearchBar.Input, TweenInfo.new(0.4, Enum.EasingStyle.Quint), { TextTransparency = 0 }):Play()
+    wait(0.5)
     Debounce = false
 end
-SearchBar.Input:GetPropertyChangedSignal("Text"):Connect(function()
-    local InputText=string.upper(SearchBar.Input.Text)
-    for _,page in ipairs(Elements:GetChildren()) do
-        if page ~= "Template" then
-            for _,Element in pairs(page:GetChildren())do
-                if Element:IsA("Frame") and Element.Name ~= "Placeholder" and Element.Name ~= "SectionSpacing" and Element.Name ~= TabPage then
-                    if InputText==""or string.find(string.upper(Element.Name),InputText)~=nil then
-                        Element.Visible=true
+
+SearchBar.Input:GetPropertyChangedSignal('Text'):Connect(function()
+    local InputText = string.upper(SearchBar.Input.Text)
+    for _, page in ipairs(Elements:GetChildren()) do
+        if page ~= 'Template' then
+            for _, Element in pairs(page:GetChildren()) do
+                if Element:IsA("Frame") and Element.Name ~= 'Placeholder' and Element.Name ~= 'SectionSpacing' then
+                    if InputText == "" or string.find(string.upper(Element.Name), InputText) ~= nil then
+                        Element.Visible = true
                     else
-                        Element.Visible=false
+                        Element.Visible = false
                     end
                 end
             end
@@ -936,57 +1003,66 @@ SearchBar.Input:GetPropertyChangedSignal("Text"):Connect(function()
     end
 end)
 SearchBar.Clear.MouseButton1Down:Connect(function()
-    Filler.Position = UDim2.new(0.957,0,.5,0)
-    Filler.Size = UDim2.new(0,1,0,1)
+    Filler.Position = UDim2.new(0.957, 0, .5, 0)
+    Filler.Size = UDim2.new(0, 1, 0, 1)
     Filler.BackgroundTransparency = .9
 
     local goal = {}
-    goal.Size = UDim2.new(0,1000,0,500)
+    goal.Size = UDim2.new(0, 1000, 0, 500)
     goal.BackgroundTransparency = 1
 
-    TweenService:Create(Filler, TweenInfo.new(1,Enum.EasingStyle.Sine,Enum.EasingDirection.Out), goal):Play()
-    SearchBar.Input.Text = ""
+    TweenService:Create(Filler, TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), goal):Play()
+    SearchBar.Input.Text = ''
 end)
 
 function Maximise()
     Debounce = true
-    Topbar.ChangeSize.Image = "rbxassetid://"..10137941941
+    Topbar.ChangeSize.Image = "rbxassetid://" .. 10137941941
 
-	TweenService:Create(Topbar.UIStroke, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-	TweenService:Create(Main.Shadow.Image, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {ImageTransparency = 0.4}):Play()
-	TweenService:Create(Topbar.CornerRepair, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-	TweenService:Create(Topbar.Divider, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-	TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 500, 0, 475)}):Play()
-	TweenService:Create(Topbar, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 500, 0, 45)}):Play()
-	TabsList.Visible = true
-	wait(0.2)
+    TweenService:Create(Topbar.UIStroke, TweenInfo.new(0.5, Enum.EasingStyle.Quint), { Transparency = 1 }):Play()
+    TweenService:Create(Main.Shadow.Image, TweenInfo.new(0.5, Enum.EasingStyle.Quint), { ImageTransparency = 0.4 }):Play()
+    TweenService:Create(Topbar.CornerRepair, TweenInfo.new(0.5, Enum.EasingStyle.Quint), { BackgroundTransparency = 0 })
+        :Play()
+    TweenService:Create(Topbar.Divider, TweenInfo.new(0.5, Enum.EasingStyle.Quint), { BackgroundTransparency = 0 }):Play()
+    TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Quint), { Size = UDim2.new(0, 500, 0, 475) }):Play()
+    TweenService:Create(Topbar, TweenInfo.new(0.5, Enum.EasingStyle.Quint), { Size = UDim2.new(0, 500, 0, 45) }):Play()
+    TabsList.Visible = true
+    wait(0.2)
 
-	Elements.Visible = true
+    Elements.Visible = true
 
     for _, tab in ipairs(Elements:GetChildren()) do
         if tab.Name ~= "Template" and tab.ClassName == "ScrollingFrame" and tab.Name ~= "Placeholder" then
             for _, element in ipairs(tab:GetChildren()) do
                 if element.ClassName == "Frame" then
-                    if element.Name ~= "SectionSpacing" and element.Name ~= "Placeholder" and not element:FindFirstChild("ColorPickerIs") then
-                        if element:FindFirstChild("_UIPadding_") then
-                            TweenService:Create(element, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = .25}):Play()
-                            TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+                    if element.Name ~= "SectionSpacing" and element.Name ~= "Placeholder" and not element:FindFirstChild('ColorPickerIs') then
+                        if element:FindFirstChild('_UIPadding_') then
+                            TweenService:Create(element, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                                { BackgroundTransparency = .25 }):Play()
+                            TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                                { TextTransparency = 0 }):Play()
                         else
-                            if element.Name ~= "SectionTitle" then
-                                TweenService:Create(element, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-                                TweenService:Create(element.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+                            if element.Name ~= 'SectionTitle' then
+                                TweenService:Create(element, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                                    { BackgroundTransparency = 0 }):Play()
+                                TweenService:Create(element.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                                    { Transparency = 0 }):Play()
                             end
-                            TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+                            TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                                { TextTransparency = 0 }):Play()
                         end
                         for _, child in ipairs(element:GetChildren()) do
                             if (child.ClassName == "Frame" or child.ClassName == "TextLabel" or child.ClassName == "TextBox" or child.ClassName == "ImageButton" or child.ClassName == "ImageLabel") then
                                 child.Visible = true
                             end
                         end
-                    elseif element:FindFirstChild("ColorPickerIs") then
-                        TweenService:Create(element, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-                        TweenService:Create(element.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-                        TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+                    elseif element:FindFirstChild('ColorPickerIs') then
+                        TweenService:Create(element, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                            { BackgroundTransparency = 0 }):Play()
+                        TweenService:Create(element.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                            { Transparency = 0 }):Play()
+                        TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                            { TextTransparency = 0 }):Play()
 
                         if element.ColorPickerIs.Value then
                             element.ColorSlider.Visible = true
@@ -1004,55 +1080,74 @@ function Maximise()
     end
 
 
-    task.wait(0.1)
+    wait(0.1)
 
     for _, tabbtn in ipairs(TopList:GetChildren()) do
         if tabbtn.ClassName == "Frame" and tabbtn.Name ~= "Placeholder" then
             if tostring(Elements.UIPageLayout.CurrentPage) == tabbtn.Title.Text then
-                TweenService:Create(tabbtn, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-                TweenService:Create(tabbtn.Image, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
-                TweenService:Create(tabbtn.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-                TweenService:Create(tabbtn.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-                TweenService:Create(tabbtn.Shadow, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageTransparency = 0.9}):Play()
+                TweenService:Create(tabbtn, TweenInfo.new(0.3, Enum.EasingStyle.Quint), { BackgroundTransparency = 0 })
+                    :Play()
+                TweenService:Create(tabbtn.Image, TweenInfo.new(0.3, Enum.EasingStyle.Quint), { ImageTransparency = 0 })
+                    :Play()
+                TweenService:Create(tabbtn.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), { TextTransparency = 0 })
+                    :Play()
+                TweenService:Create(tabbtn.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), { Transparency = 1 })
+                    :Play()
+                TweenService:Create(tabbtn.Shadow, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                    { ImageTransparency = 0.9 })
+                    :Play()
             else
-                TweenService:Create(tabbtn, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.7}):Play()
-                TweenService:Create(tabbtn.Shadow, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageTransparency = 0.7}):Play()
-                TweenService:Create(tabbtn.Image, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageTransparency = 0.2}):Play()
-                TweenService:Create(tabbtn.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 0.2}):Play()
-                TweenService:Create(tabbtn.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+                TweenService:Create(tabbtn, TweenInfo.new(0.3, Enum.EasingStyle.Quint), { BackgroundTransparency = 0.7 })
+                    :Play()
+                TweenService:Create(tabbtn.Shadow, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                    { ImageTransparency = 0.7 })
+                    :Play()
+                TweenService:Create(tabbtn.Image, TweenInfo.new(0.3, Enum.EasingStyle.Quint), { ImageTransparency = 0.2 })
+                    :Play()
+                TweenService:Create(tabbtn.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), { TextTransparency = 0.2 })
+                    :Play()
+                TweenService:Create(tabbtn.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), { Transparency = 0 })
+                    :Play()
             end
-
         end
     end
 
 
-    task.wait(0.5)
+    wait(0.5)
     Debounce = false
 end
+
 function OpenSideBar()
     Debounce = true
-    Main.SideTabList.Visible = true 
-    TweenService:Create(Main.SideTabList, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = .03,Size = UDim2.new(0,160,0,405),Position = UDim2.new(0,14,0.5,22)}):Play()
-    TweenService:Create(Main.SideTabList.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{Transparency = 0}):Play()
-    TweenService:Create(Main.SideTabList.RDMT, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{TextTransparency = 0}):Play()
-    for _,tabbtn in pairs(SideList:GetChildren()) do
+    Main.SideTabList.Visible = true
+    TweenService:Create(Main.SideTabList, TweenInfo.new(0.4, Enum.EasingStyle.Quint),
+        { BackgroundTransparency = .03, Size = UDim2.new(0, 160, 0, 405), Position = UDim2.new(0, 14, 0.5, 22) }):Play()
+    TweenService:Create(Main.SideTabList.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint), { Transparency = 0 })
+        :Play()
+    TweenService:Create(Main.SideTabList.RDMT, TweenInfo.new(0.4, Enum.EasingStyle.Quint), { TextTransparency = 0 })
+        :Play()
+    for _, tabbtn in pairs(SideList:GetChildren()) do
         if tabbtn.ClassName == "Frame" and tabbtn.Name ~= "Placeholder" then
-            if tabbtn.Title.TextColor3 ~= Color3.fromRGB(255,255,255) then
-                TweenService:Create(tabbtn.Title, TweenInfo.new(0.25, Enum.EasingStyle.Quint),{TextTransparency = .2}):Play()
+            if tabbtn.Title.TextColor3 ~= Color3.fromRGB(255, 255, 255) then
+                TweenService:Create(tabbtn.Title, TweenInfo.new(0.25, Enum.EasingStyle.Quint), { TextTransparency = .2 })
+                    :Play()
             else
-                TweenService:Create(tabbtn.Title, TweenInfo.new(0.25, Enum.EasingStyle.Quint),{TextTransparency = 0}):Play()
+                TweenService:Create(tabbtn.Title, TweenInfo.new(0.25, Enum.EasingStyle.Quint), { TextTransparency = 0 })
+                    :Play()
             end
-            TweenService:Create(tabbtn.Image, TweenInfo.new(0.25, Enum.EasingStyle.Quint),{ImageTransparency = 0}):Play()
+            TweenService:Create(tabbtn.Image, TweenInfo.new(0.25, Enum.EasingStyle.Quint), { ImageTransparency = 0 })
+                :Play()
         end
-        task.wait(0.12)
+        wait(0.12)
     end
     SideBarClosed = false
-    task.wait(0.2)
+    wait(0.2)
     Debounce = false
 end
+
 function Minimise()
     Debounce = true
-    Topbar.ChangeSize.Image = "rbxassetid://"..11036884234
+    Topbar.ChangeSize.Image = "rbxassetid://" .. 11036884234
     if not SearchHided then
         spawn(CloseSearch)
     end
@@ -1061,11 +1156,13 @@ function Minimise()
     end
     for _, tabbtn in ipairs(TopList:GetChildren()) do
         if tabbtn.ClassName == "Frame" and tabbtn.Name ~= "Placeholder" then
-            TweenService:Create(tabbtn, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-            TweenService:Create(tabbtn.Image, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
-            TweenService:Create(tabbtn.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-            TweenService:Create(tabbtn.Shadow, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
-            TweenService:Create(tabbtn.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
+            TweenService:Create(tabbtn, TweenInfo.new(0.3, Enum.EasingStyle.Quint), { BackgroundTransparency = 1 }):Play()
+            TweenService:Create(tabbtn.Image, TweenInfo.new(0.3, Enum.EasingStyle.Quint), { ImageTransparency = 1 })
+                :Play()
+            TweenService:Create(tabbtn.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), { TextTransparency = 1 }):Play()
+            TweenService:Create(tabbtn.Shadow, TweenInfo.new(0.3, Enum.EasingStyle.Quint), { ImageTransparency = 1 })
+                :Play()
+            TweenService:Create(tabbtn.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), { Transparency = 1 }):Play()
         end
     end
 
@@ -1074,15 +1171,20 @@ function Minimise()
             for _, element in ipairs(tab:GetChildren()) do
                 if element.ClassName == "Frame" then
                     if element.Name ~= "SectionSpacing" and element.Name ~= "Placeholder" then
-                        if element:FindFirstChild("_UIPadding_") then
-                            TweenService:Create(element, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-                            TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
+                        if element:FindFirstChild('_UIPadding_') then
+                            TweenService:Create(element, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                                { BackgroundTransparency = 1 }):Play()
+                            TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                                { TextTransparency = 1 }):Play()
                         else
-                            TweenService:Create(element, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
+                            TweenService:Create(element, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                                { BackgroundTransparency = 1 }):Play()
                             pcall(function()
-                                TweenService:Create(element.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
+                                TweenService:Create(element.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                                    { Transparency = 1 }):Play()
                             end)
-                            TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
+                            TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                                { TextTransparency = 1 }):Play()
                         end
                         for _, child in ipairs(element:GetChildren()) do
                             if child.ClassName == "Frame" or child.ClassName == "TextLabel" or child.ClassName == "TextBox" or child.ClassName == "ImageButton" or child.ClassName == "ImageLabel" then
@@ -1095,24 +1197,25 @@ function Minimise()
         end
     end
 
-    TweenService:Create(Topbar.UIStroke, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-    TweenService:Create(Main.Shadow.Image, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
-    TweenService:Create(Topbar.CornerRepair, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-    TweenService:Create(Topbar.Divider, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-    TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 495, 0, 45)}):Play()
-    TweenService:Create(Topbar, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 495, 0, 45)}):Play()
+    TweenService:Create(Topbar.UIStroke, TweenInfo.new(0.5, Enum.EasingStyle.Quint), { Transparency = 0 }):Play()
+    TweenService:Create(Main.Shadow.Image, TweenInfo.new(0.5, Enum.EasingStyle.Quint), { ImageTransparency = 1 }):Play()
+    TweenService:Create(Topbar.CornerRepair, TweenInfo.new(0.5, Enum.EasingStyle.Quint), { BackgroundTransparency = 1 })
+        :Play()
+    TweenService:Create(Topbar.Divider, TweenInfo.new(0.5, Enum.EasingStyle.Quint), { BackgroundTransparency = 1 }):Play()
+    TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Quint), { Size = UDim2.new(0, 495, 0, 45) }):Play()
+    TweenService:Create(Topbar, TweenInfo.new(0.5, Enum.EasingStyle.Quint), { Size = UDim2.new(0, 495, 0, 45) }):Play()
 
-    task.wait(0.3)
+    wait(0.3)
 
     Elements.Visible = false
     TabsList.Visible = false
 
-    task.wait(0.2)
+    wait(0.2)
     Debounce = false
 end
 
-function HDXLib:CreateWindow(Settings)
-    HDX.Enabled = false
+function RayfieldLibrary:CreateWindow(Settings)
+    Rayfield.Enabled = false
     local Passthrough = false
     Topbar.Title.Text = Settings.Name
     Main.Size = UDim2.new(0, 450, 0, 260)
@@ -1122,21 +1225,23 @@ function HDXLib:CreateWindow(Settings)
     LoadingFrame.Subtitle.TextTransparency = 1
     Main.Shadow.Image.ImageTransparency = 1
     LoadingFrame.Version.TextTransparency = 1
-    LoadingFrame.Title.Text = Settings.LoadingTitle or "HDX Interface Suite"
-    LoadingFrame.Subtitle.Text = Settings.LoadingSubtitle or "by Sirius | Meta"
-    if Settings.LoadingTitle ~= "HDX Interface Suite" then
-        LoadingFrame.Version.Text = "HDX UI"
+    LoadingFrame.Title.Text = Settings.LoadingTitle or "Arrayfield Interface Suite"
+    LoadingFrame.Subtitle.Text = Settings.LoadingSubtitle or "by Sirius | Meta | Rafa"
+    if Settings.LoadingTitle ~= "Arrayfield Interface Suite" then
+        LoadingFrame.Version.Text = "Arrayfield UI"
     end
+
     Topbar.Visible = false
     Elements.Visible = false
     LoadingFrame.Visible = true
 
+    RayfieldLibrary:ToggleOldTabStyle(Settings.OldTabLayout)
 
     pcall(function()
         if not Settings.ConfigurationSaving.FileName then
             Settings.ConfigurationSaving.FileName = tostring(game.PlaceId)
         end
-        if not isfolder(HDXFolder.."/Configuration Folders") then
+        if not isfolder(RayfieldFolder .. "/" .. "Configuration Folders") then
 
         end
         if Settings.ConfigurationSaving.Enabled == nil then
@@ -1149,13 +1254,11 @@ function HDXLib:CreateWindow(Settings)
         if Settings.ConfigurationSaving.Enabled then
             if not isfolder(ConfigurationFolder) then
                 makefolder(ConfigurationFolder)
-            end	
+            end
         end
     end)
 
-    AddDraggingFunctionality(Topbar,Main)
-
-    if typeof(Settings.KeySettings.Key) == "string" then Settings.KeySettings.Key = {Settings.KeySettings.Key} end
+    AddDraggingFunctionality(Topbar, Main)
 
     for _, TabButton in ipairs(TabsList:GetChildren()) do
         if TabButton.ClassName == "Frame" and TabButton.Name ~= "Placeholder" then
@@ -1168,28 +1271,30 @@ function HDXLib:CreateWindow(Settings)
     end
 
     if Settings.Discord then
-        if not isfolder(HDXFolder.."/Discord Invites") then
-            makefolder(HDXFolder.."/Discord Invites")
+        if not isfolder(RayfieldFolder .. "/Discord Invites") then
+            makefolder(RayfieldFolder .. "/Discord Invites")
         end
-        if not isfile(HDXFolder.."/Discord Invites".."/"..Settings.Discord.Invite..ConfigurationExtension) then
+        if not isfile(RayfieldFolder .. "/Discord Invites" .. "/" .. Settings.Discord.Invite .. ConfigurationExtension) then
             if request then
                 request({
-                    Url = "http://127.0.0.1:6463/rpc?v=1",
-                    Method = "POST",
+                    Url = 'http://127.0.0.1:6463/rpc?v=1',
+                    Method = 'POST',
                     Headers = {
-                        ["Content-Type"] = "application/json",
-                        Origin = "https://discord.com"
+                        ['Content-Type'] = 'application/json',
+                        Origin = 'https://discord.com'
                     },
                     Body = HttpService:JSONEncode({
-                        cmd = "INVITE_BROWSER",
+                        cmd = 'INVITE_BROWSER',
                         nonce = HttpService:GenerateGUID(false),
-                        args = {code = Settings.Discord.Invite}
+                        args = { code = Settings.Discord.Invite }
                     })
                 })
             end
 
-            if Settings.Discord.RememberJoins then -- We do logic this way so if the developer changes this setting, the user still won"t be prompted, only new users
-                writefile(HDXFolder.."/Discord Invites".."/"..Settings.Discord.Invite..ConfigurationExtension,"HDX RememberJoins is true for this invite, this invite will not ask you to join again")
+            if Settings.Discord.RememberJoins then -- We do logic this way so if the developer changes this setting, the user still won't be prompted, only new users
+                writefile(RayfieldFolder .. "/Discord Invites" .. "/" .. Settings.Discord.Invite ..
+                    ConfigurationExtension,
+                    "Rayfield RememberJoins is true for this invite, this invite will not ask you to join again")
             end
         else
 
@@ -1202,19 +1307,16 @@ function HDXLib:CreateWindow(Settings)
             return
         end
 
-        if not isfolder(HDXFolder.."/Key System") then
-            makefolder(HDXFolder.."/Key System")
+        if not isfolder(RayfieldFolder .. "/Key System") then
+            makefolder(RayfieldFolder .. "/Key System")
         end
 
         if Settings.KeySettings.GrabKeyFromSite then
-            for i, Key in ipairs(Settings.KeySettings.Key) do
-                local Success, Response = pcall(function()
-                    Settings.KeySettings.Key[i] = tostring(game:HttpGet(Key):gsub("[\n\r]", " "))
-                    Settings.KeySettings.Key[i] = string.gsub(Settings.KeySettings.Key[i], " ", "")
-                end)
-                if not Success then
-                    print("HDX | "..Key.." Error " ..tostring(Response))
-                end
+            local Success, Response = pcall(function()
+                Settings.KeySettings.Key = game:HttpGet(Settings.KeySettings.Key)
+            end)
+            if not Success then
+                print("Rayfield | " .. Settings.KeySettings.Key .. " Error " .. tostring(Response))
             end
         end
 
@@ -1222,17 +1324,15 @@ function HDXLib:CreateWindow(Settings)
             Settings.KeySettings.FileName = "No file name specified"
         end
 
-        if isfile(HDXFolder.."/Key System".."/"..Settings.KeySettings.FileName..ConfigurationExtension) then
-        for _, MKey in ipairs(Settings.KeySettings.Key) do
-            if string.find(readfile(HDXFolder.."/Key System".."/"..Settings.KeySettings.FileName..ConfigurationExtension), MKey) then
+        if isfile(RayfieldFolder .. "/Key System" .. "/" .. Settings.KeySettings.FileName .. ConfigurationExtension) then
+            if readfile(RayfieldFolder .. "/Key System" .. "/" .. Settings.KeySettings.FileName .. ConfigurationExtension) == Settings.KeySettings.Key then
                 Passthrough = true
-                end
             end
         end
 
         if not Passthrough then
-            local AttemptsRemaining = math.random(2,6)
-            HDX.Enabled = false
+            local AttemptsRemaining = math.random(2, 6)
+            Rayfield.Enabled = false
             local KeyUI = game:GetObjects("rbxassetid://11695805160")[1]
             KeyUI.Enabled = true
             pcall(function()
@@ -1260,152 +1360,193 @@ function HDXLib:CreateWindow(Settings)
             KeyMain.NoteMessage.TextTransparency = 1
             KeyMain.Hide.ImageTransparency = 1
             KeyMain.HideP.ImageTransparency = 1
-            KeyMain.Actions.Template.TextTransparency = 1
 
-            if Settings.KeySettings.Actions then
-                for _,ActionInfo in ipairs(Settings.KeySettings.Actions) do
-                    local Action = KeyMain.Actions.Template:Clone()
-                    Action.Text = ActionInfo.Text
-                    Action.MouseButton1Down:Connect(ActionInfo.OnPress)
-                    Action.MouseEnter:Connect(function()
-                        TweenService:Create(Action,TweenInfo.new(.25,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{TextColor3 = Color3.fromRGB(185, 185, 185)}):Play()
-                    end)
-                    Action.MouseLeave:Connect(function()
-                        TweenService:Create(Action,TweenInfo.new(.25,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{TextColor3 = Color3.fromRGB(105, 105, 105)}):Play()
-                    end)
-                    Action.Parent = KeyMain.Actions
-                    delay(.2,function()
-                        Action.Visible = true
-                        TweenService:Create(Action, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-                    end)
-                end
-            end
+            TweenService:Create(KeyMain, TweenInfo.new(0.6, Enum.EasingStyle.Quint), { BackgroundTransparency = 0 })
+                :Play()
+            TweenService:Create(KeyMain, TweenInfo.new(0.6, Enum.EasingStyle.Quint), { Size = UDim2.new(0, 500, 0, 187) })
+                :Play()
+            TweenService:Create(KeyMain.EShadow, TweenInfo.new(0.5, Enum.EasingStyle.Quint), { ImageTransparency = 0.5 })
+                :Play()
+            wait(0.05)
+            TweenService:Create(KeyMain.Title, TweenInfo.new(0.4, Enum.EasingStyle.Quint), { TextTransparency = 0 })
+                :Play()
+            TweenService:Create(KeyMain.Subtitle, TweenInfo.new(0.5, Enum.EasingStyle.Quint), { TextTransparency = 0 })
+                :Play()
+            wait(0.05)
+            TweenService:Create(KeyMain.KeyNote, TweenInfo.new(0.5, Enum.EasingStyle.Quint), { TextTransparency = 0 })
+                :Play()
+            TweenService:Create(KeyMain.Input, TweenInfo.new(0.5, Enum.EasingStyle.Quint), { BackgroundTransparency = 0 })
+                :Play()
+            TweenService:Create(KeyMain.Input.UIStroke, TweenInfo.new(0.5, Enum.EasingStyle.Quint), { Transparency = 0 })
+                :Play()
+            TweenService:Create(KeyMain.Input.HidenInput, TweenInfo.new(0.5, Enum.EasingStyle.Quint),
+                { TextTransparency = 0 }):Play()
+            wait(0.05)
+            TweenService:Create(KeyMain.NoteTitle, TweenInfo.new(0.4, Enum.EasingStyle.Quint), { TextTransparency = 0 })
+                :Play()
+            TweenService:Create(KeyMain.NoteMessage, TweenInfo.new(0.4, Enum.EasingStyle.Quint), { TextTransparency = 0 })
+                :Play()
+            wait(0.15)
+            TweenService:Create(KeyMain.Hide, TweenInfo.new(0.4, Enum.EasingStyle.Quint), { ImageTransparency = 0.3 })
+                :Play()
+            TweenService:Create(KeyMain.HideP, TweenInfo.new(0.4, Enum.EasingStyle.Quint), { ImageTransparency = 0.3 })
+                :Play()
 
-            TweenService:Create(KeyMain, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-            TweenService:Create(KeyMain, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 500, 0, 187)}):Play()
-            TweenService:Create(KeyMain.EShadow, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {ImageTransparency = 0.5}):Play()
-            task.wait(0.05)
-            TweenService:Create(KeyMain.Title, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-            TweenService:Create(KeyMain.Subtitle, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-            task.wait(0.05)
-            TweenService:Create(KeyMain.KeyNote, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-            TweenService:Create(KeyMain.Input, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-            TweenService:Create(KeyMain.Input.UIStroke, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-            TweenService:Create(KeyMain.Input.HidenInput, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-            task.wait(0.05)
-            TweenService:Create(KeyMain.NoteTitle, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-            TweenService:Create(KeyMain.NoteMessage, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-            task.wait(0.15)
-            TweenService:Create(KeyMain.Hide, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 0.3}):Play()
-            TweenService:Create(KeyMain.HideP, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 0.3}):Play()
-            KeyUI.Main.Input.InputBox:GetPropertyChangedSignal("Text"):Connect(function()
-                KeyUI.Main.Input.HidenInput.Text = string.rep("•", #KeyUI.Main.Input.InputBox.Text)
+            KeyUI.Main.Input.InputBox:GetPropertyChangedSignal('Text'):Connect(function()
+                KeyUI.Main.Input.HidenInput.Text = string.rep('•', #KeyUI.Main.Input.InputBox.Text)
             end)
             KeyUI.Main.Input.InputBox.FocusLost:Connect(function(EnterPressed)
                 if not EnterPressed then return end
-                if #KeyUI.Main.Input.InputBox.Text == 0 then return end
-                local KeyFound = false
-                local FoundKey = ""
-                for _, MKey in ipairs(Settings.KeySettings.Key) do
-                    if KeyMain.Input.InputBox.Text== MKey then
-                        KeyFound = true
-                        FoundKey = MKey
-                    end
-                end
-                if KeyFound then
-                    for _,Action in ipairs(KeyMain.Actions:GetChildren()) do
-                        if Action:IsA("TextButton") then
-                            TweenService:Create(Action, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-                        end
-                    end
-                    TweenService:Create(KeyMain, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-                    TweenService:Create(KeyMain, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 467, 0, 175)}):Play()
-                    TweenService:Create(KeyMain.EShadow, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
-                    TweenService:Create(KeyMain.Title, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-                    TweenService:Create(KeyMain.Subtitle, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-                    TweenService:Create(KeyMain.KeyNote, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-                    TweenService:Create(KeyMain.Input, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-                    TweenService:Create(KeyMain.Input.UIStroke, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-                    TweenService:Create(KeyMain.Input.InputBox,TweenInfo.new(0.5, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-                    TweenService:Create(KeyMain.Input.HidenInput, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-                    TweenService:Create(KeyMain.NoteTitle, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-                    TweenService:Create(KeyMain.NoteMessage, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-                    TweenService:Create(KeyMain.Hide, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
-                    TweenService:Create(KeyMain.HideP, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
-                    delay(.4,function()
+                if KeyMain.Input.InputBox.Text == Settings.KeySettings.Key then
+                    TweenService:Create(KeyMain, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                        { BackgroundTransparency = 1 })
+                        :Play()
+                    TweenService:Create(KeyMain, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                        { Size = UDim2.new(0, 467, 0, 175) }):Play()
+                    TweenService:Create(KeyMain.EShadow, TweenInfo.new(0.5, Enum.EasingStyle.Quint),
+                        { ImageTransparency = 1 }):Play()
+                    TweenService:Create(KeyMain.Title, TweenInfo.new(0.4, Enum.EasingStyle.Quint),
+                        { TextTransparency = 1 })
+                        :Play()
+                    TweenService:Create(KeyMain.Subtitle, TweenInfo.new(0.5, Enum.EasingStyle.Quint),
+                        { TextTransparency = 1 }):Play()
+                    TweenService:Create(KeyMain.KeyNote, TweenInfo.new(0.5, Enum.EasingStyle.Quint),
+                        { TextTransparency = 1 }):Play()
+                    TweenService:Create(KeyMain.Input, TweenInfo.new(0.5, Enum.EasingStyle.Quint),
+                        { BackgroundTransparency = 1 }):Play()
+                    TweenService:Create(KeyMain.Input.UIStroke, TweenInfo.new(0.5, Enum.EasingStyle.Quint),
+                        { Transparency = 1 }):Play()
+                    TweenService:Create(KeyMain.Input.InputBox, TweenInfo.new(0.5, Enum.EasingStyle.Quint),
+                        { TextTransparency = 1 }):Play()
+                    TweenService:Create(KeyMain.Input.HidenInput, TweenInfo.new(0.5, Enum.EasingStyle.Quint),
+                        { TextTransparency = 1 }):Play()
+                    TweenService:Create(KeyMain.NoteTitle, TweenInfo.new(0.4, Enum.EasingStyle.Quint),
+                        { TextTransparency = 1 }):Play()
+                    TweenService:Create(KeyMain.NoteMessage, TweenInfo.new(0.4, Enum.EasingStyle.Quint),
+                        { TextTransparency = 1 }):Play()
+                    TweenService:Create(KeyMain.Hide, TweenInfo.new(0.4, Enum.EasingStyle.Quint),
+                        { ImageTransparency = 1 })
+                        :Play()
+                    TweenService:Create(KeyMain.HideP, TweenInfo.new(0.4, Enum.EasingStyle.Quint),
+                        { ImageTransparency = 1 }):Play()
+                    delay(.4, function()
                         KeyMain.Hide.Visible = false
                         KeyUI:Destroy()
                     end)
-                    task.wait(0.51)
+                    wait(0.51)
                     Passthrough = true
                     if Settings.KeySettings.SaveKey then
                         if writefile then
-                            local keyToSave = Settings.KeySettings.Key[1]
-                            writefile(HDXFolder.."/Key System".."/"..Settings.KeySettings.FileName..ConfigurationExtension, FoundKey)
+                            writefile(
+                                RayfieldFolder .. "/Key System" .. "/" ..
+                                Settings.KeySettings.FileName .. ConfigurationExtension, Settings.KeySettings.Key)
                         end
-                        HDXLib:Notify({Title = "Key System", Content = "The key for this script has been saved successfully"})
+                        RayfieldLibrary:Notify({
+                            Title = "Key System",
+                            Content = "The key for this script has been saved successfully"
+                        })
                     end
                 else
                     if AttemptsRemaining == 0 then
-                        TweenService:Create(KeyMain, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-                        TweenService:Create(KeyMain, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 467, 0, 175)}):Play()
-                        TweenService:Create(KeyMain.Shadow.Image, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
-                        TweenService:Create(KeyMain.Title, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-                        TweenService:Create(KeyMain.Subtitle, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-                        TweenService:Create(KeyMain.KeyNote, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-                        TweenService:Create(KeyMain.Input, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-                        TweenService:Create(KeyMain.Input.UIStroke, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-                        TweenService:Create(KeyMain.Input.InputBox,TweenInfo.new(0.5, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-                        TweenService:Create(KeyMain.Input.HidenInput, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-                        TweenService:Create(KeyMain.NoteTitle, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-                        TweenService:Create(KeyMain.NoteMessage, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-                        TweenService:Create(KeyMain.Hide, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
-                        TweenService:Create(KeyMain.HideP, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
-                        task.wait(0.45)
+                        TweenService:Create(KeyMain, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                            { BackgroundTransparency = 1 }):Play()
+                        TweenService:Create(KeyMain, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                            { Size = UDim2.new(0, 467, 0, 175) }):Play()
+                        TweenService:Create(KeyMain.Shadow.Image, TweenInfo.new(0.5, Enum.EasingStyle.Quint),
+                            { ImageTransparency = 1 }):Play()
+                        TweenService:Create(KeyMain.Title, TweenInfo.new(0.4, Enum.EasingStyle.Quint),
+                            { TextTransparency = 1 }):Play()
+                        TweenService:Create(KeyMain.Subtitle, TweenInfo.new(0.5, Enum.EasingStyle.Quint),
+                            { TextTransparency = 1 }):Play()
+                        TweenService:Create(KeyMain.KeyNote, TweenInfo.new(0.5, Enum.EasingStyle.Quint),
+                            { TextTransparency = 1 }):Play()
+                        TweenService:Create(KeyMain.Input, TweenInfo.new(0.5, Enum.EasingStyle.Quint),
+                            { BackgroundTransparency = 1 }):Play()
+                        TweenService:Create(KeyMain.Input.UIStroke, TweenInfo.new(0.5, Enum.EasingStyle.Quint),
+                            { Transparency = 1 }):Play()
+                        TweenService:Create(KeyMain.Input.InputBox, TweenInfo.new(0.5, Enum.EasingStyle.Quint),
+                            { TextTransparency = 1 }):Play()
+                        TweenService:Create(KeyMain.Input.HidenInput, TweenInfo.new(0.5, Enum.EasingStyle.Quint),
+                            { TextTransparency = 1 }):Play()
+                        TweenService:Create(KeyMain.NoteTitle, TweenInfo.new(0.4, Enum.EasingStyle.Quint),
+                            { TextTransparency = 1 }):Play()
+                        TweenService:Create(KeyMain.NoteMessage, TweenInfo.new(0.4, Enum.EasingStyle.Quint),
+                            { TextTransparency = 1 }):Play()
+                        TweenService:Create(KeyMain.Hide, TweenInfo.new(0.4, Enum.EasingStyle.Quint),
+                            { ImageTransparency = 1 }):Play()
+                        TweenService:Create(KeyMain.HideP, TweenInfo.new(0.4, Enum.EasingStyle.Quint),
+                            { ImageTransparency = 1 }):Play()
+                        wait(0.45)
                         game.Players.LocalPlayer:Kick("No Attempts Remaining")
                         game:Shutdown()
                     end
                     KeyMain.Input.InputBox.Text = ""
                     AttemptsRemaining = AttemptsRemaining - 1
-                    TweenService:Create(KeyMain, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 467, 0, 175)}):Play()
-                    TweenService:Create(KeyMain, TweenInfo.new(0.4, Enum.EasingStyle.Elastic), {Position = UDim2.new(0.495,0,0.5,0)}):Play()
-                    task.wait(0.1)
-                    TweenService:Create(KeyMain, TweenInfo.new(0.4, Enum.EasingStyle.Elastic), {Position = UDim2.new(0.505,0,0.5,0)}):Play()
-                    task.wait(0.1)
-                    TweenService:Create(KeyMain, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {Position = UDim2.new(0.5,0,0.5,0)}):Play()
-                    TweenService:Create(KeyMain, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 500, 0, 187)}):Play()
+                    TweenService:Create(KeyMain, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                        { Size = UDim2.new(0, 467, 0, 175) }):Play()
+                    TweenService:Create(KeyMain, TweenInfo.new(0.4, Enum.EasingStyle.Elastic),
+                        { Position = UDim2.new(0.495, 0, 0.5, 0) }):Play()
+                    wait(0.1)
+                    TweenService:Create(KeyMain, TweenInfo.new(0.4, Enum.EasingStyle.Elastic),
+                        { Position = UDim2.new(0.505, 0, 0.5, 0) }):Play()
+                    wait(0.1)
+                    TweenService:Create(KeyMain, TweenInfo.new(0.4, Enum.EasingStyle.Quint),
+                        { Position = UDim2.new(0.5, 0, 0.5, 0) }):Play()
+                    TweenService:Create(KeyMain, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                        { Size = UDim2.new(0, 500, 0, 187) }):Play()
                 end
             end)
             local Hidden = true
             KeyMain.HideP.MouseButton1Click:Connect(function()
                 if Hidden then
-                    TweenService:Create(KeyMain.Input.HidenInput,TweenInfo.new(0.5, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-                    TweenService:Create(KeyMain.Input.InputBox,TweenInfo.new(0.5, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+                    TweenService:Create(KeyMain.Input.HidenInput, TweenInfo.new(0.5, Enum.EasingStyle.Quint),
+                        { TextTransparency = 1 }):Play()
+                    TweenService:Create(KeyMain.Input.InputBox, TweenInfo.new(0.5, Enum.EasingStyle.Quint),
+                        { TextTransparency = 0 }):Play()
                     Hidden = false
                 else
-                    TweenService:Create(KeyMain.Input.HidenInput,TweenInfo.new(0.5, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-                    TweenService:Create(KeyMain.Input.InputBox,TweenInfo.new(0.5, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
+                    TweenService:Create(KeyMain.Input.HidenInput, TweenInfo.new(0.5, Enum.EasingStyle.Quint),
+                        { TextTransparency = 0 }):Play()
+                    TweenService:Create(KeyMain.Input.InputBox, TweenInfo.new(0.5, Enum.EasingStyle.Quint),
+                        { TextTransparency = 1 }):Play()
                     Hidden = true
                 end
             end)
 
             KeyMain.Hide.MouseButton1Click:Connect(function()
-                TweenService:Create(KeyMain, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-                TweenService:Create(KeyMain, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 467, 0, 175)}):Play()
-                TweenService:Create(KeyMain.EShadow, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
-                TweenService:Create(KeyMain.Title, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-                TweenService:Create(KeyMain.Subtitle, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-                TweenService:Create(KeyMain.KeyNote, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-                TweenService:Create(KeyMain.Input, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-                TweenService:Create(KeyMain.Input.UIStroke, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-                TweenService:Create(KeyMain.Input.InputBox, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-                TweenService:Create(KeyMain.NoteTitle, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-                TweenService:Create(KeyMain.Input.HidenInput,TweenInfo.new(0.5, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-                TweenService:Create(KeyMain.NoteMessage, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-                TweenService:Create(KeyMain.Hide, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
-                TweenService:Create(KeyMain.HideP, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
-                task.wait(0.51)
-                HDXLib:Destroy()
+                TweenService:Create(KeyMain, TweenInfo.new(0.6, Enum.EasingStyle.Quint), { BackgroundTransparency = 1 })
+                    :Play()
+                TweenService:Create(KeyMain, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                    { Size = UDim2.new(0, 467, 0, 175) }):Play()
+                TweenService:Create(KeyMain.EShadow, TweenInfo.new(0.5, Enum.EasingStyle.Quint),
+                    { ImageTransparency = 1 })
+                    :Play()
+                TweenService:Create(KeyMain.Title, TweenInfo.new(0.4, Enum.EasingStyle.Quint), { TextTransparency = 1 })
+                    :Play()
+                TweenService:Create(KeyMain.Subtitle, TweenInfo.new(0.5, Enum.EasingStyle.Quint),
+                    { TextTransparency = 1 })
+                    :Play()
+                TweenService:Create(KeyMain.KeyNote, TweenInfo.new(0.5, Enum.EasingStyle.Quint), { TextTransparency = 1 })
+                    :Play()
+                TweenService:Create(KeyMain.Input, TweenInfo.new(0.5, Enum.EasingStyle.Quint),
+                    { BackgroundTransparency = 1 }):Play()
+                TweenService:Create(KeyMain.Input.UIStroke, TweenInfo.new(0.5, Enum.EasingStyle.Quint),
+                    { Transparency = 1 }):Play()
+                TweenService:Create(KeyMain.Input.InputBox, TweenInfo.new(0.5, Enum.EasingStyle.Quint),
+                    { TextTransparency = 1 }):Play()
+                TweenService:Create(KeyMain.NoteTitle, TweenInfo.new(0.4, Enum.EasingStyle.Quint),
+                    { TextTransparency = 1 })
+                    :Play()
+                TweenService:Create(KeyMain.Input.HidenInput, TweenInfo.new(0.5, Enum.EasingStyle.Quint),
+                    { TextTransparency = 1 }):Play()
+                TweenService:Create(KeyMain.NoteMessage, TweenInfo.new(0.4, Enum.EasingStyle.Quint),
+                    { TextTransparency = 1 }):Play()
+                TweenService:Create(KeyMain.Hide, TweenInfo.new(0.4, Enum.EasingStyle.Quint), { ImageTransparency = 1 })
+                    :Play()
+                TweenService:Create(KeyMain.HideP, TweenInfo.new(0.4, Enum.EasingStyle.Quint), { ImageTransparency = 1 })
+                    :Play()
+                wait(0.51)
+                RayfieldLibrary:Destroy()
                 KeyUI:Destroy()
             end)
         else
@@ -1413,55 +1554,42 @@ function HDXLib:CreateWindow(Settings)
         end
     end
     if Settings.KeySystem then
-        repeat task.wait() until Passthrough
+        repeat wait() until Passthrough
     end
-    HDX.Enabled = true
-    for _,tabbtn in pairs(SideList:GetChildren()) do
+    Rayfield.Enabled = true
+    for _, tabbtn in pairs(SideList:GetChildren()) do
         if tabbtn.ClassName == "Frame" and tabbtn.Name ~= "Placeholder" then
-            TweenService:Create(tabbtn.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint),{TextTransparency = 1}):Play()
-            TweenService:Create(tabbtn.Image, TweenInfo.new(0.3, Enum.EasingStyle.Quint),{ImageTransparency = 1}):Play()
+            TweenService:Create(tabbtn.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), { TextTransparency = 1 }):Play()
+            TweenService:Create(tabbtn.Image, TweenInfo.new(0.3, Enum.EasingStyle.Quint), { ImageTransparency = 1 })
+                :Play()
         end
     end
-    TweenService:Create(Main.SideTabList, TweenInfo.new(0, Enum.EasingStyle.Quint), {BackgroundTransparency = 1,Size = UDim2.new(0,150,0,390),Position = UDim2.new(0,10,0.5,22)}):Play()
-    TweenService:Create(Main.SideTabList.UIStroke, TweenInfo.new(0, Enum.EasingStyle.Quint),{Transparency = 1}):Play()
-    TweenService:Create(Main.SideTabList.RDMT, TweenInfo.new(0, Enum.EasingStyle.Quint),{TextTransparency = 1}):Play()
-    --delay(4,function()
-    --	qNotePrompt({
-    --		Title = "Preview",
-    --		Description = "This is a preview for the official HDX forum post. Remember that things are subject to change.",
+    TweenService:Create(Main.SideTabList, TweenInfo.new(0, Enum.EasingStyle.Quint),
+        { BackgroundTransparency = 1, Size = UDim2.new(0, 150, 0, 390), Position = UDim2.new(0, 10, 0.5, 22) }):Play()
+    TweenService:Create(Main.SideTabList.UIStroke, TweenInfo.new(0, Enum.EasingStyle.Quint), { Transparency = 1 }):Play()
+    TweenService:Create(Main.SideTabList.RDMT, TweenInfo.new(0, Enum.EasingStyle.Quint), { TextTransparency = 1 }):Play()
+    -- 	delay(4,function()
+    -- 		qNotePrompt({
+    -- 			Title = 'New Library Documentation Available',
+    -- 			Description = 'The Library Developer has updated the Documentation and recommends all script developers to take a look.',
 
-    --	})
-    --end)
-
-    TweenService:Create(InfoPrompt,TweenInfo.new(.3,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{
-        Size = UDim2.fromOffset(212,254),BackgroundTransparency = 1
-    }):Play()
-    TweenService:Create(InfoPrompt.ImageLabel,TweenInfo.new(.25,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{
-        ImageTransparency = 1
-    }):Play()
-    TweenService:Create(InfoPrompt.Description,TweenInfo.new(.25,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{
-        TextTransparency = 1
-    }):Play()
-    TweenService:Create(InfoPrompt.Status,TweenInfo.new(.25,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{
-        TextTransparency = 1
-    }):Play()
-    TweenService:Create(InfoPrompt.Title,TweenInfo.new(.25,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{
-        TextTransparency = 1
-    }):Play()
-
+    -- 		})
+    -- 	end)
     TopList.Template.Visible = false
     SideList.SideTemplate.Visible = false
     Notifications.Template.Visible = false
     Notifications.Visible = true
-    task.wait(0.5)
-    TweenService:Create(Main, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-    TweenService:Create(Main.Shadow.Image, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0.55}):Play()
-    task.wait(0.1)
-    TweenService:Create(LoadingFrame.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-    task.wait(0.05)
-    TweenService:Create(LoadingFrame.Subtitle, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-    task.wait(0.05)
-    TweenService:Create(LoadingFrame.Version, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+    wait(0.5)
+    TweenService:Create(Main, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { BackgroundTransparency = 0 }):Play()
+    TweenService:Create(Main.Shadow.Image, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { ImageTransparency = 0.55 })
+        :Play()
+    wait(0.1)
+    TweenService:Create(LoadingFrame.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { TextTransparency = 0 }):Play()
+    wait(0.05)
+    TweenService:Create(LoadingFrame.Subtitle, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { TextTransparency = 0 })
+        :Play()
+    wait(0.05)
+    TweenService:Create(LoadingFrame.Version, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { TextTransparency = 0 }):Play()
 
     Elements.Template.LayoutOrder = 100000
     Elements.Template.Visible = false
@@ -1470,38 +1598,38 @@ function HDXLib:CreateWindow(Settings)
 
     -- Tab
     local FirstTab = false
-    HDXQuality.Window = {Tabs = {}}
-    local Window = HDXQuality.Window
-    
-    function Window:SetTopbarTitle(text)
-        Topbar.Title.Text = text
-    end
-    
-    function Window:CreateTab(Name,Image)
-        Window.Tabs[Name]={Elements = {}}
+    RayFieldQuality.Window = { Tabs = {} }
+    local Window = RayFieldQuality.Window
+    function Window:CreateTab(Name, Image, AllowColorChange)
+        Window.Tabs[Name] = { Elements = {} }
         local Tab = Window.Tabs[Name]
         local SDone = false
-        local TopTabButton,SideTabButton = TopList.Template:Clone(), SideList.SideTemplate:Clone()
+        local TopTabButton, SideTabButton = TopList.Template:Clone(), SideList.SideTemplate:Clone()
 
         SideTabButton.Parent = SideList
         TopTabButton.Parent = TopList
 
-        TopTabButton.Name=Name SideTabButton.Name=Name
+        TopTabButton.Name = Name
+        SideTabButton.Name = Name
 
-        TopTabButton.Title.Text = Name SideTabButton.Title.Text = Name
-        SideTabButton.Title.TextWrapped = false TopTabButton.Title.TextWrapped = false 
+        TopTabButton.Title.Text = Name
+        SideTabButton.Title.Text = Name
+        SideTabButton.Title.TextWrapped = false
+        TopTabButton.Title.TextWrapped = false
 
         TopTabButton.Size = UDim2.new(0, TopTabButton.Title.TextBounds.X + 30, 0, 30)
-		if Image then
-			TopTabButton.Image.Image = "rbxassetid://"..Image
-			SideTabButton.Image.Image = "rbxassetid://"..Image
 
-			TopTabButton.Title.AnchorPoint = Vector2.new(0, 0.5)
-			TopTabButton.Title.Position = UDim2.new(0, 37, 0.5, 0)
-			TopTabButton.Image.Visible = true
-			TopTabButton.Title.TextXAlignment = Enum.TextXAlignment.Left
-			TopTabButton.Size = UDim2.new(0, TopTabButton.Title.TextBounds.X + 46, 0, 30)
-		end
+        if Image then
+            TopTabButton.Image.Image = "rbxassetid://" .. Image
+            SideTabButton.Image.Image = "rbxassetid://" .. Image
+
+            TopTabButton.Title.AnchorPoint = Vector2.new(0, 0.5)
+            TopTabButton.Title.Position = UDim2.new(0, 37, 0.5, 0)
+            TopTabButton.Image.Visible = true
+            TopTabButton.Title.TextXAlignment = Enum.TextXAlignment.Left
+            TopTabButton.Size = UDim2.new(0, TopTabButton.Title.TextBounds.X + 46, 0, 30)
+        end
+
         TopTabButton.BackgroundTransparency = 1
         TopTabButton.Title.TextTransparency = 1
         TopTabButton.Shadow.ImageTransparency = 1
@@ -1537,76 +1665,114 @@ function HDXLib:CreateWindow(Settings)
             Elements.UIPageLayout.Animated = true
         end
 
-        if SelectedTheme ~= HDXLib.Theme.Default then
+        if SelectedTheme ~= RayfieldLibrary.Theme.Default then
             TopTabButton.Shadow.Visible = false
         end
         TopTabButton.UIStroke.Color = SelectedTheme.TabStroke
         --Animate
-        task.wait(0.1)
+        wait(0.1)
         if FirstTab then
             TopTabButton.BackgroundColor3 = SelectedTheme.TabBackground
-            TopTabButton.Image.ImageColor3 = SelectedTheme.TabTextColor
+            if AllowColorChange then
+                TopTabButton.Image.ImageColor3 = SelectedTheme.TabTextColor
+            end
             TopTabButton.Title.TextColor3 = SelectedTheme.TabTextColor
-            TweenService:Create(TopTabButton, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.7}):Play()
-            TweenService:Create(TopTabButton.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0.2}):Play()
-            TweenService:Create(TopTabButton.Image, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0.2}):Play()
-            TweenService:Create(TopTabButton.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-            TweenService:Create(TopTabButton.Shadow, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageTransparency = 0.7}):Play()
+            TweenService:Create(TopTabButton, TweenInfo.new(0.7, Enum.EasingStyle.Quint),
+                { BackgroundTransparency = 0.7 })
+                :Play()
+            TweenService:Create(TopTabButton.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint),
+                { TextTransparency = 0.2 })
+                :Play()
+            TweenService:Create(TopTabButton.Image, TweenInfo.new(0.7, Enum.EasingStyle.Quint),
+                { ImageTransparency = 0.2 })
+                :Play()
+            TweenService:Create(TopTabButton.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { Transparency = 0 })
+                :Play()
+            TweenService:Create(TopTabButton.Shadow, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                { ImageTransparency = 0.7 }):Play()
 
-            TweenService:Create(SideTabButton.Image, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0,ImageColor3 = Color3.fromRGB(205, 205, 205)}):Play()
-            TweenService:Create(SideTabButton.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = .2,TextColor3 = Color3.fromRGB(205, 205, 205)}):Play()	
+            TweenService:Create(SideTabButton.Image, TweenInfo.new(0.7, Enum.EasingStyle.Quint),
+                { ImageTransparency = 0, ImageColor3 = Color3.fromRGB(205, 205, 205) }):Play()
+            TweenService:Create(SideTabButton.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint),
+                { TextTransparency = .2, TextColor3 = Color3.fromRGB(205, 205, 205) }):Play()
         else
             FirstTab = Name
 
             TopTabButton.BackgroundColor3 = SelectedTheme.TabBackgroundSelected
-            TopTabButton.Image.ImageColor3 = SelectedTheme.SelectedTabTextColor
+            if AllowColorChange then
+                TopTabButton.Image.ImageColor3 = SelectedTheme.SelectedTabTextColor
+            end
             TopTabButton.Title.TextColor3 = SelectedTheme.SelectedTabTextColor
-            TweenService:Create(TopTabButton.Shadow, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageTransparency = 0.9}):Play()
-            TweenService:Create(TopTabButton.Image, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
-            TweenService:Create(TopTabButton, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-            TweenService:Create(TopTabButton.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+            TweenService:Create(TopTabButton.Shadow, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                { ImageTransparency = 0.9 }):Play()
+            TweenService:Create(TopTabButton.Image, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { ImageTransparency = 0 })
+                :Play()
+            TweenService:Create(TopTabButton, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { BackgroundTransparency = 0 })
+                :Play()
+            TweenService:Create(TopTabButton.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { TextTransparency = 0 })
+                :Play()
 
             SideTabButton.Image.ImageColor3 = Color3.fromRGB(255, 255, 255)
             SideTabButton.Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-            TweenService:Create(SideTabButton.Image, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
-            TweenService:Create(SideTabButton.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-
+            TweenService:Create(SideTabButton.Image, TweenInfo.new(0.7, Enum.EasingStyle.Quint),
+                { ImageTransparency = 0 })
+                :Play()
+            TweenService:Create(SideTabButton.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { TextTransparency = 0 })
+                :Play()
         end
 
         local function Pick()
             if Minimised then return end
-            TweenService:Create(TopTabButton, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-            TweenService:Create(TopTabButton.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-            TweenService:Create(TopTabButton.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-            TweenService:Create(TopTabButton.Image, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
-            TweenService:Create(TopTabButton, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.TabBackgroundSelected}):Play()
-            TweenService:Create(TopTabButton.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextColor3 = SelectedTheme.SelectedTabTextColor}):Play()
-            TweenService:Create(TopTabButton.Image, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageColor3 = SelectedTheme.SelectedTabTextColor}):Play()
-            TweenService:Create(TopTabButton.Shadow, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageTransparency = 0.9}):Play()
+            TweenService:Create(TopTabButton, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { BackgroundTransparency = 0 })
+                :Play()
+            TweenService:Create(TopTabButton.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { Transparency = 1 })
+                :Play()
+            TweenService:Create(TopTabButton.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { TextTransparency = 0 })
+                :Play()
+            TweenService:Create(TopTabButton.Image, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { ImageTransparency = 0 })
+                :Play()
+            TweenService:Create(TopTabButton, TweenInfo.new(0.7, Enum.EasingStyle.Quint),
+                { BackgroundColor3 = SelectedTheme.TabBackgroundSelected }):Play()
+            TweenService:Create(TopTabButton.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint),
+                { TextColor3 = SelectedTheme.SelectedTabTextColor }):Play()
+            if AllowColorChange then
+                TweenService:Create(TopTabButton.Image, TweenInfo.new(0.7, Enum.EasingStyle.Quint),
+                    { ImageColor3 = SelectedTheme.SelectedTabTextColor }):Play()
+            end
+            TweenService:Create(TopTabButton.Shadow, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                { ImageTransparency = 0.9 }):Play()
 
-            TweenService:Create(SideTabButton.Image, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0,ImageColor3 = Color3.fromRGB(255, 255, 255)}):Play()
-            TweenService:Create(SideTabButton.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0,TextColor3 = Color3.fromRGB(255, 255, 255)}):Play()
+            TweenService:Create(SideTabButton.Image, TweenInfo.new(0.7, Enum.EasingStyle.Quint),
+                { ImageTransparency = 0, ImageColor3 = Color3.fromRGB(255, 255, 255) }):Play()
+            TweenService:Create(SideTabButton.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint),
+                { TextTransparency = 0, TextColor3 = Color3.fromRGB(255, 255, 255) }):Play()
             Elements.UIPageLayout:JumpTo(TabPage)
             for _, OtherTabButton in ipairs(TopList:GetChildren()) do
-                spawn(function()
+                task.spawn(function()
                     if OtherTabButton.Name ~= "Template" and OtherTabButton.ClassName == "Frame" and OtherTabButton ~= TopTabButton and OtherTabButton.Name ~= "Placeholder" then
-                        TweenService:Create(OtherTabButton, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.TabBackground,BackgroundTransparency = .7}):Play()
-                        TweenService:Create(OtherTabButton.Image, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageColor3 = Color3.fromRGB(240, 240, 240)}):Play()
-                        TweenService:Create(OtherTabButton.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0,Color = Color3.fromRGB(85,85,85)}):Play()
-                        TweenService:Create(OtherTabButton.Shadow, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = .85,ImageColor3 = Color3.fromRGB(20,20,20)}):Play()
-                        TweenService:Create(OtherTabButton.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextColor3 = Color3.fromRGB(240, 240, 240),TextTransparency = .2}):Play()
+                        TweenService:Create(OtherTabButton, TweenInfo.new(0.7, Enum.EasingStyle.Quint),
+                            { BackgroundColor3 = SelectedTheme.TabBackground, BackgroundTransparency = .7 }):Play()
+                        TweenService:Create(OtherTabButton.Image, TweenInfo.new(0.7, Enum.EasingStyle.Quint),
+                            { ImageColor3 = Color3.fromRGB(240, 240, 240) }):Play()
+                        TweenService:Create(OtherTabButton.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint),
+                            { Transparency = 0, Color = Color3.fromRGB(85, 85, 85) }):Play()
+                        TweenService:Create(OtherTabButton.Shadow, TweenInfo.new(0.7, Enum.EasingStyle.Quint),
+                            { ImageTransparency = .85, ImageColor3 = Color3.fromRGB(20, 20, 20) }):Play()
+                        TweenService:Create(OtherTabButton.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint),
+                            { TextColor3 = Color3.fromRGB(240, 240, 240), TextTransparency = .2 }):Play()
                     end
                 end)
             end
-            for _,OtherTabButton in ipairs(SideList:GetChildren()) do
-                spawn(function()
+            for _, OtherTabButton in ipairs(SideList:GetChildren()) do
+                task.spawn(function()
                     if OtherTabButton.Name ~= "Template" and OtherTabButton.ClassName == "Frame" and OtherTabButton ~= SideTabButton and OtherTabButton.Name ~= "Placeholder" then
-                        TweenService:Create(OtherTabButton.Image, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0,ImageColor3 = Color3.fromRGB(205, 205, 205)}):Play()
-                        TweenService:Create(OtherTabButton.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = .2,TextColor3 = Color3.fromRGB(205, 205, 205)}):Play()	
+                        TweenService:Create(OtherTabButton.Image, TweenInfo.new(0.7, Enum.EasingStyle.Quint),
+                            { ImageTransparency = 0, ImageColor3 = Color3.fromRGB(205, 205, 205) }):Play()
+                        TweenService:Create(OtherTabButton.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint),
+                            { TextTransparency = .2, TextColor3 = Color3.fromRGB(205, 205, 205) }):Play()
                     end
                 end)
             end
-
         end
 
         TopTabButton.Interact.MouseButton1Click:Connect(Pick)
@@ -1614,19 +1780,18 @@ function HDXLib:CreateWindow(Settings)
 
         -- Button
         function Tab:CreateButton(ButtonSettings)
-            local ButtonValue = {Locked = false}
+            local ButtonValue = { Locked = false, Disabled = false }
 
             local Button = Elements.Template.Button:Clone()
             ButtonValue.Button = Button
             Tab.Elements[Button.Name] = {
-                type = "button",
+                type = 'button',
                 section = ButtonSettings.SectionParent,
                 element = Button
             }
-
             Button.Name = ButtonSettings.Name
             Button.Title.Text = ButtonSettings.Name
-            Button.ElementIndicator.Text = ButtonSettings.Interact or "button"
+            Button.ElementIndicator.Text = ButtonSettings.Interact or 'button'
             Button.Visible = true
 
             Button.BackgroundTransparency = 1
@@ -1637,73 +1802,120 @@ function HDXLib:CreateWindow(Settings)
             else
                 Button.Parent = TabPage
             end
-            TweenService:Create(Button, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-            TweenService:Create(Button.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-            TweenService:Create(Button.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()	
+            TweenService:Create(Button, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { BackgroundTransparency = 0 }):Play()
+            TweenService:Create(Button.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { Transparency = 0 }):Play()
+            TweenService:Create(Button.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { TextTransparency = 0 }):Play()
 
             Button.Interact.MouseButton1Click:Connect(function()
-                if ButtonValue.Locked then return end
+                if ButtonValue.Locked or ButtonValue.Disabled then return end
                 local Success, Response = pcall(ButtonSettings.Callback)
                 if not Success then
-                    TweenService:Create(Button, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(85, 0, 0)}):Play()
-                    TweenService:Create(Button.ElementIndicator, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-                    TweenService:Create(Button.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
+                    TweenService:Create(Button, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                        { BackgroundColor3 = Color3.fromRGB(85, 0, 0) }):Play()
+                    TweenService:Create(Button.ElementIndicator, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                        { TextTransparency = 1 }):Play()
+                    TweenService:Create(Button.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), { Transparency = 1 })
+                        :Play()
                     Button.Title.Text = "Callback Error"
-                    print("HDX | "..ButtonSettings.Name.." Callback Error " ..tostring(Response))
-                    task.wait(0.5)
+                    print("Rayfield | " .. ButtonSettings.Name .. " Callback Error " .. tostring(Response))
+                    wait(0.5)
                     Button.Title.Text = ButtonSettings.Name
-                    TweenService:Create(Button, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
-                    TweenService:Create(Button.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-                    TweenService:Create(Button.ElementIndicator, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 0.9}):Play()
+                    TweenService:Create(Button, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                        { BackgroundColor3 = SelectedTheme.ElementBackground }):Play()
+                    TweenService:Create(Button.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), { Transparency = 0 })
+                        :Play()
+                    TweenService:Create(Button.ElementIndicator, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                        { TextTransparency = 0.9 }):Play()
                 else
                     SaveConfiguration()
-                    TweenService:Create(Button, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
-                    TweenService:Create(Button.ElementIndicator, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-                    TweenService:Create(Button.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-                    task.wait(0.2)
-                    TweenService:Create(Button, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
-                    TweenService:Create(Button.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-                    TweenService:Create(Button.ElementIndicator, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 0.9}):Play()
+                    TweenService:Create(Button, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                        { BackgroundColor3 = SelectedTheme.ElementBackgroundHover }):Play()
+                    TweenService:Create(Button.ElementIndicator, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                        { TextTransparency = 1 }):Play()
+                    TweenService:Create(Button.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), { Transparency = 1 })
+                        :Play()
+                    wait(0.2)
+                    TweenService:Create(Button, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                        { BackgroundColor3 = SelectedTheme.ElementBackground }):Play()
+                    TweenService:Create(Button.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), { Transparency = 0 })
+                        :Play()
+                    TweenService:Create(Button.ElementIndicator, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                        { TextTransparency = 0.9 }):Play()
                 end
             end)
 
             Button.MouseEnter:Connect(function()
-                TweenService:Create(Button, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
-                TweenService:Create(Button.ElementIndicator, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 0.7}):Play()
+                TweenService:Create(Button, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                    { BackgroundColor3 = SelectedTheme.ElementBackgroundHover }):Play()
+                TweenService:Create(Button.ElementIndicator, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                    { TextTransparency = 0.7 }):Play()
             end)
 
             Button.MouseLeave:Connect(function()
-                TweenService:Create(Button, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
-                TweenService:Create(Button.ElementIndicator, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 0.9}):Play()
+                TweenService:Create(Button, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                    { BackgroundColor3 = SelectedTheme.ElementBackground }):Play()
+                TweenService:Create(Button.ElementIndicator, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                    { TextTransparency = 0.9 }):Play()
             end)
 
-            function ButtonValue:Set(NewButton,Interaction)
+            function ButtonValue:Set(NewButton, Interaction)
                 Button.Title.Text = NewButton or Button.Title.Text
                 Button.Name = NewButton or Button.Name
                 Button.ElementIndicator.Text = Interaction or Button.ElementIndicator.Text
             end
+
             function ButtonValue:Destroy()
                 Button:Destroy()
             end
+
             function ButtonValue:Lock(Reason)
                 if ButtonValue.Locked then return end
                 ButtonValue.Locked = true
-                Button.Lock.Reason.Text = Reason or "Locked"
-                TweenService:Create(Button.Lock,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{BackgroundTransparency = 0}):Play()
-                TweenService:Create(Button.Lock.Reason,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{TextTransparency = 0}):Play()
-                task.wait(0.2)
+                Button.Lock.Reason.Text = Reason or 'Locked'
+                TweenService:Create(Button.Lock, TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
+                    { BackgroundTransparency = 0 }):Play()
+                TweenService:Create(Button.Lock.Reason,
+                    TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), { TextTransparency = 0 }):Play()
+                wait(0.2)
                 if not ButtonValue.Locked then return end --no icon bug
-                TweenService:Create(Button.Lock.Reason.Icon,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{ImageTransparency = 0}):Play()
+                TweenService:Create(Button.Lock.Reason.Icon,
+                    TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), { ImageTransparency = 0 })
+                    :Play()
             end
+
+            function ButtonValue:Disable(Reason)
+                if ButtonValue.Disabled then return end
+                ButtonValue.Disabled = true
+                Button.Lock.Reason.Text = Reason or 'Disabled'
+                TweenService:Create(Button.Lock, TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
+                    { BackgroundTransparency = 0 }):Play()
+                TweenService:Create(Button.Lock.Reason,
+                    TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), { TextTransparency = 0 }):Play()
+            end
+
+            function ButtonValue:Enable()
+                if not ButtonValue.Disabled then return end
+                ButtonValue.Disabled = false
+                TweenService:Create(Button.Lock, TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
+                    { BackgroundTransparency = 1 }):Play()
+                TweenService:Create(Button.Lock.Reason,
+                    TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), { TextTransparency = 1 }):Play()
+            end
+
             function ButtonValue:Unlock()
                 if not ButtonValue.Locked then return end
                 ButtonValue.Locked = false
-                task.wait(0.2)
-                TweenService:Create(Button.Lock.Reason.Icon,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{ImageTransparency = 1}):Play()
+                wait(0.2)
+                TweenService:Create(Button.Lock.Reason.Icon,
+                    TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), { ImageTransparency = 1 })
+                    :Play()
                 if ButtonValue.Locked then return end --no icon bug
-                TweenService:Create(Button.Lock,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{BackgroundTransparency = 1}):Play()
-                TweenService:Create(Button.Lock.Reason,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{TextTransparency = 1}):Play()
+                TweenService:Create(Button.Lock, TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
+                    { BackgroundTransparency = 1 }):Play()
+                TweenService:Create(Button.Lock.Reason,
+                    TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), { TextTransparency = 1 }):Play()
             end
+
             function ButtonValue:Visible(bool)
                 Button.Visible = bool
             end
@@ -1712,9 +1924,9 @@ function HDXLib:CreateWindow(Settings)
         end
 
         -- Section
-         function Tab:CreateSection(SectionName, Display, DefaultHide, Icon)
+        function Tab:CreateSection(SectionName, Display, DefaultHide, Icon)
             local SectionValue = {
-                Holder = HDX.Holding,
+                Holder = Rayfield.Holding,
                 Open = true
             }
             local Debounce = false
@@ -1884,30 +2096,15 @@ function HDXLib:CreateWindow(Settings)
             return SectionValue
         end
 
-        -- Spacing
-        function Tab:CreateSpacing(SectionParent,Size)
-            local Spacing = Elements.Template.SectionSpacing:Clone()
-            Spacing.Visible = true
-            Spacing.Parent = TabPage
-
-            Spacing.Size = UDim2.fromOffset(475,Size or 6)
-
-            if SectionParent then
-                Spacing.Parent = SectionParent.Holder
-            else
-                Spacing.Parent = TabPage
-            end
-        end
-
         -- Label
-        function Tab:CreateLabel(LabelText,SectionParent)
+        function Tab:CreateLabel(LabelText, SectionParent)
             local LabelValue = {}
 
             local Label = Elements.Template.Label:Clone()
             Label.Title.Text = LabelText
             Label.Visible = true
             Tab.Elements[LabelText] = {
-                type = "label",
+                type = 'label',
                 section = SectionParent,
                 element = Label
             }
@@ -1924,9 +2121,9 @@ function HDXLib:CreateWindow(Settings)
             Label.BackgroundColor3 = SelectedTheme.SecondaryElementBackground
             Label.UIStroke.Color = SelectedTheme.SecondaryElementStroke
 
-            TweenService:Create(Label, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-            TweenService:Create(Label.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-            TweenService:Create(Label.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()	
+            TweenService:Create(Label, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { BackgroundTransparency = 0 }):Play()
+            TweenService:Create(Label.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { Transparency = 0 }):Play()
+            TweenService:Create(Label.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { TextTransparency = 0 }):Play()
 
             function LabelValue:Set(NewLabel)
                 Label.Title.Text = NewLabel
@@ -1936,22 +2133,32 @@ function HDXLib:CreateWindow(Settings)
         end
 
         -- Paragraph
-        function Tab:CreateParagraph(ParagraphSettings)
+        function Tab:CreateParagraph(ParagraphSettings, SectionParent)
             local ParagraphValue = {}
 
             local Paragraph = Elements.Template.Paragraph:Clone()
             Paragraph.Title.Text = ParagraphSettings.Title
+            Paragraph.Title.RichText = true
             Paragraph.Content.Text = ParagraphSettings.Content
+            Paragraph.Content.RichText = true
             Paragraph.Visible = true
-            Paragraph.Parent = TabPage
+
             Tab.Elements[ParagraphSettings.Title] = {
-                type = "paragraph",
+                type = 'paragraph',
                 section = ParagraphSettings.SectionParent,
                 element = Paragraph
             }
-            Paragraph.Content.Size = UDim2.new(0, 438, 0, Paragraph.Content.TextBounds.Y)
-            --Paragraph.Content.Position = UDim2.new(0,465, 0,76)
-            Paragraph.Size = UDim2.new(0,465, 0, Paragraph.Content.TextBounds.Y + 40)
+
+            if SectionParent or (ParagraphSettings.SectionParent and ParagraphSettings.SectionParent.Holder) then
+                Paragraph.Parent = SectionParent.Holder or ParagraphSettings.SectionParent.Holder
+            else
+                Paragraph.Parent = TabPage
+            end
+
+            -- local textSize = TextService:GetTextSize(Paragraph.Content.Text, Paragraph.Content.TextSize, Paragraph.Content.Font, Vector2.new(math.huge, math.huge))
+            -- Paragraph.Content.Size = UDim2.new(0, 438, 0, textSize.Y)
+            -- --Paragraph.Content.Position = UDim2.new(0,465, 0,76)
+            -- Paragraph.Size = UDim2.new(0,465, 0, textSize.Y + 40)
 
             Paragraph.BackgroundTransparency = 1
             Paragraph.UIStroke.Transparency = 1
@@ -1961,14 +2168,26 @@ function HDXLib:CreateWindow(Settings)
             Paragraph.BackgroundColor3 = SelectedTheme.SecondaryElementBackground
             Paragraph.UIStroke.Color = SelectedTheme.SecondaryElementStroke
 
-            TweenService:Create(Paragraph, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-            TweenService:Create(Paragraph.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-            TweenService:Create(Paragraph.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()	
-            TweenService:Create(Paragraph.Content, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()	
+            TweenService:Create(Paragraph, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { BackgroundTransparency = 0 })
+                :Play()
+            TweenService:Create(Paragraph.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { Transparency = 0 })
+                :Play()
+            TweenService:Create(Paragraph.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { TextTransparency = 0 })
+                :Play()
+            TweenService:Create(Paragraph.Content, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { TextTransparency = 0 })
+                :Play()
 
             function ParagraphValue:Set(NewParagraphSettings)
                 Paragraph.Title.Text = NewParagraphSettings.Title
                 Paragraph.Content.Text = NewParagraphSettings.Content
+            end
+
+            function ParagraphValue:SetTitle(newTitle)
+                Paragraph.Title.Text = newTitle
+            end
+
+            function ParagraphValue:SetContent(newContent)
+                Paragraph.Content.Text = newContent
             end
 
             return ParagraphValue
@@ -1982,7 +2201,7 @@ function HDXLib:CreateWindow(Settings)
             Input.Visible = true
             InputSettings.Locked = false
             Tab.Elements[InputSettings.Name] = {
-                type = "input",
+                type = 'input',
                 section = InputSettings.SectionParent,
                 element = Input
             }
@@ -1991,6 +2210,8 @@ function HDXLib:CreateWindow(Settings)
             else
                 Input.Parent = TabPage
             end
+
+
             Input.BackgroundTransparency = 1
             Input.UIStroke.Transparency = 1
             Input.Title.TextTransparency = 1
@@ -1998,35 +2219,48 @@ function HDXLib:CreateWindow(Settings)
             Input.InputFrame.BackgroundColor3 = SelectedTheme.InputBackground
             Input.InputFrame.UIStroke.Color = SelectedTheme.InputStroke
 
-            TweenService:Create(Input, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-            TweenService:Create(Input.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-            TweenService:Create(Input.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()	
+            TweenService:Create(Input, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { BackgroundTransparency = 0 }):Play()
+            TweenService:Create(Input.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { Transparency = 0 }):Play()
+            TweenService:Create(Input.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { TextTransparency = 0 }):Play()
 
             Input.InputFrame.InputBox.PlaceholderText = InputSettings.PlaceholderText
             Input.InputFrame.Size = UDim2.new(0, Input.InputFrame.InputBox.TextBounds.X + 24, 0, 30)
 
             if InputSettings.NumbersOnly or InputSettings.CharacterLimit then
-                Input.InputFrame.InputBox:GetPropertyChangedSignal("Text"):Connect(function()
-                    if Input.InputFrame.InputBox.Text == "" then return end 
-                    if InputSettings.CharacterLimit then Input.InputFrame.InputBox.Text = Input.InputFrame.InputBox.Text:sub(1,InputSettings.CharacterLimit) end
-                    if InputSettings.NumbersOnly then Input.InputFrame.InputBox.Text = Input.InputFrame.InputBox.Text:gsub("%D+", "") end
+                Input.InputFrame.InputBox:GetPropertyChangedSignal('Text'):Connect(function()
+                    if Input.InputFrame.InputBox.Text == '' then return end
+                    if InputSettings.CharacterLimit then
+                        Input.InputFrame.InputBox.Text = Input.InputFrame.InputBox.Text
+                            :sub(1, InputSettings.CharacterLimit)
+                    end
+                    if InputSettings.NumbersOnly then
+                        Input.InputFrame.InputBox.Text = Input.InputFrame.InputBox.Text
+                            :gsub('%D+', '')
+                    end
                 end)
             end
 
             Input.InputFrame.InputBox.FocusLost:Connect(function(enter)
-                if InputSettings.OnEnter and not enter then if InputSettings.RemoveTextAfterFocusLost then Input.InputFrame.InputBox.Text = "" end return end
+                if InputSettings.OnEnter and not enter then
+                    if InputSettings.RemoveTextAfterFocusLost then Input.InputFrame.InputBox.Text = "" end
+                    return
+                end
                 local Success, Response = pcall(function()
                     InputSettings.Callback(Input.InputFrame.InputBox.Text)
                 end)
                 if not Success then
-                    TweenService:Create(Input, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(85, 0, 0)}):Play()
-                    TweenService:Create(Input.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
+                    TweenService:Create(Input, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                        { BackgroundColor3 = Color3.fromRGB(85, 0, 0) }):Play()
+                    TweenService:Create(Input.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), { Transparency = 1 })
+                        :Play()
                     Input.Title.Text = "Callback Error"
-                    print("HDX | "..InputSettings.Name.." Callback Error " ..tostring(Response))
-                    task.wait(0.5)
+                    print("Rayfield | " .. InputSettings.Name .. " Callback Error " .. tostring(Response))
+                    wait(0.5)
                     Input.Title.Text = InputSettings.Name
-                    TweenService:Create(Input, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
-                    TweenService:Create(Input.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+                    TweenService:Create(Input, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                        { BackgroundColor3 = SelectedTheme.ElementBackground }):Play()
+                    TweenService:Create(Input.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), { Transparency = 0 })
+                        :Play()
                 end
 
                 if InputSettings.RemoveTextAfterFocusLost then Input.InputFrame.InputBox.Text = "" end
@@ -2034,71 +2268,86 @@ function HDXLib:CreateWindow(Settings)
             end)
 
             Input.MouseEnter:Connect(function()
-                TweenService:Create(Input, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
+                TweenService:Create(Input, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                    { BackgroundColor3 = SelectedTheme.ElementBackgroundHover }):Play()
             end)
 
             Input.MouseLeave:Connect(function()
-                TweenService:Create(Input, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
+                TweenService:Create(Input, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                    { BackgroundColor3 = SelectedTheme.ElementBackground }):Play()
             end)
 
             Input.InputFrame.InputBox:GetPropertyChangedSignal("Text"):Connect(function()
-                TweenService:Create(Input.InputFrame, TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, Input.InputFrame.InputBox.TextBounds.X + 24, 0, 30)}):Play()
+                TweenService:Create(Input.InputFrame,
+                    TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
+                    { Size = UDim2.new(0, Input.InputFrame.InputBox.TextBounds.X + 24, 0, 30) }):Play()
             end)
 
             Input.InputFrame.InputBox.Focused:Connect(function()
                 if InputSettings.Locked then
-                    Input.InputFrame.InputBox:ReleaseFocus() return
+                    Input.InputFrame.InputBox:ReleaseFocus()
+                    return
                 end
             end)
 
             function InputSettings:Destroy()
                 Input:Destroy()
             end
+
             function InputSettings:Lock(Reason)
                 if InputSettings.Locked then return end
                 InputSettings.Locked = true
-                Input.Lock.Reason.Text = Reason or "Locked"
-                TweenService:Create(Input.Lock,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{BackgroundTransparency = 0}):Play()
-                TweenService:Create(Input.Lock.Reason,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{TextTransparency = 0}):Play()
-                task.wait(0.2)
+                Input.Lock.Reason.Text = Reason or 'Locked'
+                TweenService:Create(Input.Lock, TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
+                    { BackgroundTransparency = 0 }):Play()
+                TweenService:Create(Input.Lock.Reason, TweenInfo.new(0.4, Enum.EasingStyle.Quint,
+                    Enum.EasingDirection.Out), { TextTransparency = 0 }):Play()
+                wait(0.2)
                 if not InputSettings.Locked then return end --no icon bug
-                TweenService:Create(Input.Lock.Reason.Icon,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{ImageTransparency = 0}):Play()
+                TweenService:Create(Input.Lock.Reason.Icon,
+                    TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), { ImageTransparency = 0 })
+                    :Play()
             end
+
             function InputSettings:Unlock()
                 if not InputSettings.Locked then return end
                 InputSettings.Locked = false
-                task.wait(0.2)
-                TweenService:Create(Input.Lock.Reason.Icon,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{ImageTransparency = 1}):Play()
+                wait(0.2)
+                TweenService:Create(Input.Lock.Reason.Icon,
+                    TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), { ImageTransparency = 1 })
+                    :Play()
                 if InputSettings.Locked then return end --no icon bug
-                TweenService:Create(Input.Lock,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{BackgroundTransparency = 1}):Play()
-                TweenService:Create(Input.Lock.Reason,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{TextTransparency = 1}):Play()
+                TweenService:Create(Input.Lock, TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
+                    { BackgroundTransparency = 1 }):Play()
+                TweenService:Create(Input.Lock.Reason, TweenInfo.new(0.4, Enum.EasingStyle.Quint,
+                    Enum.EasingDirection.Out), { TextTransparency = 1 }):Play()
             end
+
             function InputSettings:Visible(bool)
                 Input.Visible = bool
             end
+
             return InputSettings
         end
 
-        -- Dropdown
         function Tab:CreateDropdown(DropdownSettings)
             local Dropdown = Elements.Template.Dropdown:Clone()
-            local SearchBar = Dropdown.List["-SearchBar"]
-            local Required = 1
-            --local Debounce = false
-            DropdownSettings.Items = {
-                Selected = {Default = DropdownSettings.Selected or nil}
-            }
             DropdownSettings.Locked = false
-            local Multi = DropdownSettings.MultiSelection or false
-            if string.find(DropdownSettings.Name,"closed") then
+            local SearchBar = Dropdown.List["-SearchBar"]
+            if string.find(DropdownSettings.Name, "closed") then
                 Dropdown.Name = "Dropdown"
             else
                 Dropdown.Name = DropdownSettings.Name
             end
             Dropdown.Title.Text = DropdownSettings.Name
             Dropdown.Visible = true
+            Dropdown.Parent = TabPage
+            if DropdownSettings.MultiSelection then
+                DropdownSettings.MultipleOptions = true
+            end
+            Dropdown.List.Visible = false
             Tab.Elements[DropdownSettings.Name] = {
-                type = "dropdown",
+                type = 'dropdown',
                 section = DropdownSettings.SectionParent,
                 element = Dropdown
             }
@@ -2107,91 +2356,139 @@ function HDXLib:CreateWindow(Settings)
             else
                 Dropdown.Parent = TabPage
             end
+            if typeof(DropdownSettings.CurrentOption) == "string" then
+                DropdownSettings.CurrentOption = { DropdownSettings.CurrentOption }
+            end
 
-            Dropdown.List.Visible = false
+            if not DropdownSettings.MultipleOptions then
+                DropdownSettings.CurrentOption = { DropdownSettings.CurrentOption[1] }
+            end
+
+            local function Refresh()
+                if DropdownSettings.MultipleOptions then
+                    if not DropdownSettings.CurrentOption then
+                        DropdownSettings.CurrentOption = {}
+                    end
+
+                    if #DropdownSettings.CurrentOption == 1 then
+                        Dropdown.Selected.Text = DropdownSettings.CurrentOption[1]
+                    elseif #DropdownSettings.CurrentOption == 0 then
+                        Dropdown.Selected.Text = "None"
+                    else
+                        print(#DropdownSettings.CurrentOption)
+                        for i, v in pairs(DropdownSettings.CurrentOption) do
+                            print(i, v)
+                        end
+                        Dropdown.Selected.Text = "Various"
+                    end
+                else
+                    Dropdown.Selected.Text = DropdownSettings.CurrentOption[1]
+                end
+            end
+
+            Refresh()
+
+            Dropdown.Icon.Visible = false
+            if DropdownSettings.Icon then
+                if not string.match(DropdownSettings.Icon, "rbxassetid://") then
+                    DropdownSettings.Icon = "rbxassetid://" .. tostring(DropdownSettings.Icon)
+                end
+                Dropdown.Icon.Image = tostring(DropdownSettings.Icon)
+                Dropdown.Icon.Visible = true
+                Dropdown.Title.Position = UDim2.new(0, 50, 0, 22)
+            end
+
             Dropdown.BackgroundTransparency = 1
             Dropdown.UIStroke.Transparency = 1
             Dropdown.Title.TextTransparency = 1
 
-            Dropdown.Size = UDim2.new(0,465, 0, 44)
+            Dropdown.Size = UDim2.new(1, -10, 0, 45)
 
-            TweenService:Create(Dropdown, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-            TweenService:Create(Dropdown.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-            TweenService:Create(Dropdown.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()	
-
+            TweenService:Create(Dropdown, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { BackgroundTransparency = 0 })
+                :Play()
+            TweenService:Create(Dropdown.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { Transparency = 0 })
+                :Play()
+            TweenService:Create(Dropdown.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { TextTransparency = 0 })
+                :Play()
 
             for _, ununusedoption in ipairs(Dropdown.List:GetChildren()) do
-                if ununusedoption.ClassName == "Frame" and ununusedoption.Name ~= "PlaceHolder" and ununusedoption.Name ~= "-SearchBar" then
+                if ununusedoption.ClassName == "Frame" and ununusedoption.Name ~= 'PlaceHolder' and ununusedoption.Name ~= "-SearchBar" then
                     ununusedoption:Destroy()
                 end
             end
 
             Dropdown.Toggle.Rotation = 180
 
-            local function RefreshSelected()
-                if #DropdownSettings.Items.Selected > 1 then
-                    local NT = {}
-                    for _,kj in ipairs(DropdownSettings.Items.Selected) do
-                        NT[#NT+1] = kj.Option.Name
-                    end
-                    Dropdown.Selected.Text = table.concat(NT, ", ")
-                elseif DropdownSettings.Items.Selected[1] then
-                    Dropdown.Selected.Text = DropdownSettings.Items.Selected[1].Option.Name
-                else
-                    Dropdown.Selected.Text = "Select an option"
-                end
-            end
-
             Dropdown.Interact.MouseButton1Click:Connect(function()
-                if DropdownSettings.Locked then return end
-                TweenService:Create(Dropdown, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
-                TweenService:Create(Dropdown.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-                task.wait(0.1)
-                TweenService:Create(Dropdown, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
-                TweenService:Create(Dropdown.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+                TweenService:Create(Dropdown, TweenInfo.new(0.4, Enum.EasingStyle.Quint),
+                    { BackgroundColor3 = SelectedTheme.ElementBackgroundHover }):Play()
+                TweenService:Create(Dropdown.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint), { Transparency = 1 })
+                    :Play()
+                wait(0.1)
+                TweenService:Create(Dropdown, TweenInfo.new(0.4, Enum.EasingStyle.Quint),
+                    { BackgroundColor3 = SelectedTheme.ElementBackground }):Play()
+                TweenService:Create(Dropdown.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint), { Transparency = 0 })
+                    :Play()
                 if Debounce then return end
                 if Dropdown.List.Visible then
                     Debounce = true
-                    TweenService:Create(Dropdown, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0,465, 0, 44)}):Play()
+                    TweenService:Create(Dropdown, TweenInfo.new(0.5, Enum.EasingStyle.Quint),
+                        { Size = UDim2.new(1, -10, 0, 45) }):Play()
                     for _, DropdownOpt in ipairs(Dropdown.List:GetChildren()) do
-                        if DropdownOpt.ClassName == "Frame" and DropdownOpt.Name ~= "PlaceHolder" and DropdownOpt~= SearchBar then
-                            TweenService:Create(DropdownOpt, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-                            TweenService:Create(DropdownOpt.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-                            TweenService:Create(DropdownOpt.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
+                        if DropdownOpt.ClassName == "Frame" and DropdownOpt.Name ~= "PlaceHolder" and DropdownOpt ~= SearchBar then
+                            TweenService:Create(DropdownOpt, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                                { BackgroundTransparency = 1 }):Play()
+                            TweenService:Create(DropdownOpt.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                                { Transparency = 1 }):Play()
+                            TweenService:Create(DropdownOpt.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                                { TextTransparency = 1 }):Play()
                         end
                     end
-                    TweenService:Create(Dropdown.List, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ScrollBarImageTransparency = 1}):Play()
-                    TweenService:Create(Dropdown.Toggle, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Rotation = 180}):Play()	
-                    task.wait(0.35)
+                    TweenService:Create(Dropdown.List, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                        { ScrollBarImageTransparency = 1 }):Play()
+                    TweenService:Create(Dropdown.Toggle, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { Rotation = 180 })
+                        :Play()
+                    wait(0.35)
                     Dropdown.List.Visible = false
                     Debounce = false
                 else
-                    TweenService:Create(Dropdown, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0,465, 0, 178)}):Play()
+                    TweenService:Create(Dropdown, TweenInfo.new(0.5, Enum.EasingStyle.Quint),
+                        { Size = UDim2.new(1, -10, 0, 180) }):Play()
                     Dropdown.List.Visible = true
-                    TweenService:Create(Dropdown.List, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ScrollBarImageTransparency = 0.7}):Play()
-                    TweenService:Create(Dropdown.Toggle, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Rotation = 0}):Play()	
+                    TweenService:Create(Dropdown.List, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                        { ScrollBarImageTransparency = 0.7 }):Play()
+                    TweenService:Create(Dropdown.Toggle, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { Rotation = 0 })
+                        :Play()
                     for _, DropdownOpt in ipairs(Dropdown.List:GetChildren()) do
                         if DropdownOpt.ClassName == "Frame" and DropdownOpt.Name ~= "PlaceHolder" and DropdownOpt ~= SearchBar then
-                            TweenService:Create(DropdownOpt, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-                            TweenService:Create(DropdownOpt.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-                            TweenService:Create(DropdownOpt.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+                            TweenService:Create(DropdownOpt, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                                { BackgroundTransparency = 0 }):Play()
+                            TweenService:Create(DropdownOpt.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                                { Transparency = 0 }):Play()
+                            TweenService:Create(DropdownOpt.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                                { TextTransparency = 0 }):Play()
                         end
                     end
                 end
             end)
-
-            Dropdown.List["-SearchBar"].Input:GetPropertyChangedSignal("Text"):Connect(function()
-                local InputText=string.upper(Dropdown.List["-SearchBar"].Input.Text)
-                for _,item in ipairs(Dropdown.List:GetChildren()) do
-                    if item:IsA("Frame") and item.Name ~= "Template" and item ~= SearchBar and item.Name ~= "PlaceHolder" then
-                        if InputText=="" or InputText==" "or string.find(string.upper(item.Name),InputText)~=nil then
-                            TweenService:Create(item, TweenInfo.new(0.15, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-                            TweenService:Create(item.UIStroke, TweenInfo.new(0.15, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-                            TweenService:Create(item.Title, TweenInfo.new(0.15, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+            SearchBar.Input:GetPropertyChangedSignal('Text'):Connect(function()
+                local InputText = string.upper(SearchBar.Input.Text)
+                for _, item in ipairs(Dropdown.List:GetChildren()) do
+                    if item:IsA('Frame') and item.Name ~= 'Template' and item ~= SearchBar and item.Name ~= 'PlaceHolder' then
+                        if InputText == "" or InputText == " " or string.find(string.upper(item.Name), InputText) ~= nil then
+                            TweenService:Create(item, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                                { BackgroundTransparency = 0 }):Play()
+                            TweenService:Create(item.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                                { Transparency = 0 }):Play()
+                            TweenService:Create(item.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                                { TextTransparency = 0 }):Play()
                         else
-                            TweenService:Create(item, TweenInfo.new(0.15, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-                            TweenService:Create(item.UIStroke, TweenInfo.new(0.15, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-                            TweenService:Create(item.Title, TweenInfo.new(0.15, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
+                            TweenService:Create(item, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                                { BackgroundTransparency = 1 }):Play()
+                            TweenService:Create(item.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                                { Transparency = 1 }):Play()
+                            TweenService:Create(item.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                                { TextTransparency = 1 }):Play()
                         end
                     end
                 end
@@ -2199,268 +2496,241 @@ function HDXLib:CreateWindow(Settings)
 
             Dropdown.MouseEnter:Connect(function()
                 if not Dropdown.List.Visible then
-                    TweenService:Create(Dropdown, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
+                    TweenService:Create(Dropdown, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                        { BackgroundColor3 = SelectedTheme.ElementBackgroundHover }):Play()
                 end
             end)
 
             Dropdown.MouseLeave:Connect(function()
-                TweenService:Create(Dropdown, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
+                TweenService:Create(Dropdown, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                    { BackgroundColor3 = SelectedTheme.ElementBackground }):Play()
             end)
 
-            local function Error(text)
-                TweenService:Create(Dropdown, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(85, 0, 0)}):Play()
-                TweenService:Create(Dropdown.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-                Dropdown.Title.Text = text
-                task.wait(0.5)
-                Dropdown.Title.Text = DropdownSettings.Name
-                TweenService:Create(Dropdown, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
-                TweenService:Create(Dropdown.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-            end
 
-            local function AddOption(Option,Selecteds)
+
+            for _, Option in ipairs(DropdownSettings.Options) do
                 local DropdownOption = Elements.Template.Dropdown.List.Template:Clone()
-                DropdownOption:GetPropertyChangedSignal("BackgroundTransparency"):Connect(function()
+                DropdownOption:GetPropertyChangedSignal('BackgroundTransparency'):Connect(function()
                     if DropdownOption.BackgroundTransparency == 1 then
                         DropdownOption.Visible = false
                     else
                         DropdownOption.Visible = true
                     end
                 end)
-                DropdownSettings.Items[Option] = {
-                    Option = DropdownOption,
-                    Selected = false
-                }
-                local OptionInTable = DropdownSettings.Items[Option]
-                DropdownOption.Name = Option.Name or Option
-                DropdownOption.Title.Text = Option.Name or Option
+                DropdownOption.Name = Option
+                DropdownOption.Title.Text = Option
                 DropdownOption.Parent = Dropdown.List
                 DropdownOption.Visible = true
-                local IsSelected = OptionInTable.Selected
-                if Selecteds and #Selecteds > 0 then
-                    if typeof(Selecteds) == "string" then
-                        Selecteds = {Selecteds}
-                    end
-                    for index,Selected in pairs(Selecteds) do
-                        if Selected == Option then
-                            IsSelected = true
-                            OptionInTable.Selected = true
-                            table.insert(DropdownSettings.Items.Selected,OptionInTable)
-                            DropdownSettings.Items.Selected[table.find(DropdownSettings.Items.Selected,OptionInTable)].Selected = true
-                        end
-                    end
-                    RefreshSelected()
-                end
 
-                if IsSelected then
+                if DropdownSettings.CurrentOption == Option then
                     DropdownOption.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
                 end
 
-                if Dropdown.Visible then
-                    DropdownOption.BackgroundTransparency = 0
-                    DropdownOption.UIStroke.Transparency = 0
-                    DropdownOption.Title.TextTransparency = 0
-                else
-                    DropdownOption.BackgroundTransparency = 1
-                    DropdownOption.UIStroke.Transparency = 1
-                    DropdownOption.Title.TextTransparency = 1
-                end
+                DropdownOption.BackgroundTransparency = 1
+                DropdownOption.UIStroke.Transparency = 1
+                DropdownOption.Title.TextTransparency = 1
 
                 DropdownOption.Interact.ZIndex = 50
                 DropdownOption.Interact.MouseButton1Click:Connect(function()
-                    if DropdownSettings.Locked then return end
-                    if OptionInTable.Selected then
-                        OptionInTable.Selected = false
-                        table.remove(DropdownSettings.Items.Selected,table.find(DropdownSettings.Items.Selected,OptionInTable))
-                        RefreshSelected()
-                        TweenService:Create(DropdownOption, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(30, 30, 30)}):Play()
-                        SaveConfiguration()
+                    if not DropdownSettings.MultipleOptions and table.find(DropdownSettings.CurrentOption, Option) then
                         return
                     end
-                    if not Multi and DropdownSettings.Items.Selected[1] then
-                        DropdownSettings.Items.Selected[1].Selected = false
-                        TweenService:Create(DropdownSettings.Items.Selected[1].Option, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(30, 30, 30)}):Play()
-                    end
-                    if not (Multi) then
-                        DropdownSettings.Items.Selected = {OptionInTable}
-                        Dropdown.Selected.Text = Option.Name or Option
+
+                    if table.find(DropdownSettings.CurrentOption, Option) then
+                        table.remove(DropdownSettings.CurrentOption, table.find(DropdownSettings.CurrentOption, Option))
+                        Refresh()
                     else
-                        table.insert(DropdownSettings.Items.Selected,OptionInTable)
-                        RefreshSelected()
+                        if not DropdownSettings.MultipleOptions then
+                            table.clear(DropdownSettings.CurrentOption)
+                        end
+                        table.insert(DropdownSettings.CurrentOption, Option)
+                        Refresh()
+                        TweenService:Create(DropdownOption.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                            { Transparency = 1 }):Play()
+                        TweenService:Create(DropdownOption, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                            { BackgroundColor3 = Color3.fromRGB(40, 40, 40) }):Play()
+                        Debounce = true
+                        wait(0.2)
+                        TweenService:Create(DropdownOption.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                            { Transparency = 0 }):Play()
                     end
 
                     local Success, Response = pcall(function()
-                        DropdownSettings.Callback(Option)
+                        DropdownSettings.Callback(DropdownSettings.CurrentOption)
                     end)
+
                     if not Success then
-                        Error("Callback Error")
-                        print("HDX | "..DropdownSettings.Name.." Callback Error " ..tostring(Response))
+                        TweenService:Create(Dropdown, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                            { BackgroundColor3 = Color3.fromRGB(85, 0, 0) }):Play()
+                        TweenService:Create(Dropdown.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                            { Transparency = 1 }):Play()
+                        Dropdown.Title.Text = "Callback Error"
+                        print("Rayfield | " .. DropdownSettings.Name .. " Callback Error " .. tostring(Response))
+                        wait(0.5)
+                        Dropdown.Title.Text = DropdownSettings.Name
+                        TweenService:Create(Dropdown, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                            { BackgroundColor3 = SelectedTheme.ElementBackground }):Play()
+                        TweenService:Create(Dropdown.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                            { Transparency = 0 }):Play()
                     end
 
-                    OptionInTable.Selected = true
-
-                    if not (Multi) then
-                        for _,op in ipairs(DropdownSettings.Items.Selected) do
-                            TweenService:Create(op.Option, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(30, 30, 30)}):Play()
+                    for _, droption in ipairs(Dropdown.List:GetChildren()) do
+                        if droption.ClassName == "Frame" and droption.Name ~= "Placeholder" and droption ~= SearchBar and not table.find(DropdownSettings.CurrentOption, droption.Name) then
+                            TweenService:Create(droption, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                                { BackgroundColor3 = Color3.fromRGB(30, 30, 30) }):Play()
                         end
                     end
-                    TweenService:Create(DropdownOption.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-                    TweenService:Create(DropdownOption, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(40, 40, 40)}):Play()
-                    Debounce = true
-                    task.wait(0.2)
-                    TweenService:Create(DropdownOption.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-                    task.wait(0.1)
-                    if not Multi then
-                        TweenService:Create(Dropdown, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0,465, 0, 45)}):Play()
+                    if not DropdownSettings.MultipleOptions then
+                        wait(0.1)
+                        TweenService:Create(Dropdown, TweenInfo.new(0.5, Enum.EasingStyle.Quint),
+                            { Size = UDim2.new(1, -10, 0, 45) }):Play()
                         for _, DropdownOpt in ipairs(Dropdown.List:GetChildren()) do
                             if DropdownOpt.ClassName == "Frame" and DropdownOpt.Name ~= "PlaceHolder" and DropdownOpt ~= SearchBar then
-                                TweenService:Create(DropdownOpt, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-                                TweenService:Create(DropdownOpt.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-                                TweenService:Create(DropdownOpt.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
+                                TweenService:Create(DropdownOpt, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                                    { BackgroundTransparency = 1 }):Play()
+                                TweenService:Create(DropdownOpt.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                                    { Transparency = 1 }):Play()
+                                TweenService:Create(DropdownOpt.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                                    { TextTransparency = 1 }):Play()
                             end
                         end
-                        TweenService:Create(Dropdown.List, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ScrollBarImageTransparency = 1}):Play()
-                        TweenService:Create(Dropdown.Toggle, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Rotation = 180}):Play()	
-                        task.wait(0.35)
+                        TweenService:Create(Dropdown.List, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                            { ScrollBarImageTransparency = 1 }):Play()
+                        TweenService:Create(Dropdown.Toggle, TweenInfo.new(0.7, Enum.EasingStyle.Quint),
+                            { Rotation = 180 })
+                            :Play()
+                        wait(0.35)
                         Dropdown.List.Visible = false
-
                     end
                     Debounce = false
                     SaveConfiguration()
                 end)
             end
-            local function AddOptions(Options,Selected)
-                if typeof(Options) == "table" then
-                    for _, Option in ipairs(Options) do
-                        AddOption(Option,Selected)
-                    end
-                else
-                    AddOption(Options,Selected)
-                end
-                if Settings.ConfigurationSaving then
-                    if Settings.ConfigurationSaving.Enabled and DropdownSettings.Flag then
-                        HDXLib.Flags[DropdownSettings.Flag] = DropdownSettings
+
+            for _, droption in ipairs(Dropdown.List:GetChildren()) do
+                if droption.ClassName == "Frame" and droption.Name ~= "Placeholder" and droption ~= SearchBar then
+                    if not table.find(DropdownSettings.CurrentOption, droption.Name) then
+                        droption.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+                    else
+                        droption.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
                     end
                 end
             end
-            function DropdownSettings:Add(Items,Selected)
-                AddOptions(Items,Selected)
-            end
 
-            AddOptions(DropdownSettings.Options,DropdownSettings.CurrentOption)
-
-            --fix
             function DropdownSettings:Set(NewOption)
+                DropdownSettings.CurrentOption = NewOption
 
-                for _,o in pairs(NewOption) do
+                if typeof(DropdownSettings.CurrentOption) == "string" then
+                    DropdownSettings.CurrentOption = { DropdownSettings.CurrentOption }
+                end
 
-                    if typeof(NewOption) == "table" then
+                if not DropdownSettings.MultipleOptions then
+                    DropdownSettings.CurrentOption = { DropdownSettings.CurrentOption[1] }
+                end
 
-                        DropdownSettings.Items.Selected = NewOption
-                    else
-                        DropdownSettings.Items.Selected = {NewOption}
-                    end
-                    local Success, Response = pcall(function()
-                        DropdownSettings.Callback(NewOption)
-                    end)
-                    if not Success then
-                        TweenService:Create(Dropdown, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(85, 0, 0)}):Play()
-                        TweenService:Create(Dropdown.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-                        Dropdown.Title.Text = "Callback Error"
-                        print("HDX | "..DropdownSettings.Name.." Callback Error " ..tostring(Response))
-                        task.wait(0.5)
-                        Dropdown.Title.Text = DropdownSettings.Name
-                        TweenService:Create(Dropdown, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
-                        TweenService:Create(Dropdown.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-                    end
-                    if DropdownSettings.Items[NewOption] then
-                        local DropdownOption =  DropdownSettings.Items[NewOption]
-                        DropdownOption.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+                Refresh()
 
-                        if Dropdown.Visible then
-                            DropdownOption.BackgroundTransparency = 0
-                            DropdownOption.UIStroke.Transparency = 0
-                            DropdownOption.Title.TextTransparency = 0
+
+                local Success, Response = pcall(function()
+                    DropdownSettings.Callback(NewOption)
+                end)
+                if not Success then
+                    TweenService:Create(Dropdown, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                        { BackgroundColor3 = Color3.fromRGB(85, 0, 0) }):Play()
+                    TweenService:Create(Dropdown.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                        { Transparency = 1 })
+                        :Play()
+                    Dropdown.Title.Text = "Callback Error"
+                    print("Rayfield | " .. DropdownSettings.Name .. " Callback Error " .. tostring(Response))
+                    wait(0.5)
+                    Dropdown.Title.Text = DropdownSettings.Name
+                    TweenService:Create(Dropdown, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                        { BackgroundColor3 = SelectedTheme.ElementBackground }):Play()
+                    TweenService:Create(Dropdown.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                        { Transparency = 0 })
+                        :Play()
+                end
+
+                for _, droption in ipairs(Dropdown.List:GetChildren()) do
+                    if droption.ClassName == "Frame" and droption.Name ~= "Placeholder" then
+                        if not table.find(DropdownSettings.CurrentOption, droption.Name) then
+                            droption.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
                         else
-                            DropdownOption.BackgroundTransparency = 1
-                            DropdownOption.UIStroke.Transparency = 1
-                            DropdownOption.Title.TextTransparency = 1
+                            droption.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
                         end
-
                     end
                 end
-                --Dropdown.Selected.Text = NewText
-            end
-            function DropdownSettings:Error(text)
-                Error(text)
-            end
-            function DropdownSettings:Refresh(NewOptions,Selecteds)
-                DropdownSettings.Items = {}
-                DropdownSettings.Items.Selected = {}
-                for _, option in ipairs(Dropdown.List:GetChildren()) do
-                    if option.ClassName == "Frame" and option ~= SearchBar and option.Name ~= "Placeholder" then
-                        option:Destroy()
-                    end
-                end
-                AddOptions(NewOptions,Selecteds)
-            end
-            function DropdownSettings:Remove(Item)
-                if Item.Name ~= "Placeholder" and Item ~= SearchBar then
-                    if DropdownSettings.Items[Item] then
-                        DropdownSettings.Items[Item].Option:Destroy()
-                        table.remove(DropdownSettings.Items,table.find(DropdownSettings.Items,Item))
-                    else
-                        Error("Option not found.")
-                    end
-                else
-                    SearchBar:Destroy()
-                    Error("why you trynna remove the searchbar? FINE")
-                end
-                if Dropdown.Selected.Text == Item then
-                    Dropdown.Selected.Text = ""
-                end
+                --SaveConfiguration()
             end
 
+            if Settings.ConfigurationSaving then
+                if Settings.ConfigurationSaving.Enabled and DropdownSettings.Flag then
+                    RayfieldLibrary.Flags[DropdownSettings.Flag] = DropdownSettings
+                end
+            end
             function DropdownSettings:Destroy()
                 Dropdown:Destroy()
             end
-            function DropdownSettings:Lock(Reason)
+
+            function DropdownSettings:Lock(Reason, hideIcon)
                 if DropdownSettings.Locked then return end
                 DropdownSettings.Locked = true
                 Debounce = true
-                TweenService:Create(Dropdown, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0,465, 0, 44)}):Play()
+                TweenService:Create(Dropdown, TweenInfo.new(0.5, Enum.EasingStyle.Quint),
+                    { Size = UDim2.new(0, 465, 0, 44) }):Play()
                 for _, DropdownOpt in ipairs(Dropdown.List:GetChildren()) do
-                    if DropdownOpt.ClassName == "Frame" and DropdownOpt.Name ~= "PlaceHolder" and DropdownOpt.Name ~= "-SearchBar" then
-                        TweenService:Create(DropdownOpt, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-                        TweenService:Create(DropdownOpt.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-                        TweenService:Create(DropdownOpt.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
+                    if DropdownOpt.ClassName == "Frame" and DropdownOpt.Name ~= "PlaceHolder" and DropdownOpt ~= SearchBar then
+                        TweenService:Create(DropdownOpt, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                            { BackgroundTransparency = 1 }):Play()
+                        TweenService:Create(DropdownOpt.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                            { Transparency = 1 }):Play()
+                        TweenService:Create(DropdownOpt.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                            { TextTransparency = 1 }):Play()
                     end
                 end
-                TweenService:Create(Dropdown.List, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ScrollBarImageTransparency = 1}):Play()
-                TweenService:Create(Dropdown.Toggle, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Rotation = 180}):Play()	
-                task.wait(0.35)
+                TweenService:Create(Dropdown.List, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                    { ScrollBarImageTransparency = 1 }):Play()
+                TweenService:Create(Dropdown.Toggle, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { Rotation = 180 })
+                    :Play()
+                wait(0.35)
                 Dropdown.List.Visible = false
                 Debounce = false
-                Dropdown.Lock.Reason.Text = Reason or "Locked"
-                TweenService:Create(Dropdown.Lock,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{BackgroundTransparency = 0}):Play()
-                TweenService:Create(Dropdown.Lock.Reason,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{TextTransparency = 0}):Play()
-                task.wait(0.2)
-                if not DropdownSettings.Locked then return end --no icon bug
-                TweenService:Create(Dropdown.Lock.Reason.Icon,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{ImageTransparency = 0}):Play()
+                Dropdown.Lock.Reason.Text = Reason or 'Locked'
+                TweenService:Create(Dropdown.Lock, TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
+                    { BackgroundTransparency = 0 }):Play()
+                TweenService:Create(Dropdown.Lock.Reason,
+                    TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), { TextTransparency = 0 }):Play()
+                wait(0.2)
+                if not DropdownSettings.Locked or hideIcon then return end --no icon bug
+                TweenService:Create(Dropdown.Lock.Reason.Icon,
+                    TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), { ImageTransparency = 0 })
+                    :Play()
             end
+
             function DropdownSettings:Unlock()
                 if not DropdownSettings.Locked then return end
                 DropdownSettings.Locked = false
-                task.wait(0.2)
-                TweenService:Create(Dropdown.Lock.Reason.Icon,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{ImageTransparency = 1}):Play()
+                wait(0.2)
+                if Dropdown.Lock.Reason.Icon.ImageTransparency == 0 then
+                    TweenService:Create(Dropdown.Lock.Reason.Icon,
+                        TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), { ImageTransparency = 1 })
+                        :Play()
+                end
                 if DropdownSettings.Locked then return end --no icon bug
-                TweenService:Create(Dropdown.Lock,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{BackgroundTransparency = 1}):Play()
-                TweenService:Create(Dropdown.Lock.Reason,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{TextTransparency = 1}):Play()
+                TweenService:Create(Dropdown.Lock, TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
+                    { BackgroundTransparency = 1 }):Play()
+                TweenService:Create(Dropdown.Lock.Reason,
+                    TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), { TextTransparency = 1 }):Play()
             end
+
             function DropdownSettings:Visible(bool)
                 Dropdown.Visible = bool
             end
+
             return DropdownSettings
         end
+
+        -- Dropdown
 
         -- Keybind
         function Tab:CreateKeybind(KeybindSettings)
@@ -2470,7 +2740,7 @@ function HDXLib:CreateWindow(Settings)
             Keybind.Title.Text = KeybindSettings.Name
             Keybind.Visible = true
             Tab.Elements[KeybindSettings.Name] = {
-                type = "keybind",
+                type = 'keybind',
                 section = KeybindSettings.SectionParent,
                 element = Keybind
             }
@@ -2480,6 +2750,7 @@ function HDXLib:CreateWindow(Settings)
                 Keybind.Parent = TabPage
             end
 
+
             Keybind.BackgroundTransparency = 1
             Keybind.UIStroke.Transparency = 1
             Keybind.Title.TextTransparency = 1
@@ -2487,16 +2758,19 @@ function HDXLib:CreateWindow(Settings)
             Keybind.KeybindFrame.BackgroundColor3 = SelectedTheme.InputBackground
             Keybind.KeybindFrame.UIStroke.Color = SelectedTheme.InputStroke
 
-            TweenService:Create(Keybind, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-            TweenService:Create(Keybind.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-            TweenService:Create(Keybind.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()	
+            TweenService:Create(Keybind, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { BackgroundTransparency = 0 })
+                :Play()
+            TweenService:Create(Keybind.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { Transparency = 0 }):Play()
+            TweenService:Create(Keybind.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { TextTransparency = 0 })
+                :Play()
 
             Keybind.KeybindFrame.KeybindBox.Text = KeybindSettings.CurrentKeybind
             Keybind.KeybindFrame.Size = UDim2.new(0, Keybind.KeybindFrame.KeybindBox.TextBounds.X + 24, 0, 30)
 
             Keybind.KeybindFrame.KeybindBox.Focused:Connect(function()
                 if KeybindSettings.Locked then
-                    Keybind.KeybindFrame.KeybindBox:ReleaseFocus() return
+                    Keybind.KeybindFrame.KeybindBox:ReleaseFocus()
+                    return
                 end
                 CheckingForKey = true
                 Keybind.KeybindFrame.KeybindBox.Text = ""
@@ -2510,17 +2784,18 @@ function HDXLib:CreateWindow(Settings)
             end)
 
             Keybind.MouseEnter:Connect(function()
-                TweenService:Create(Keybind, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
+                TweenService:Create(Keybind, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                    { BackgroundColor3 = SelectedTheme.ElementBackgroundHover }):Play()
             end)
 
             Keybind.MouseLeave:Connect(function()
-                TweenService:Create(Keybind, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
+                TweenService:Create(Keybind, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                    { BackgroundColor3 = SelectedTheme.ElementBackground }):Play()
             end)
 
-            UserInputService.InputBegan:Connect(function(input)
-
+            UserInputService.InputBegan:Connect(function(input, processed)
                 if CheckingForKey then
-                    if input.KeyCode ~= Enum.KeyCode.Unknown and input.KeyCode ~= Enum.KeyCode.RightControl then
+                    if input.KeyCode ~= Enum.KeyCode.Unknown and input.KeyCode ~= Enum.KeyCode.LeftControl then
                         local SplitMessage = string.split(tostring(input.KeyCode), ".")
                         local NewKeyNoEnum = SplitMessage[3]
                         Keybind.KeybindFrame.KeybindBox.Text = tostring(NewKeyNoEnum)
@@ -2528,7 +2803,7 @@ function HDXLib:CreateWindow(Settings)
                         Keybind.KeybindFrame.KeybindBox:ReleaseFocus()
                         SaveConfiguration()
                     end
-                elseif KeybindSettings.CurrentKeybind ~= nil and (input.KeyCode == Enum.KeyCode[KeybindSettings.CurrentKeybind]) then  --Test
+                elseif KeybindSettings.CurrentKeybind ~= nil and (input.KeyCode == Enum.KeyCode[KeybindSettings.CurrentKeybind] and not processed) then --Test
                     local Held = true
                     local Connection
                     Connection = input.Changed:Connect(function(prop)
@@ -2541,17 +2816,21 @@ function HDXLib:CreateWindow(Settings)
                     if not KeybindSettings.HoldToInteract then
                         local Success, Response = pcall(KeybindSettings.Callback)
                         if not Success then
-                            TweenService:Create(Keybind, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(85, 0, 0)}):Play()
-                            TweenService:Create(Keybind.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
+                            TweenService:Create(Keybind, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                                { BackgroundColor3 = Color3.fromRGB(85, 0, 0) }):Play()
+                            TweenService:Create(Keybind.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                                { Transparency = 1 }):Play()
                             Keybind.Title.Text = "Callback Error"
-                            print("HDX | "..KeybindSettings.Name.." Callback Error " ..tostring(Response))
-                            task.wait(0.5)
+                            print("Rayfield | " .. KeybindSettings.Name .. " Callback Error " .. tostring(Response))
+                            wait(0.5)
                             Keybind.Title.Text = KeybindSettings.Name
-                            TweenService:Create(Keybind, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
-                            TweenService:Create(Keybind.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+                            TweenService:Create(Keybind, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                                { BackgroundColor3 = SelectedTheme.ElementBackground }):Play()
+                            TweenService:Create(Keybind.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                                { Transparency = 0 }):Play()
                         end
                     else
-                        task.wait(0.25)
+                        wait(0.25)
                         if Held then
                             local Loop; Loop = RunService.Stepped:Connect(function()
                                 if not Held then
@@ -2560,14 +2839,16 @@ function HDXLib:CreateWindow(Settings)
                                 else
                                     KeybindSettings.Callback(true) -- maybe pcall this
                                 end
-                            end)	
+                            end)
                         end
                     end
                 end
             end)
 
             Keybind.KeybindFrame.KeybindBox:GetPropertyChangedSignal("Text"):Connect(function()
-                TweenService:Create(Keybind.KeybindFrame, TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, Keybind.KeybindFrame.KeybindBox.TextBounds.X + 24, 0, 30)}):Play()
+                TweenService:Create(Keybind.KeybindFrame,
+                    TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
+                    { Size = UDim2.new(0, Keybind.KeybindFrame.KeybindBox.TextBounds.X + 24, 0, 30) }):Play()
             end)
 
             function KeybindSettings:Set(NewKeybind)
@@ -2576,34 +2857,47 @@ function HDXLib:CreateWindow(Settings)
                 Keybind.KeybindFrame.KeybindBox:ReleaseFocus()
                 SaveConfiguration()
             end
+
             function KeybindSettings:Destroy()
                 Keybind:Destroy()
             end
+
             function KeybindSettings:Lock(Reason)
                 if KeybindSettings.Locked then return end
                 KeybindSettings.Locked = true
-                Keybind.Lock.Reason.Text = Reason or "Locked"
-                TweenService:Create(Keybind.Lock,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{BackgroundTransparency = 0}):Play()
-                TweenService:Create(Keybind.Lock.Reason,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{TextTransparency = 0}):Play()
-                task.wait(0.2)
+                Keybind.Lock.Reason.Text = Reason or 'Locked'
+                TweenService:Create(Keybind.Lock, TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
+                    { BackgroundTransparency = 0 }):Play()
+                TweenService:Create(Keybind.Lock.Reason,
+                    TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), { TextTransparency = 0 }):Play()
+                wait(0.2)
                 if not KeybindSettings.Locked then return end --no icon bug
-                TweenService:Create(Keybind.Lock.Reason.Icon,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{ImageTransparency = 0}):Play()
+                TweenService:Create(Keybind.Lock.Reason.Icon,
+                    TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), { ImageTransparency = 0 })
+                    :Play()
             end
+
             function KeybindSettings:Unlock()
                 if not KeybindSettings.Locked then return end
                 KeybindSettings.Locked = false
-                task.wait(0.2)
-                TweenService:Create(Keybind.Lock.Reason.Icon,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{ImageTransparency = 1}):Play()
+                wait(0.2)
+                TweenService:Create(Keybind.Lock.Reason.Icon,
+                    TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), { ImageTransparency = 1 })
+                    :Play()
                 if KeybindSettings.Locked then return end --no icon bug
-                TweenService:Create(Keybind.Lock,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{BackgroundTransparency = 1}):Play()
-                TweenService:Create(Keybind.Lock.Reason,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{TextTransparency = 1}):Play()
+                TweenService:Create(Keybind.Lock, TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
+                    { BackgroundTransparency = 1 }):Play()
+                TweenService:Create(Keybind.Lock.Reason,
+                    TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), { TextTransparency = 1 }):Play()
             end
+
             function KeybindSettings:Visible(bool)
                 Keybind.Visible = bool
             end
+
             if Settings.ConfigurationSaving then
                 if Settings.ConfigurationSaving.Enabled and KeybindSettings.Flag then
-                    HDXLib.Flags[KeybindSettings.Flag] = KeybindSettings
+                    RayfieldLibrary.Flags[KeybindSettings.Flag] = KeybindSettings
                 end
             end
             return KeybindSettings
@@ -2611,7 +2905,6 @@ function HDXLib:CreateWindow(Settings)
 
         -- Toggle
         function Tab:CreateToggle(ToggleSettings)
-
             local Toggle = Elements.Template.Toggle:Clone()
             Toggle.Name = ToggleSettings.Name
             Toggle.Title.Text = ToggleSettings.Name
@@ -2622,27 +2915,22 @@ function HDXLib:CreateWindow(Settings)
             Toggle.Title.TextTransparency = 1
             Toggle.Switch.BackgroundColor3 = SelectedTheme.ToggleBackground
             Tab.Elements[Toggle.Name] = {
-                type = "toggle",
+                type = 'toggle',
                 section = ToggleSettings.SectionParent,
                 element = Toggle
             }
-			if ToggleSettings.CurrentValue == true then
-				local Success, Response = pcall(function()
-					ToggleSettings.Callback(ToggleSettings.CurrentValue)
-				end)
-			end
             if ToggleSettings.SectionParent then
                 Toggle.Parent = ToggleSettings.SectionParent.Holder
             else
                 Toggle.Parent = TabPage
             end
-            if SelectedTheme ~= HDXLib.Theme.Default then
+            if SelectedTheme ~= RayfieldLibrary.Theme.Default then
                 Toggle.Switch.Shadow.Visible = false
             end
             ToggleSettings.Locked = false
-            TweenService:Create(Toggle, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-            TweenService:Create(Toggle.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-            TweenService:Create(Toggle.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()	
+            TweenService:Create(Toggle, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { BackgroundTransparency = 0 }):Play()
+            TweenService:Create(Toggle.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { Transparency = 0 }):Play()
+            TweenService:Create(Toggle.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { TextTransparency = 0 }):Play()
 
 
             if not ToggleSettings.CurrentValue then
@@ -2658,56 +2946,94 @@ function HDXLib:CreateWindow(Settings)
             end
 
             Toggle.MouseEnter:Connect(function()
-                TweenService:Create(Toggle, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
+                TweenService:Create(Toggle, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                    { BackgroundColor3 = SelectedTheme.ElementBackgroundHover }):Play()
             end)
 
             Toggle.MouseLeave:Connect(function()
-                TweenService:Create(Toggle, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
+                TweenService:Create(Toggle, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                    { BackgroundColor3 = SelectedTheme.ElementBackground }):Play()
             end)
             Toggle.Interact.MouseButton1Click:Connect(function()
                 if ToggleSettings.Locked then return end
                 if ToggleSettings.CurrentValue then
                     ToggleSettings.CurrentValue = false
-                    TweenService:Create(Toggle, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
-                    TweenService:Create(Toggle.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-                    TweenService:Create(Toggle.Switch.Indicator, TweenInfo.new(0.45, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Position = UDim2.new(1, -40, 0.5, 0)}):Play()
-                    TweenService:Create(Toggle.Switch.Indicator, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0,12,0,12)}):Play()
-                    TweenService:Create(Toggle.Switch.Indicator.UIStroke, TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Color = SelectedTheme.ToggleDisabledStroke}):Play()
-                    TweenService:Create(Toggle.Switch.Indicator, TweenInfo.new(0.8, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = SelectedTheme.ToggleDisabled}):Play()
-                    TweenService:Create(Toggle.Switch.UIStroke, TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Color = SelectedTheme.ToggleDisabledOuterStroke}):Play()
-                    task.wait(0.05)
-                    TweenService:Create(Toggle.Switch.Indicator, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0,17,0,17)}):Play()
-                    task.wait(0.15)
-                    TweenService:Create(Toggle, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
-                    TweenService:Create(Toggle.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 0}):Play()	
+                    TweenService:Create(Toggle, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                        { BackgroundColor3 = SelectedTheme.ElementBackgroundHover }):Play()
+                    TweenService:Create(Toggle.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), { Transparency = 1 })
+                        :Play()
+                    TweenService:Create(Toggle.Switch.Indicator,
+                        TweenInfo.new(0.45, Enum.EasingStyle.Quart, Enum.EasingDirection.Out),
+                        { Position = UDim2.new(1, -40, 0.5, 0) }):Play()
+                    TweenService:Create(Toggle.Switch.Indicator,
+                        TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out),
+                        { Size = UDim2.new(0, 12, 0, 12) }):Play()
+                    TweenService:Create(Toggle.Switch.Indicator.UIStroke,
+                        TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
+                        { Color = SelectedTheme.ToggleDisabledStroke }):Play()
+                    TweenService:Create(Toggle.Switch.Indicator,
+                        TweenInfo.new(0.8, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
+                        { BackgroundColor3 = SelectedTheme.ToggleDisabled }):Play()
+                    TweenService:Create(Toggle.Switch.UIStroke,
+                        TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
+                        { Color = SelectedTheme.ToggleDisabledOuterStroke }):Play()
+                    wait(0.05)
+                    TweenService:Create(Toggle.Switch.Indicator,
+                        TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out),
+                        { Size = UDim2.new(0, 17, 0, 17) }):Play()
+                    wait(0.15)
+                    TweenService:Create(Toggle, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                        { BackgroundColor3 = SelectedTheme.ElementBackground }):Play()
+                    TweenService:Create(Toggle.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), { Transparency = 0 })
+                        :Play()
                 else
                     ToggleSettings.CurrentValue = true
-                    TweenService:Create(Toggle, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
-                    TweenService:Create(Toggle.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-                    TweenService:Create(Toggle.Switch.Indicator, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Position = UDim2.new(1, -20, 0.5, 0)}):Play()
-                    TweenService:Create(Toggle.Switch.Indicator, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0,12,0,12)}):Play()
-                    TweenService:Create(Toggle.Switch.Indicator.UIStroke, TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Color = SelectedTheme.ToggleEnabledStroke}):Play()
-                    TweenService:Create(Toggle.Switch.Indicator, TweenInfo.new(0.8, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = SelectedTheme.ToggleEnabled}):Play()
-                    TweenService:Create(Toggle.Switch.UIStroke, TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Color = SelectedTheme.ToggleEnabledOuterStroke}):Play()
-                    task.wait(0.05)
-                    TweenService:Create(Toggle.Switch.Indicator, TweenInfo.new(0.45, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0,17,0,17)}):Play()	
-                    task.wait(0.15)
-                    TweenService:Create(Toggle, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
-                    TweenService:Create(Toggle.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 0}):Play()		
+                    TweenService:Create(Toggle, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                        { BackgroundColor3 = SelectedTheme.ElementBackgroundHover }):Play()
+                    TweenService:Create(Toggle.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), { Transparency = 1 })
+                        :Play()
+                    TweenService:Create(Toggle.Switch.Indicator,
+                        TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out),
+                        { Position = UDim2.new(1, -20, 0.5, 0) }):Play()
+                    TweenService:Create(Toggle.Switch.Indicator,
+                        TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out),
+                        { Size = UDim2.new(0, 12, 0, 12) }):Play()
+                    TweenService:Create(Toggle.Switch.Indicator.UIStroke,
+                        TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
+                        { Color = SelectedTheme.ToggleEnabledStroke }):Play()
+                    TweenService:Create(Toggle.Switch.Indicator,
+                        TweenInfo.new(0.8, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
+                        { BackgroundColor3 = SelectedTheme.ToggleEnabled }):Play()
+                    TweenService:Create(Toggle.Switch.UIStroke,
+                        TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
+                        { Color = SelectedTheme.ToggleEnabledOuterStroke }):Play()
+                    wait(0.05)
+                    TweenService:Create(Toggle.Switch.Indicator,
+                        TweenInfo.new(0.45, Enum.EasingStyle.Quart, Enum.EasingDirection.Out),
+                        { Size = UDim2.new(0, 17, 0, 17) }):Play()
+                    wait(0.15)
+                    TweenService:Create(Toggle, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                        { BackgroundColor3 = SelectedTheme.ElementBackground }):Play()
+                    TweenService:Create(Toggle.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), { Transparency = 0 })
+                        :Play()
                 end
 
                 local Success, Response = pcall(function()
                     ToggleSettings.Callback(ToggleSettings.CurrentValue)
                 end)
                 if not Success then
-                    TweenService:Create(Toggle, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(85, 0, 0)}):Play()
-                    TweenService:Create(Toggle.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
+                    TweenService:Create(Toggle, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                        { BackgroundColor3 = Color3.fromRGB(85, 0, 0) }):Play()
+                    TweenService:Create(Toggle.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), { Transparency = 1 })
+                        :Play()
                     Toggle.Title.Text = "Callback Error"
-                    print("HDX | "..ToggleSettings.Name.." Callback Error " ..tostring(Response))
-                    task.wait(0.5)
+                    print("Rayfield | " .. ToggleSettings.Name .. " Callback Error " .. tostring(Response))
+                    wait(0.5)
                     Toggle.Title.Text = ToggleSettings.Name
-                    TweenService:Create(Toggle, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
-                    TweenService:Create(Toggle.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+                    TweenService:Create(Toggle, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                        { BackgroundColor3 = SelectedTheme.ElementBackground }):Play()
+                    TweenService:Create(Toggle.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), { Transparency = 0 })
+                        :Play()
                 end
 
                 SaveConfiguration()
@@ -2715,77 +3041,129 @@ function HDXLib:CreateWindow(Settings)
             function ToggleSettings:Set(NewToggleValue)
                 if NewToggleValue then
                     ToggleSettings.CurrentValue = true
-                    TweenService:Create(Toggle, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
-                    TweenService:Create(Toggle.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-                    TweenService:Create(Toggle.Switch.Indicator, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Position = UDim2.new(1, -20, 0.5, 0)}):Play()
-                    TweenService:Create(Toggle.Switch.Indicator, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0,12,0,12)}):Play()
-                    TweenService:Create(Toggle.Switch.Indicator.UIStroke, TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Color = SelectedTheme.ToggleEnabledStroke}):Play()
-                    TweenService:Create(Toggle.Switch.Indicator, TweenInfo.new(0.8, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = SelectedTheme.ToggleEnabled}):Play()
-                    TweenService:Create(Toggle.Switch.UIStroke, TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Color = Color3.fromRGB(100,100,100)}):Play()
-                    task.wait(0.05)
-                    TweenService:Create(Toggle.Switch.Indicator, TweenInfo.new(0.45, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0,17,0,17)}):Play()	
-                    task.wait(0.15)
-                    TweenService:Create(Toggle, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
-                    TweenService:Create(Toggle.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 0}):Play()	
+                    TweenService:Create(Toggle, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                        { BackgroundColor3 = SelectedTheme.ElementBackgroundHover }):Play()
+                    TweenService:Create(Toggle.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), { Transparency = 1 })
+                        :Play()
+                    TweenService:Create(Toggle.Switch.Indicator,
+                        TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out),
+                        { Position = UDim2.new(1, -20, 0.5, 0) }):Play()
+                    TweenService:Create(Toggle.Switch.Indicator,
+                        TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out),
+                        { Size = UDim2.new(0, 12, 0, 12) }):Play()
+                    TweenService:Create(Toggle.Switch.Indicator.UIStroke,
+                        TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
+                        { Color = SelectedTheme.ToggleEnabledStroke }):Play()
+                    TweenService:Create(Toggle.Switch.Indicator,
+                        TweenInfo.new(0.8, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
+                        { BackgroundColor3 = SelectedTheme.ToggleEnabled }):Play()
+                    TweenService:Create(Toggle.Switch.UIStroke,
+                        TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
+                        { Color = Color3.fromRGB(100, 100, 100) }):Play()
+                    wait(0.05)
+                    TweenService:Create(Toggle.Switch.Indicator,
+                        TweenInfo.new(0.45, Enum.EasingStyle.Quart, Enum.EasingDirection.Out),
+                        { Size = UDim2.new(0, 17, 0, 17) }):Play()
+                    wait(0.15)
+                    TweenService:Create(Toggle, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                        { BackgroundColor3 = SelectedTheme.ElementBackground }):Play()
+                    TweenService:Create(Toggle.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), { Transparency = 0 })
+                        :Play()
                 else
                     ToggleSettings.CurrentValue = false
-                    TweenService:Create(Toggle, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
-                    TweenService:Create(Toggle.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-                    TweenService:Create(Toggle.Switch.Indicator, TweenInfo.new(0.45, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Position = UDim2.new(1, -40, 0.5, 0)}):Play()
-                    TweenService:Create(Toggle.Switch.Indicator, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0,12,0,12)}):Play()
-                    TweenService:Create(Toggle.Switch.Indicator.UIStroke, TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Color = SelectedTheme.ToggleDisabledStroke}):Play()
-                    TweenService:Create(Toggle.Switch.Indicator, TweenInfo.new(0.8, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = SelectedTheme.ToggleDisabled}):Play()
-                    TweenService:Create(Toggle.Switch.UIStroke, TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Color = Color3.fromRGB(65,65,65)}):Play()
-                    task.wait(0.05)
-                    TweenService:Create(Toggle.Switch.Indicator, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0,17,0,17)}):Play()
-                    task.wait(0.15)
-                    TweenService:Create(Toggle, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
-                    TweenService:Create(Toggle.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 0}):Play()	
+                    TweenService:Create(Toggle, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                        { BackgroundColor3 = SelectedTheme.ElementBackgroundHover }):Play()
+                    TweenService:Create(Toggle.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), { Transparency = 1 })
+                        :Play()
+                    TweenService:Create(Toggle.Switch.Indicator,
+                        TweenInfo.new(0.45, Enum.EasingStyle.Quart, Enum.EasingDirection.Out),
+                        { Position = UDim2.new(1, -40, 0.5, 0) }):Play()
+                    TweenService:Create(Toggle.Switch.Indicator,
+                        TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out),
+                        { Size = UDim2.new(0, 12, 0, 12) }):Play()
+                    TweenService:Create(Toggle.Switch.Indicator.UIStroke,
+                        TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
+                        { Color = SelectedTheme.ToggleDisabledStroke }):Play()
+                    TweenService:Create(Toggle.Switch.Indicator,
+                        TweenInfo.new(0.8, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
+                        { BackgroundColor3 = SelectedTheme.ToggleDisabled }):Play()
+                    TweenService:Create(Toggle.Switch.UIStroke,
+                        TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
+                        { Color = Color3.fromRGB(65, 65, 65) }):Play()
+                    wait(0.05)
+                    TweenService:Create(Toggle.Switch.Indicator,
+                        TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out),
+                        { Size = UDim2.new(0, 17, 0, 17) }):Play()
+                    wait(0.15)
+                    TweenService:Create(Toggle, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                        { BackgroundColor3 = SelectedTheme.ElementBackground }):Play()
+                    TweenService:Create(Toggle.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), { Transparency = 0 })
+                        :Play()
                 end
                 local Success, Response = pcall(function()
                     ToggleSettings.Callback(ToggleSettings.CurrentValue)
                 end)
                 if not Success then
-                    TweenService:Create(Toggle, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(85, 0, 0)}):Play()
-                    TweenService:Create(Toggle.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
+                    TweenService:Create(Toggle, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                        { BackgroundColor3 = Color3.fromRGB(85, 0, 0) }):Play()
+                    TweenService:Create(Toggle.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), { Transparency = 1 })
+                        :Play()
                     Toggle.Title.Text = "Callback Error"
-                    print("HDX | "..ToggleSettings.Name.." Callback Error " ..tostring(Response))
-                    task.wait(0.5)
+                    print("Rayfield | " .. ToggleSettings.Name .. " Callback Error " .. tostring(Response))
+                    wait(0.5)
                     Toggle.Title.Text = ToggleSettings.Name
-                    TweenService:Create(Toggle, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
-                    TweenService:Create(Toggle.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+                    TweenService:Create(Toggle, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                        { BackgroundColor3 = SelectedTheme.ElementBackground }):Play()
+                    TweenService:Create(Toggle.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), { Transparency = 0 })
+                        :Play()
                 end
                 SaveConfiguration()
             end
+
             function ToggleSettings:Destroy()
                 Toggle:Destroy()
             end
-            function ToggleSettings:Lock(Reason)
+
+            function ToggleSettings:Lock(Reason, HideLockIcon)
                 if ToggleSettings.Locked then return end
                 ToggleSettings.Locked = true
-                Toggle.Lock.Reason.Text = Reason or "Locked"
-                TweenService:Create(Toggle.Lock,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{BackgroundTransparency = 0}):Play()
-                TweenService:Create(Toggle.Lock.Reason,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{TextTransparency = 0}):Play()
-                task.wait(0.2)
-                if not ToggleSettings.Locked then return end --no icon bug
-                TweenService:Create(Toggle.Lock.Reason.Icon,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{ImageTransparency = 0}):Play()
+                Toggle.Lock.Reason.Text = Reason or 'Locked'
+                TweenService:Create(Toggle.Lock, TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
+                    { BackgroundTransparency = 0 }):Play()
+                TweenService:Create(Toggle.Lock.Reason,
+                    TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), { TextTransparency = 0 }):Play()
+                if not HideLockIcon then
+                    wait(0.2)
+                    if not ToggleSettings.Locked then return end --no icon bug
+                    TweenService:Create(Toggle.Lock.Reason.Icon,
+                        TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), { ImageTransparency = 0 })
+                        :Play()
+                end
             end
+
             function ToggleSettings:Unlock()
                 if not ToggleSettings.Locked then return end
                 ToggleSettings.Locked = false
-                task.wait(0.2)
-                TweenService:Create(Toggle.Lock.Reason.Icon,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{ImageTransparency = 1}):Play()
+                wait(0.2)
+                if Toggle.Lock.Reason.Icon.ImageTransparency == 0 then
+                    TweenService:Create(Toggle.Lock.Reason.Icon,
+                        TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), { ImageTransparency = 1 })
+                        :Play()
+                end
                 if ToggleSettings.Locked then return end --no icon bug
-                TweenService:Create(Toggle.Lock,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{BackgroundTransparency = 1}):Play()
-                TweenService:Create(Toggle.Lock.Reason,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{TextTransparency = 1}):Play()
+                TweenService:Create(Toggle.Lock, TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
+                    { BackgroundTransparency = 1 }):Play()
+                TweenService:Create(Toggle.Lock.Reason,
+                    TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), { TextTransparency = 1 }):Play()
             end
+
             function ToggleSettings:Visible(bool)
                 Toggle.Visible = bool
             end
 
             if Settings.ConfigurationSaving then
                 if Settings.ConfigurationSaving.Enabled and ToggleSettings.Flag then
-                    HDXLib.Flags[ToggleSettings.Flag] = ToggleSettings
+                    RayfieldLibrary.Flags[ToggleSettings.Flag] = ToggleSettings
                 end
             end
 
@@ -2796,7 +3174,7 @@ function HDXLib:CreateWindow(Settings)
         function Tab:CreateColorPicker(ColorPickerSettings) -- by Throit
             local ColorPicker = Elements.Template.ColorPicker:Clone()
             Tab.Elements[ColorPickerSettings.Name] = {
-                type = "colorpicker",
+                type = 'colorpicker',
                 section = ColorPickerSettings.SectionParent,
                 element = ColorPicker
             }
@@ -2815,225 +3193,277 @@ function HDXLib:CreateWindow(Settings)
             else
                 ColorPicker.Parent = TabPage
             end
-            ColorPicker.Size = UDim2.new(0,465,0,40)
-            ColorPicker.ColorSlider.Visible = false
-            ColorPicker.HexInput.Visible = false
-            ColorPicker.RGB.Visible = false
-            Background.Size = UDim2.new(0, 39, 0, 22)
-            Display.BackgroundTransparency = 0
-            Main.MainPoint.ImageTransparency = 1
-            ColorPicker.Interact.Size = UDim2.new(1, 0, 1, 0)
-            ColorPicker.Interact.Position = UDim2.new(0.5, 0, 0.5, 0)
-            ColorPicker.RGB.Position = UDim2.new(0, 17, 0, 70)
-            ColorPicker.HexInput.Position = UDim2.new(0, 17, 0, 90)
-            Main.ImageTransparency = 1
+            ColorPicker.Size                  = UDim2.new(0, 465, 0, 40)
+            ColorPicker.ColorSlider.Visible   = false
+            ColorPicker.HexInput.Visible      = false
+            ColorPicker.RGB.Visible           = false
+            Background.Size                   = UDim2.new(0, 39, 0, 22)
+            Display.BackgroundTransparency    = 0
+            Main.MainPoint.ImageTransparency  = 1
+            ColorPicker.Interact.Size         = UDim2.new(1, 0, 1, 0)
+            ColorPicker.Interact.Position     = UDim2.new(0.5, 0, 0.5, 0)
+            ColorPicker.RGB.Position          = UDim2.new(0, 17, 0, 70)
+            ColorPicker.HexInput.Position     = UDim2.new(0, 17, 0, 90)
+            Main.ImageTransparency            = 1
             Background.BackgroundTransparency = 1
-            local opened  = false 
-            local mouse = game.Players.LocalPlayer:GetMouse()
-            Main.Image = "http://www.roblox.com/asset/?id=11415645739"
-            local mainDragging = false 
-            local sliderDragging = false 
+            local opened                      = false
+            local mouse                       = game.Players.LocalPlayer:GetMouse()
+            Main.Image                        = "http://www.roblox.com/asset/?id=11415645739"
+            local mainDragging                = false
+            local sliderDragging              = false
             ColorPicker.Interact.MouseButton1Down:Connect(function()
                 if ColorPickerSettings.Locked then return end
                 if not opened then
                     ColorPicker.ColorPickerIs.Value = true
-                    opened = true 
+                    opened = true
                     ColorPicker.ColorSlider.Visible = true
                     ColorPicker.HexInput.Visible = true
                     ColorPicker.RGB.Visible = true
-                    TweenService:Create(ColorPicker, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Size = UDim2.new(0,465, 0, 120)}):Play()
-                    TweenService:Create(Background, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 173, 0, 86)}):Play()
-                    TweenService:Create(Display, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-                    TweenService:Create(ColorPicker.Interact, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Position = UDim2.new(0.289, 0, 0.5, 0)}):Play()
-                    TweenService:Create(ColorPicker.RGB, TweenInfo.new(0.8, Enum.EasingStyle.Quint), {Position = UDim2.new(0, 17, 0, 40)}):Play()
-                    TweenService:Create(ColorPicker.HexInput, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Position = UDim2.new(0, 17, 0, 73)}):Play()
-                    TweenService:Create(ColorPicker.Interact, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Size = UDim2.new(0.574, 0, 1, 0)}):Play()
-                    TweenService:Create(Main.MainPoint, TweenInfo.new(0.2, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
-                    TweenService:Create(Main, TweenInfo.new(0.2, Enum.EasingStyle.Quint), {ImageTransparency = 0.1}):Play()
-                    TweenService:Create(Background, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
+                    TweenService:Create(ColorPicker, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                        { Size = UDim2.new(0, 465, 0, 120) }):Play()
+                    TweenService:Create(Background, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                        { Size = UDim2.new(0, 173, 0, 86) }):Play()
+                    TweenService:Create(Display, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                        { BackgroundTransparency = 1 })
+                        :Play()
+                    TweenService:Create(ColorPicker.Interact, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                        { Position = UDim2.new(0.289, 0, 0.5, 0) }):Play()
+                    TweenService:Create(ColorPicker.RGB, TweenInfo.new(0.8, Enum.EasingStyle.Quint),
+                        { Position = UDim2.new(0, 17, 0, 40) }):Play()
+                    TweenService:Create(ColorPicker.HexInput, TweenInfo.new(0.5, Enum.EasingStyle.Quint),
+                        { Position = UDim2.new(0, 17, 0, 73) }):Play()
+                    TweenService:Create(ColorPicker.Interact, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                        { Size = UDim2.new(0.574, 0, 1, 0) }):Play()
+                    TweenService:Create(Main.MainPoint, TweenInfo.new(0.2, Enum.EasingStyle.Quint),
+                        { ImageTransparency = 0 }):Play()
+                    TweenService:Create(Main, TweenInfo.new(0.2, Enum.EasingStyle.Quint), { ImageTransparency = 0.1 })
+                        :Play()
+                    TweenService:Create(Background, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                        { BackgroundTransparency = 0 }):Play()
                 else
                     ColorPicker.ColorPickerIs.Value = false
                     opened = false
                     ColorPicker.ColorSlider.Visible = false
                     ColorPicker.HexInput.Visible = false
                     ColorPicker.RGB.Visible = false
-                    TweenService:Create(ColorPicker, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Size = UDim2.new(0,465, 0,40)}):Play()
-                    TweenService:Create(Background, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 39, 0, 22)}):Play()
-                    TweenService:Create(ColorPicker.Interact, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Size = UDim2.new(1, 0, 1, 0)}):Play()
-                    TweenService:Create(ColorPicker.Interact, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Position = UDim2.new(0.5, 0, 0.5, 0)}):Play()
-                    TweenService:Create(ColorPicker.RGB, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Position = UDim2.new(0, 17, 0, 70)}):Play()
-                    TweenService:Create(ColorPicker.HexInput, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Position = UDim2.new(0, 17, 0, 90)}):Play()
-                    TweenService:Create(Display, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-                    TweenService:Create(Main.MainPoint, TweenInfo.new(0.2, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
-                    TweenService:Create(Main, TweenInfo.new(0.2, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
-                    TweenService:Create(Background, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
+                    TweenService:Create(ColorPicker, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                        { Size = UDim2.new(0, 465, 0, 40) }):Play()
+                    TweenService:Create(Background, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                        { Size = UDim2.new(0, 39, 0, 22) }):Play()
+                    TweenService:Create(ColorPicker.Interact, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                        { Size = UDim2.new(1, 0, 1, 0) }):Play()
+                    TweenService:Create(ColorPicker.Interact, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                        { Position = UDim2.new(0.5, 0, 0.5, 0) }):Play()
+                    TweenService:Create(ColorPicker.RGB, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                        { Position = UDim2.new(0, 17, 0, 70) }):Play()
+                    TweenService:Create(ColorPicker.HexInput, TweenInfo.new(0.5, Enum.EasingStyle.Quint),
+                        { Position = UDim2.new(0, 17, 0, 90) }):Play()
+                    TweenService:Create(Display, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                        { BackgroundTransparency = 0 })
+                        :Play()
+                    TweenService:Create(Main.MainPoint, TweenInfo.new(0.2, Enum.EasingStyle.Quint),
+                        { ImageTransparency = 1 }):Play()
+                    TweenService:Create(Main, TweenInfo.new(0.2, Enum.EasingStyle.Quint), { ImageTransparency = 1 })
+                        :Play()
+                    TweenService:Create(Background, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                        { BackgroundTransparency = 1 }):Play()
                 end
             end)
 
-            game:GetService("UserInputService").InputEnded:Connect(function(input, gameProcessed) if input.UserInputType == Enum.UserInputType.MouseButton1 then 
+            game:GetService("UserInputService").InputEnded:Connect(function(input, gameProcessed)
+                if input.UserInputType == Enum.UserInputType.MouseButton1 then
                     mainDragging = false
                     sliderDragging = false
-                end end)
+                end
+            end)
             Main.MouseButton1Down:Connect(function()
                 if opened and not ColorPickerSettings.Locked then
-                    mainDragging = true 
+                    mainDragging = true
                 end
             end)
             Main.MainPoint.MouseButton1Down:Connect(function()
                 if opened and not ColorPickerSettings.Locked then
-                    mainDragging = true 
+                    mainDragging = true
                 end
             end)
             Slider.MouseButton1Down:Connect(function()
                 if ColorPickerSettings.Locked then return end
-                sliderDragging = true 
+                sliderDragging = true
             end)
             Slider.SliderPoint.MouseButton1Down:Connect(function()
                 if ColorPickerSettings.Locked then return end
-                sliderDragging = true 
+                sliderDragging = true
             end)
 
-            local h,s,v = ColorPickerSettings.Color:ToHSV()
-            local color = Color3.fromHSV(h,s,v) 
-            local hex = string.format("#%02X%02X%02X",color.R*0xFF,color.G*0xFF,color.B*0xFF)
+            local h, s, v = ColorPickerSettings.Color:ToHSV()
+            local color = Color3.fromHSV(h, s, v)
+            local hex = string.format("#%02X%02X%02X", color.R * 0xFF, color.G * 0xFF, color.B * 0xFF)
             ColorPicker.HexInput.InputBox.Text = hex
             local function setDisplay()
                 --Main
-                Main.MainPoint.Position = UDim2.new(s,-Main.MainPoint.AbsoluteSize.X/2,1-v,-Main.MainPoint.AbsoluteSize.Y/2)
-                Main.MainPoint.ImageColor3 = Color3.fromHSV(h,s,v)
-                Background.BackgroundColor3 = Color3.fromHSV(h,1,1)
-                Display.BackgroundColor3 = Color3.fromHSV(h,s,v)
-                --Slider 
+                Main.MainPoint.Position = UDim2.new(s, -Main.MainPoint.AbsoluteSize.X / 2, 1 - v,
+                    -Main.MainPoint.AbsoluteSize.Y / 2)
+                Main.MainPoint.ImageColor3 = Color3.fromHSV(h, s, v)
+                Background.BackgroundColor3 = Color3.fromHSV(h, 1, 1)
+                Display.BackgroundColor3 = Color3.fromHSV(h, s, v)
+                --Slider
                 local x = h * Slider.AbsoluteSize.X
-                Slider.SliderPoint.Position = UDim2.new(0,x-Slider.SliderPoint.AbsoluteSize.X/2,0.5,0)
-                Slider.SliderPoint.ImageColor3 = Color3.fromHSV(h,1,1)
-                local color = Color3.fromHSV(h,s,v) 
-                local r,g,b = math.floor((color.R*255)+0.5),math.floor((color.G*255)+0.5),math.floor((color.B*255)+0.5)
+                Slider.SliderPoint.Position = UDim2.new(0, x - Slider.SliderPoint.AbsoluteSize.X / 2, 0.5, 0)
+                Slider.SliderPoint.ImageColor3 = Color3.fromHSV(h, 1, 1)
+                local color = Color3.fromHSV(h, s, v)
+                local r, g, b = math.floor((color.R * 255) + 0.5), math.floor((color.G * 255) + 0.5),
+                    math.floor((color.B * 255) + 0.5)
                 ColorPicker.RGB.RInput.InputBox.Text = tostring(r)
                 ColorPicker.RGB.GInput.InputBox.Text = tostring(g)
                 ColorPicker.RGB.BInput.InputBox.Text = tostring(b)
-                hex = string.format("#%02X%02X%02X",color.R*0xFF,color.G*0xFF,color.B*0xFF)
+                hex = string.format("#%02X%02X%02X", color.R * 0xFF, color.G * 0xFF, color.B * 0xFF)
                 ColorPicker.HexInput.InputBox.Text = hex
             end
             setDisplay()
             ColorPicker.HexInput.InputBox.FocusLost:Connect(function()
                 if not pcall(function()
                         local r, g, b = string.match(ColorPicker.HexInput.InputBox.Text, "^#?(%w%w)(%w%w)(%w%w)$")
-                        local rgbColor = Color3.fromRGB(tonumber(r, 16),tonumber(g, 16), tonumber(b, 16))
-                        h,s,v = rgbColor:ToHSV()
+                        local rgbColor = Color3.fromRGB(tonumber(r, 16), tonumber(g, 16), tonumber(b, 16))
+                        h, s, v = rgbColor:ToHSV()
                         hex = ColorPicker.HexInput.InputBox.Text
                         setDisplay()
                         ColorPickerSettings.Color = rgbColor
-                    end) 
-                then 
-                    ColorPicker.HexInput.InputBox.Text = hex 
+                    end)
+                then
+                    ColorPicker.HexInput.InputBox.Text = hex
                 end
-                pcall(function()ColorPickerSettings.Callback(Color3.fromHSV(h,s,v))end)
-                local r,g,b = math.floor((h*255)+0.5),math.floor((s*255)+0.5),math.floor((v*255)+0.5)
-                ColorPickerSettings.Color = Color3.fromRGB(r,g,b)
+                pcall(function() ColorPickerSettings.Callback(Color3.fromHSV(h, s, v)) end)
+                local r, g, b = math.floor((h * 255) + 0.5), math.floor((s * 255) + 0.5), math.floor((v * 255) + 0.5)
+                ColorPickerSettings.Color = Color3.fromRGB(r, g, b)
                 SaveConfiguration()
             end)
             --RGB
-            local function rgbBoxes(box,toChange)
-                local value = tonumber(box.Text) 
-                local color = Color3.fromHSV(h,s,v) 
-                local oldR,oldG,oldB = math.floor((color.R*255)+0.5),math.floor((color.G*255)+0.5),math.floor((color.B*255)+0.5)
-                local save 
-                if toChange == "R" then save = oldR;oldR = value elseif toChange == "G" then save = oldG;oldG = value else save = oldB;oldB = value end
-                if value then 
-                    value = math.clamp(value,0,255)
-                    h,s,v = Color3.fromRGB(oldR,oldG,oldB):ToHSV()
+            local function rgbBoxes(box, toChange)
+                local value = tonumber(box.Text)
+                local color = Color3.fromHSV(h, s, v)
+                local oldR, oldG, oldB = math.floor((color.R * 255) + 0.5), math.floor((color.G * 255) + 0.5),
+                    math.floor((color.B * 255) + 0.5)
+                local save
+                if toChange == "R" then
+                    save = oldR; oldR = value
+                elseif toChange == "G" then
+                    save = oldG; oldG = value
+                else
+                    save = oldB; oldB = value
+                end
+                if value then
+                    value = math.clamp(value, 0, 255)
+                    h, s, v = Color3.fromRGB(oldR, oldG, oldB):ToHSV()
 
                     setDisplay()
-                else 
+                else
                     box.Text = tostring(save)
                 end
-                local r,g,b = math.floor((h*255)+0.5),math.floor((s*255)+0.5),math.floor((v*255)+0.5)
-                ColorPickerSettings.Color = Color3.fromRGB(r,g,b)
+                local r, g, b = math.floor((h * 255) + 0.5), math.floor((s * 255) + 0.5), math.floor((v * 255) + 0.5)
+                ColorPickerSettings.Color = Color3.fromRGB(r, g, b)
                 SaveConfiguration()
             end
 
             ColorPicker.RGB.RInput.InputBox.FocusLost:connect(function()
-                rgbBoxes(ColorPicker.RGB.RInput.InputBox,"R")
-                pcall(function()ColorPickerSettings.Callback(Color3.fromHSV(h,s,v))end)
+                rgbBoxes(ColorPicker.RGB.RInput.InputBox, "R")
+                pcall(function() ColorPickerSettings.Callback(Color3.fromHSV(h, s, v)) end)
             end)
             ColorPicker.RGB.GInput.InputBox.FocusLost:connect(function()
-                rgbBoxes(ColorPicker.RGB.GInput.InputBox,"G")
-                pcall(function()ColorPickerSettings.Callback(Color3.fromHSV(h,s,v))end)
+                rgbBoxes(ColorPicker.RGB.GInput.InputBox, "G")
+                pcall(function() ColorPickerSettings.Callback(Color3.fromHSV(h, s, v)) end)
             end)
             ColorPicker.RGB.BInput.InputBox.FocusLost:connect(function()
-                rgbBoxes(ColorPicker.RGB.BInput.InputBox,"B")
-                pcall(function()ColorPickerSettings.Callback(Color3.fromHSV(h,s,v))end)
+                rgbBoxes(ColorPicker.RGB.BInput.InputBox, "B")
+                pcall(function() ColorPickerSettings.Callback(Color3.fromHSV(h, s, v)) end)
             end)
 
             ColorPicker.HexInput.InputBox.Focused:Connect(function()
-                if ColorPickerSettings.Locked then ColorPicker.HexInput.InputBox:ReleaseFocus() return end
+                if ColorPickerSettings.Locked then
+                    ColorPicker.HexInput.InputBox:ReleaseFocus()
+                    return
+                end
             end)
             ColorPicker.RGB.RInput.InputBox.Focused:connect(function()
-                if ColorPickerSettings.Locked then ColorPicker.RGB.RInput.InputBox:ReleaseFocus() return end
+                if ColorPickerSettings.Locked then
+                    ColorPicker.RGB.RInput.InputBox:ReleaseFocus()
+                    return
+                end
             end)
             ColorPicker.RGB.GInput.InputBox.Focused:connect(function()
-                if ColorPickerSettings.Locked then ColorPicker.RGB.GInput.InputBox:ReleaseFocus() return end
+                if ColorPickerSettings.Locked then
+                    ColorPicker.RGB.GInput.InputBox:ReleaseFocus()
+                    return
+                end
             end)
             ColorPicker.RGB.BInput.InputBox.Focused:connect(function()
-                if ColorPickerSettings.Locked then ColorPicker.RGB.BInput.InputBox:ReleaseFocus() return end
+                if ColorPickerSettings.Locked then
+                    ColorPicker.RGB.BInput.InputBox:ReleaseFocus()
+                    return
+                end
             end)
 
             game:GetService("RunService").RenderStepped:connect(function()
-                if mainDragging then 
-                    local localX = math.clamp(mouse.X-Main.AbsolutePosition.X,0,Main.AbsoluteSize.X)
-                    local localY = math.clamp(mouse.Y-Main.AbsolutePosition.Y,0,Main.AbsoluteSize.Y)
-                    Main.MainPoint.Position = UDim2.new(0,localX-Main.MainPoint.AbsoluteSize.X/2,0,localY-Main.MainPoint.AbsoluteSize.Y/2)
+                if mainDragging then
+                    local localX = math.clamp(mouse.X - Main.AbsolutePosition.X, 0, Main.AbsoluteSize.X)
+                    local localY = math.clamp(mouse.Y - Main.AbsolutePosition.Y, 0, Main.AbsoluteSize.Y)
+                    Main.MainPoint.Position = UDim2.new(0, localX - Main.MainPoint.AbsoluteSize.X / 2, 0,
+                        localY - Main.MainPoint.AbsoluteSize.Y / 2)
                     s = localX / Main.AbsoluteSize.X
                     v = 1 - (localY / Main.AbsoluteSize.Y)
-                    Display.BackgroundColor3 = Color3.fromHSV(h,s,v)
-                    Main.MainPoint.ImageColor3 = Color3.fromHSV(h,s,v)
-                    Background.BackgroundColor3 = Color3.fromHSV(h,1,1)
-                    local color = Color3.fromHSV(h,s,v) 
-                    local r,g,b = math.floor((color.R*255)+0.5),math.floor((color.G*255)+0.5),math.floor((color.B*255)+0.5)
+                    Display.BackgroundColor3 = Color3.fromHSV(h, s, v)
+                    Main.MainPoint.ImageColor3 = Color3.fromHSV(h, s, v)
+                    Background.BackgroundColor3 = Color3.fromHSV(h, 1, 1)
+                    local color = Color3.fromHSV(h, s, v)
+                    local r, g, b = math.floor((color.R * 255) + 0.5), math.floor((color.G * 255) + 0.5),
+                        math.floor((color.B * 255) + 0.5)
                     ColorPicker.RGB.RInput.InputBox.Text = tostring(r)
                     ColorPicker.RGB.GInput.InputBox.Text = tostring(g)
                     ColorPicker.RGB.BInput.InputBox.Text = tostring(b)
-                    ColorPicker.HexInput.InputBox.Text = string.format("#%02X%02X%02X",color.R*0xFF,color.G*0xFF,color.B*0xFF)
-                    pcall(function()ColorPickerSettings.Callback(Color3.fromHSV(h,s,v))end)
-                    ColorPickerSettings.Color = Color3.fromRGB(r,g,b)
+                    ColorPicker.HexInput.InputBox.Text = string.format("#%02X%02X%02X", color.R * 0xFF, color.G * 0xFF,
+                        color.B * 0xFF)
+                    pcall(function() ColorPickerSettings.Callback(Color3.fromHSV(h, s, v)) end)
+                    ColorPickerSettings.Color = Color3.fromRGB(r, g, b)
                     SaveConfiguration()
                 end
-                if sliderDragging then 
-                    local localX = math.clamp(mouse.X-Slider.AbsolutePosition.X,0,Slider.AbsoluteSize.X)
+                if sliderDragging then
+                    local localX = math.clamp(mouse.X - Slider.AbsolutePosition.X, 0, Slider.AbsoluteSize.X)
                     h = localX / Slider.AbsoluteSize.X
-                    Display.BackgroundColor3 = Color3.fromHSV(h,s,v)
-                    Slider.SliderPoint.Position = UDim2.new(0,localX-Slider.SliderPoint.AbsoluteSize.X/2,0.5,0)
-                    Slider.SliderPoint.ImageColor3 = Color3.fromHSV(h,1,1)
-                    Background.BackgroundColor3 = Color3.fromHSV(h,1,1)
-                    Main.MainPoint.ImageColor3 = Color3.fromHSV(h,s,v)
-                    local color = Color3.fromHSV(h,s,v) 
-                    local r,g,b = math.floor((color.R*255)+0.5),math.floor((color.G*255)+0.5),math.floor((color.B*255)+0.5)
+                    Display.BackgroundColor3 = Color3.fromHSV(h, s, v)
+                    Slider.SliderPoint.Position = UDim2.new(0, localX - Slider.SliderPoint.AbsoluteSize.X / 2, 0.5, 0)
+                    Slider.SliderPoint.ImageColor3 = Color3.fromHSV(h, 1, 1)
+                    Background.BackgroundColor3 = Color3.fromHSV(h, 1, 1)
+                    Main.MainPoint.ImageColor3 = Color3.fromHSV(h, s, v)
+                    local color = Color3.fromHSV(h, s, v)
+                    local r, g, b = math.floor((color.R * 255) + 0.5), math.floor((color.G * 255) + 0.5),
+                        math.floor((color.B * 255) + 0.5)
                     ColorPicker.RGB.RInput.InputBox.Text = tostring(r)
                     ColorPicker.RGB.GInput.InputBox.Text = tostring(g)
                     ColorPicker.RGB.BInput.InputBox.Text = tostring(b)
-                    ColorPicker.HexInput.InputBox.Text = string.format("#%02X%02X%02X",color.R*0xFF,color.G*0xFF,color.B*0xFF)
-                    pcall(function()ColorPickerSettings.Callback(Color3.fromHSV(h,s,v))end)
-                    ColorPickerSettings.Color = Color3.fromRGB(r,g,b)
+                    ColorPicker.HexInput.InputBox.Text = string.format("#%02X%02X%02X", color.R * 0xFF, color.G * 0xFF,
+                        color.B * 0xFF)
+                    pcall(function() ColorPickerSettings.Callback(Color3.fromHSV(h, s, v)) end)
+                    ColorPickerSettings.Color = Color3.fromRGB(r, g, b)
                     SaveConfiguration()
                 end
             end)
 
             if Settings.ConfigurationSaving then
                 if Settings.ConfigurationSaving.Enabled and ColorPickerSettings.Flag then
-                    HDXLib.Flags[ColorPickerSettings.Flag] = ColorPickerSettings
+                    RayfieldLibrary.Flags[ColorPickerSettings.Flag] = ColorPickerSettings
                 end
             end
 
             function ColorPickerSettings:Set(RGBColor)
                 ColorPickerSettings.Color = RGBColor
-                h,s,v = ColorPickerSettings.Color:ToHSV()
-                color = Color3.fromHSV(h,s,v)
+                h, s, v = ColorPickerSettings.Color:ToHSV()
+                color = Color3.fromHSV(h, s, v)
                 setDisplay()
             end
+
             function ColorPickerSettings:Destroy()
                 ColorPicker:Destroy()
             end
+
             function ColorPickerSettings:Lock(Reason)
                 if ColorPickerSettings.Locked then return end
                 ColorPicker.ColorPickerIs.Value = false
@@ -3041,36 +3471,57 @@ function HDXLib:CreateWindow(Settings)
                 ColorPicker.ColorSlider.Visible = false
                 ColorPicker.HexInput.Visible = false
                 ColorPicker.RGB.Visible = false
-                TweenService:Create(ColorPicker, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Size = UDim2.new(0,465, 0,40)}):Play()
-                TweenService:Create(Background, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 39, 0, 22)}):Play()
-                TweenService:Create(ColorPicker.Interact, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Size = UDim2.new(1, 0, 1, 0)}):Play()
-                TweenService:Create(ColorPicker.Interact, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Position = UDim2.new(0.5, 0, 0.5, 0)}):Play()
-                TweenService:Create(ColorPicker.RGB, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Position = UDim2.new(0, 17, 0, 70)}):Play()
-                TweenService:Create(ColorPicker.HexInput, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Position = UDim2.new(0, 17, 0, 90)}):Play()
-                TweenService:Create(Display, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-                TweenService:Create(Main.MainPoint, TweenInfo.new(0.2, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
-                TweenService:Create(Main, TweenInfo.new(0.2, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
-                TweenService:Create(Background, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-                ColorPicker.Lock.Reason.Text = Reason or "Locked"
+                TweenService:Create(ColorPicker, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                    { Size = UDim2.new(0, 465, 0, 40) }):Play()
+                TweenService:Create(Background, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                    { Size = UDim2.new(0, 39, 0, 22) }):Play()
+                TweenService:Create(ColorPicker.Interact, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                    { Size = UDim2.new(1, 0, 1, 0) }):Play()
+                TweenService:Create(ColorPicker.Interact, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                    { Position = UDim2.new(0.5, 0, 0.5, 0) }):Play()
+                TweenService:Create(ColorPicker.RGB, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                    { Position = UDim2.new(0, 17, 0, 70) }):Play()
+                TweenService:Create(ColorPicker.HexInput, TweenInfo.new(0.5, Enum.EasingStyle.Quint),
+                    { Position = UDim2.new(0, 17, 0, 90) }):Play()
+                TweenService:Create(Display, TweenInfo.new(0.6, Enum.EasingStyle.Quint), { BackgroundTransparency = 0 })
+                    :Play()
+                TweenService:Create(Main.MainPoint, TweenInfo.new(0.2, Enum.EasingStyle.Quint), { ImageTransparency = 1 })
+                    :Play()
+                TweenService:Create(Main, TweenInfo.new(0.2, Enum.EasingStyle.Quint), { ImageTransparency = 1 }):Play()
+                TweenService:Create(Background, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                    { BackgroundTransparency = 1 })
+                    :Play()
+                ColorPicker.Lock.Reason.Text = Reason or 'Locked'
                 ColorPickerSettings.Locked = true
-                TweenService:Create(ColorPicker.Lock,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{BackgroundTransparency = 0}):Play()
-                TweenService:Create(ColorPicker.Lock.Reason,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{TextTransparency = 0}):Play()
-                task.wait(0.2)
+                TweenService:Create(ColorPicker.Lock, TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection
+                    .Out), { BackgroundTransparency = 0 }):Play()
+                TweenService:Create(ColorPicker.Lock.Reason,
+                    TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), { TextTransparency = 0 }):Play()
+                wait(0.2)
                 if not ColorPickerSettings.Locked then return end --no icon bug
-                TweenService:Create(ColorPicker.Lock.Reason.Icon,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{ImageTransparency = 0}):Play()
+                TweenService:Create(ColorPicker.Lock.Reason.Icon,
+                    TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), { ImageTransparency = 0 })
+                    :Play()
             end
+
             function ColorPickerSettings:Unlock()
                 if not ColorPickerSettings.Locked then return end
                 ColorPickerSettings.Locked = false
-                task.wait(0.2)
-                TweenService:Create(ColorPicker.Lock.Reason.Icon,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{ImageTransparency = 1}):Play()
+                wait(0.2)
+                TweenService:Create(ColorPicker.Lock.Reason.Icon,
+                    TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), { ImageTransparency = 1 })
+                    :Play()
                 if ColorPickerSettings.Locked then return end --no icon bug
-                TweenService:Create(ColorPicker.Lock,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{BackgroundTransparency = 1}):Play()
-                TweenService:Create(ColorPicker.Lock.Reason,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{TextTransparency = 1}):Play()
+                TweenService:Create(ColorPicker.Lock, TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection
+                    .Out), { BackgroundTransparency = 1 }):Play()
+                TweenService:Create(ColorPicker.Lock.Reason,
+                    TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), { TextTransparency = 1 }):Play()
             end
+
             function ColorPickerSettings:Visible(bool)
                 ColorPicker.Visible = bool
             end
+
             return ColorPickerSettings
         end
 
@@ -3081,7 +3532,7 @@ function HDXLib:CreateWindow(Settings)
             Slider.Title.Text = SliderSettings.Name
             Slider.Visible = true
             Tab.Elements[SliderSettings.Name] = {
-                type = "slider",
+                type = 'slider',
                 section = SliderSettings.SectionParent,
                 element = Slider
             }
@@ -3095,7 +3546,7 @@ function HDXLib:CreateWindow(Settings)
             Slider.UIStroke.Transparency = 1
             Slider.Title.TextTransparency = 1
 
-            if SelectedTheme ~= HDXLib.Theme.Default then
+            if SelectedTheme ~= RayfieldLibrary.Theme.Default then
                 Slider.Main.Shadow.Visible = false
             end
 
@@ -3103,11 +3554,16 @@ function HDXLib:CreateWindow(Settings)
             Slider.Main.UIStroke.Color = SelectedTheme.SliderStroke
             Slider.Main.Progress.BackgroundColor3 = SelectedTheme.SliderProgress
 
-            TweenService:Create(Slider, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-            TweenService:Create(Slider.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-            TweenService:Create(Slider.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()	
+            TweenService:Create(Slider, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { BackgroundTransparency = 0 }):Play()
+            TweenService:Create(Slider.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { Transparency = 0 }):Play()
+            TweenService:Create(Slider.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { TextTransparency = 0 }):Play()
 
-            Slider.Main.Progress.Size =	UDim2.new(0, Slider.Main.AbsoluteSize.X * ((SliderSettings.CurrentValue + SliderSettings.Range[1]) / (SliderSettings.Range[2] - SliderSettings.Range[1])) > 5 and Slider.Main.AbsoluteSize.X * (SliderSettings.CurrentValue / (SliderSettings.Range[2] - SliderSettings.Range[1])) or 5, 1, 0)
+            Slider.Main.Progress.Size = UDim2.new(0,
+                Slider.Main.AbsoluteSize.X *
+                ((SliderSettings.CurrentValue + SliderSettings.Range[1]) / (SliderSettings.Range[2] - SliderSettings.Range[1])) >
+                5 and
+                Slider.Main.AbsoluteSize.X *
+                (SliderSettings.CurrentValue / (SliderSettings.Range[2] - SliderSettings.Range[1])) or 5, 1, 0)
 
             if not SliderSettings.Suffix then
                 Slider.Main.Information.Text = tostring(SliderSettings.CurrentValue)
@@ -3117,13 +3573,15 @@ function HDXLib:CreateWindow(Settings)
 
 
             Slider.MouseEnter:Connect(function()
-                TweenService:Create(Slider, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
+                TweenService:Create(Slider, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                    { BackgroundColor3 = SelectedTheme.ElementBackgroundHover }):Play()
             end)
             Slider.Main.Interact.MouseLeave:Connect(function()
                 Dragging = false
             end)
             Slider.MouseLeave:Connect(function()
-                TweenService:Create(Slider, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
+                TweenService:Create(Slider, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                    { BackgroundColor3 = SelectedTheme.ElementBackground }):Play()
             end)
             local function UpdateSlider(X)
                 local Current = Slider.Main.Progress.AbsolutePosition.X + Slider.Main.Progress.AbsoluteSize.X
@@ -3150,10 +3608,19 @@ function HDXLib:CreateWindow(Settings)
                 elseif Current >= Location and (Location - Start) > 0 then
                     Start = Location
                 end
-                TweenService:Create(Slider.Main.Progress, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = UDim2.new(0, Location - Slider.Main.AbsolutePosition.X > 5 and Location - Slider.Main.AbsolutePosition.X or 5, 1, 0)}):Play()
-                local NewValue = SliderSettings.Range[1] + (Location - Slider.Main.AbsolutePosition.X) / Slider.Main.AbsoluteSize.X * (SliderSettings.Range[2] - SliderSettings.Range[1])
+                TweenService:Create(Slider.Main.Progress,
+                    TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+                    {
+                        Size = UDim2.new(0,
+                            Location - Slider.Main.AbsolutePosition.X > 5 and Location - Slider.Main.AbsolutePosition.X or
+                            5, 1, 0)
+                    }):Play()
+                local NewValue = SliderSettings.Range[1] +
+                    (Location - Slider.Main.AbsolutePosition.X) / Slider.Main.AbsoluteSize.X *
+                    (SliderSettings.Range[2] - SliderSettings.Range[1])
 
-                NewValue = math.floor(NewValue / SliderSettings.Increment + 0.5) * (SliderSettings.Increment * 10000000) / 10000000
+                NewValue = math.floor(NewValue / SliderSettings.Increment + 0.5) * (SliderSettings.Increment * 10000000) /
+                    10000000
                 if not SliderSettings.Suffix then
                     Slider.Main.Information.Text = tostring(NewValue)
                 else
@@ -3165,14 +3632,18 @@ function HDXLib:CreateWindow(Settings)
                         SliderSettings.Callback(NewValue)
                     end)
                     if not Success then
-                        TweenService:Create(Slider, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(85, 0, 0)}):Play()
-                        TweenService:Create(Slider.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
+                        TweenService:Create(Slider, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                            { BackgroundColor3 = Color3.fromRGB(85, 0, 0) }):Play()
+                        TweenService:Create(Slider.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                            { Transparency = 1 }):Play()
                         Slider.Title.Text = "Callback Error"
-                        print("HDX | "..SliderSettings.Name.." Callback Error " ..tostring(Response))
-                        task.wait(0.5)
+                        print("Rayfield | " .. SliderSettings.Name .. " Callback Error " .. tostring(Response))
+                        wait(0.5)
                         Slider.Title.Text = SliderSettings.Name
-                        TweenService:Create(Slider, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
-                        TweenService:Create(Slider.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+                        TweenService:Create(Slider, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                            { BackgroundColor3 = SelectedTheme.ElementBackground }):Play()
+                        TweenService:Create(Slider.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                            { Transparency = 0 }):Play()
                     end
 
                     SliderSettings.CurrentValue = NewValue
@@ -3180,13 +3651,13 @@ function HDXLib:CreateWindow(Settings)
                 end
             end
             Slider.Main.Interact.MouseButton1Down:Connect(function(X)
-                if not SliderSettings.Locked then 
+                if not SliderSettings.Locked then
                     UpdateSlider(X)
-                    Dragging = true 
-                end 
+                    Dragging = true
+                end
             end)
-            Slider.Main.Interact.MouseButton1Up:Connect(function(X) 
-                Dragging = false 
+            Slider.Main.Interact.MouseButton1Up:Connect(function(X)
+                Dragging = false
             end)
             Slider.Main.Interact.MouseMoved:Connect(function(X)
                 if SliderSettings.Locked then return end
@@ -3196,70 +3667,96 @@ function HDXLib:CreateWindow(Settings)
             end)
 
             function SliderSettings:Set(NewVal)
-                TweenService:Create(Slider.Main.Progress, TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, Slider.Main.AbsoluteSize.X * ((NewVal + SliderSettings.Range[1]) / (SliderSettings.Range[2] - SliderSettings.Range[1])) > 5 and Slider.Main.AbsoluteSize.X * (NewVal / (SliderSettings.Range[2] - SliderSettings.Range[1])) or 5, 1, 0)}):Play()
+                TweenService:Create(Slider.Main.Progress,
+                    TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
+                    {
+                        Size = UDim2.new(0,
+                            Slider.Main.AbsoluteSize.X *
+                            ((NewVal + SliderSettings.Range[1]) / (SliderSettings.Range[2] - SliderSettings.Range[1])) >
+                            5 and
+                            Slider.Main.AbsoluteSize.X * (NewVal / (SliderSettings.Range[2] - SliderSettings.Range[1])) or
+                            5, 1, 0)
+                    }):Play()
                 Slider.Main.Information.Text = tostring(NewVal) .. " " .. SliderSettings.Suffix
                 local Success, Response = pcall(function()
                     SliderSettings.Callback(NewVal)
                 end)
                 if not Success then
-                    TweenService:Create(Slider, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(85, 0, 0)}):Play()
-                    TweenService:Create(Slider.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
+                    TweenService:Create(Slider, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                        { BackgroundColor3 = Color3.fromRGB(85, 0, 0) }):Play()
+                    TweenService:Create(Slider.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), { Transparency = 1 })
+                        :Play()
                     Slider.Title.Text = "Callback Error"
-                    print("HDX | "..SliderSettings.Name.." Callback Error " ..tostring(Response))
-                    task.wait(0.5)
+                    print("Rayfield | " .. SliderSettings.Name .. " Callback Error " .. tostring(Response))
+                    wait(0.5)
                     Slider.Title.Text = SliderSettings.Name
-                    TweenService:Create(Slider, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
-                    TweenService:Create(Slider.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+                    TweenService:Create(Slider, TweenInfo.new(0.6, Enum.EasingStyle.Quint),
+                        { BackgroundColor3 = SelectedTheme.ElementBackground }):Play()
+                    TweenService:Create(Slider.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), { Transparency = 0 })
+                        :Play()
                 end
                 SliderSettings.CurrentValue = NewVal
                 SaveConfiguration()
             end
+
             function SliderSettings:Destroy()
                 Slider:Destroy()
             end
+
             function SliderSettings:Lock(Reason)
                 if SliderSettings.Locked then return end
                 SliderSettings.Locked = true
-                Slider.Lock.Reason.Text = Reason or "Locked"
-                TweenService:Create(Slider.Lock,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{BackgroundTransparency = 0}):Play()
-                TweenService:Create(Slider.Lock.Reason,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{TextTransparency = 0}):Play()
-                task.wait(0.2)
+                Slider.Lock.Reason.Text = Reason or 'Locked'
+                TweenService:Create(Slider.Lock, TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
+                    { BackgroundTransparency = 0 }):Play()
+                TweenService:Create(Slider.Lock.Reason,
+                    TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), { TextTransparency = 0 }):Play()
+                wait(0.2)
                 if not SliderSettings.Locked then return end --no icon bug
-                TweenService:Create(Slider.Lock.Reason.Icon,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{ImageTransparency = 0}):Play()
+                TweenService:Create(Slider.Lock.Reason.Icon,
+                    TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), { ImageTransparency = 0 })
+                    :Play()
             end
+
             function SliderSettings:Unlock()
                 if not SliderSettings.Locked then return end
                 SliderSettings.Locked = false
-                task.wait(0.2)
-                TweenService:Create(Slider.Lock.Reason.Icon,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{ImageTransparency = 1}):Play()
+                wait(0.2)
+                TweenService:Create(Slider.Lock.Reason.Icon,
+                    TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), { ImageTransparency = 1 })
+                    :Play()
                 if SliderSettings.Locked then return end --no icon bug
-                TweenService:Create(Slider.Lock,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{BackgroundTransparency = 1}):Play()
-                TweenService:Create(Slider.Lock.Reason,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{TextTransparency = 1}):Play()
+                TweenService:Create(Slider.Lock, TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
+                    { BackgroundTransparency = 1 }):Play()
+                TweenService:Create(Slider.Lock.Reason,
+                    TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), { TextTransparency = 1 }):Play()
             end
+
             function SliderSettings:Visible(bool)
                 Slider.Visible = bool
             end
+
             if Settings.ConfigurationSaving then
                 if Settings.ConfigurationSaving.Enabled and SliderSettings.Flag then
-                    HDXLib.Flags[SliderSettings.Flag] = SliderSettings
+                    RayfieldLibrary.Flags[SliderSettings.Flag] = SliderSettings
                 end
             end
             return SliderSettings
         end
-
 
         return Tab
     end
 
     Elements.Visible = true
 
-    task.wait(1.2)
-    TweenService:Create(LoadingFrame.Title, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-    TweenService:Create(LoadingFrame.Subtitle, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-    TweenService:Create(LoadingFrame.Version, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-    task.wait(0.2)
-    TweenService:Create(Main, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 500, 0, 475)}):Play()
-    TweenService:Create(Main.Shadow.Image, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0.4}):Play()
+    wait(1.2)
+    TweenService:Create(LoadingFrame.Title, TweenInfo.new(0.5, Enum.EasingStyle.Quint), { TextTransparency = 1 }):Play()
+    TweenService:Create(LoadingFrame.Subtitle, TweenInfo.new(0.5, Enum.EasingStyle.Quint), { TextTransparency = 1 })
+        :Play()
+    TweenService:Create(LoadingFrame.Version, TweenInfo.new(0.5, Enum.EasingStyle.Quint), { TextTransparency = 1 }):Play()
+    wait(0.2)
+    TweenService:Create(Main, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { Size = UDim2.new(0, 500, 0, 475) }):Play()
+    TweenService:Create(Main.Shadow.Image, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { ImageTransparency = 0.4 }):Play()
 
     Topbar.BackgroundTransparency = 1
     Topbar.Divider.Size = UDim2.new(0, 0, 0, 1)
@@ -3269,22 +3766,22 @@ function HDXLib:CreateWindow(Settings)
     Topbar.ChangeSize.ImageTransparency = 1
     Topbar.Hide.ImageTransparency = 1
 
-    task.wait(0.8)
+    wait(0.8)
     Topbar.Visible = true
-    TweenService:Create(Topbar, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-    TweenService:Create(Topbar.CornerRepair, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-    task.wait(0.1)
-    TweenService:Create(Topbar.Divider, TweenInfo.new(1, Enum.EasingStyle.Quint), {Size = UDim2.new(1, 0, 0, 1)}):Play()
-    task.wait(0.1)
-    TweenService:Create(Topbar.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-    task.wait(0.1)
-    TweenService:Create(Topbar.Theme, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0.8}):Play()
-    task.wait(0.1)
-    TweenService:Create(Topbar.ChangeSize, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0.8}):Play()
-    task.wait(0.1)
-    TweenService:Create(Topbar.Hide, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0.8}):Play()
-    task.wait(0.3)
-
+    TweenService:Create(Topbar, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { BackgroundTransparency = 0 }):Play()
+    TweenService:Create(Topbar.CornerRepair, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { BackgroundTransparency = 0 })
+        :Play()
+    wait(0.1)
+    TweenService:Create(Topbar.Divider, TweenInfo.new(1, Enum.EasingStyle.Quint), { Size = UDim2.new(1, 0, 0, 1) }):Play()
+    wait(0.1)
+    TweenService:Create(Topbar.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { TextTransparency = 0 }):Play()
+    wait(0.1)
+    TweenService:Create(Topbar.Theme, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { ImageTransparency = 0.8 }):Play()
+    wait(0.1)
+    TweenService:Create(Topbar.ChangeSize, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { ImageTransparency = 0.8 }):Play()
+    wait(0.1)
+    TweenService:Create(Topbar.Hide, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { ImageTransparency = 0.8 }):Play()
+    wait(0.3)
     function Window:Prompt(PromptSettings)
         local PromptUI = Prompt.Prompt
         Prompt.Visible = true
@@ -3294,7 +3791,7 @@ function HDXLib:CreateWindow(Settings)
         PromptUI.Content.TextTransparency = 1
         PromptUI.Title.TextTransparency = 1
         PromptUI.Sub.TextTransparency = 1
-        PromptUI.Size = UDim2.new(0,340,0,140)
+        PromptUI.Size = UDim2.new(0, 340, 0, 140)
         PromptUI.Buttons.Template.Visible = false
         PromptUI.Buttons.Template.TextLabel.TextTransparency = 1
         PromptUI.Buttons.Template.UIStroke.Transparency = 1
@@ -3303,11 +3800,11 @@ function HDXLib:CreateWindow(Settings)
         --PromptUI.Buttons.Middle.UIStroke.Transparency = 1
 
         PromptUI.Content.Text = PromptSettings.Content
-        PromptUI.Sub.Text = PromptSettings.SubTitle or ""
-        PromptUI.Title.Text = PromptSettings.Title or ""
+        PromptUI.Sub.Text = PromptSettings.SubTitle or ''
+        PromptUI.Title.Text = PromptSettings.Title or ''
 
         if PromptSettings.Actions then
-            for name,info in pairs(PromptSettings.Actions) do
+            for name, info in pairs(PromptSettings.Actions) do
                 local Button = PromptUI.Buttons.Template:Clone()
                 Button.TextLabel.Text = info.Name
                 Button.Interact.MouseButton1Up:Connect(function()
@@ -3316,7 +3813,7 @@ function HDXLib:CreateWindow(Settings)
                         clicked = true
                         if not Success then
                             ClosePrompt()
-                            print("HDX | "..info.Name.." Callback Error " ..tostring(Response))
+                            print("Rayfield | " .. info.Name .. " Callback Error " .. tostring(Response))
                         else
                             ClosePrompt()
                         end
@@ -3328,22 +3825,26 @@ function HDXLib:CreateWindow(Settings)
             end
         end
 
-        TweenService:Create(Prompt, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = .5}):Play()
-        task.wait(.2)
-        TweenService:Create(PromptUI, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 0,Size = UDim2.new(0,350,0,150)}):Play()
-        task.wait(0.2)
-        TweenService:Create(PromptUI.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-        TweenService:Create(PromptUI.Title, TweenInfo.new(0.45, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-        TweenService:Create(PromptUI.Content, TweenInfo.new(0.45, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-        TweenService:Create(PromptUI.Sub, TweenInfo.new(0.45, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-        task.wait(1)
+        TweenService:Create(Prompt, TweenInfo.new(0.3, Enum.EasingStyle.Quint), { BackgroundTransparency = .5 }):Play()
+        wait(.2)
+        TweenService:Create(PromptUI, TweenInfo.new(0.4, Enum.EasingStyle.Quint),
+            { BackgroundTransparency = 0, Size = UDim2.new(0, 350, 0, 150) }):Play()
+        wait(0.2)
+        TweenService:Create(PromptUI.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint), { Transparency = 0 }):Play()
+        TweenService:Create(PromptUI.Title, TweenInfo.new(0.45, Enum.EasingStyle.Quint), { TextTransparency = 0 }):Play()
+        TweenService:Create(PromptUI.Content, TweenInfo.new(0.45, Enum.EasingStyle.Quint), { TextTransparency = 0 })
+            :Play()
+        TweenService:Create(PromptUI.Sub, TweenInfo.new(0.45, Enum.EasingStyle.Quint), { TextTransparency = 0 }):Play()
+        wait(1)
         if PromptSettings.Actions then
-            for _,button in pairs(PromptUI.Buttons:GetChildren()) do
-                if button.Name ~= "Template" and button.Name ~= "Middle" and button:IsA("Frame") then
+            for _, button in pairs(PromptUI.Buttons:GetChildren()) do
+                if button.Name ~= 'Template' and button.Name ~= 'Middle' and button:IsA('Frame') then
                     button.Visible = true
-                    TweenService:Create(button.UIStroke,TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-                    TweenService:Create(button.TextLabel,TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-                    task.wait(.8)
+                    TweenService:Create(button.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), { Transparency = 0 })
+                        :Play()
+                    TweenService:Create(button.TextLabel, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                        { TextTransparency = 0 }):Play()
+                    wait(.8)
                 end
             end
         else
@@ -3351,11 +3852,32 @@ function HDXLib:CreateWindow(Settings)
             --TweenService:Create(PromptUI.Buttons.Middle.TextLabel,TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
         end
     end
+
     return Window
 end
 
-function HDXLib:Destroy()
-    HDX:Destroy()
+function RayfieldLibrary:ToggleOldTabStyle(oldTabStyle)
+    if oldTabStyle == nil then oldTabStyle = false end
+
+    if oldTabStyle then
+        TopList.Visible = true
+        Elements.Size = UDim2.new(1, 0, 0, 364)
+        Elements.Position = UDim2.new(0.5, 0, 0.5, 45)
+
+        Topbar.Type.Visible = false
+        Topbar.Title.Position = UDim2.new(0, 15, 0.5, 0)
+    else
+        TopList.Visible = false
+        Elements.Size = UDim2.new(1, 0, 0, 409)
+        Elements.Position = UDim2.new(0.5, 0, 0.555, 0)
+
+        Topbar.Type.Visible = true
+        Topbar.Title.Position = UDim2.new(0, 45, 0.5, 0)
+    end
+end
+
+function RayfieldLibrary:Destroy()
+    Rayfield:Destroy()
 end
 
 Topbar.ChangeSize.MouseButton1Click:Connect(function()
@@ -3364,12 +3886,14 @@ Topbar.ChangeSize.MouseButton1Click:Connect(function()
         Minimised = false
         Maximise()
     else
-        if not SearchHided then SearchHided = true spawn(CloseSearch)  end
+        if not SearchHided then
+            SearchHided = true
+            spawn(CloseSearch)
+        end
         Minimised = true
         Minimise()
     end
 end)
-
 Topbar.Search.MouseButton1Click:Connect(function()
     if Debounce or Minimised then return end
     if SearchHided then
@@ -3380,18 +3904,16 @@ Topbar.Search.MouseButton1Click:Connect(function()
         CloseSearch()
     end
 end)
-
 Topbar.Type.MouseButton1Click:Connect(function()
     if Debounce or Minimised then return end
     if SideBarClosed then
-        Topbar.Type.Image = "rbxassetid://"..6023565894
+        -- Topbar.Type.Image = "rbxassetid://"..6023565894
         OpenSideBar()
     else
-        Topbar.Type.Image = "rbxassetid://"..6023565896
+        -- Topbar.Type.Image = "rbxassetid://"..6023565896
         CloseSideBar()
     end
 end)
-
 Topbar.Hide.MouseButton1Click:Connect(function()
     if Debounce then return end
     if Hidden then
@@ -3399,14 +3921,26 @@ Topbar.Hide.MouseButton1Click:Connect(function()
         Minimised = false
         Unhide()
     else
-        if not SearchHided then SearchHided = true spawn(CloseSearch)  end
+        if not SearchHided then
+            SearchHided = true
+            spawn(CloseSearch)
+        end
         Hidden = true
         Hide()
     end
 end)
 
-UserInputService.InputBegan:Connect(function(input)
-    if (input.KeyCode == Enum.KeyCode.RightControl) then
+-- Topbar.Theme.MouseButton1Click:Connect(function()
+-- if Debounce then return end
+-- if SelectedTheme == RayfieldLibrary.Theme.Default then
+-- ChangeTheme("Light")
+-- else
+-- ChangeTheme("Default")
+-- end
+-- end)
+
+UserInputService.InputBegan:Connect(function(input, processed)
+    if (input.KeyCode == Enum.KeyCode.LeftControl and not processed) then
         if Debounce then return end
         if Hidden then
             Hidden = false
@@ -3422,74 +3956,63 @@ end)
 for _, TopbarButton in ipairs(Topbar:GetChildren()) do
     if TopbarButton.ClassName == "ImageButton" then
         TopbarButton.MouseEnter:Connect(function()
-            if TopbarButton.Name ~= "Type" then
-                TweenService:Create(TopbarButton, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
+            if TopbarButton.Name ~= 'Type' then
+                TweenService:Create(TopbarButton, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { ImageTransparency = 0 })
+                    :Play()
             else
-                TweenService:Create(TopbarButton, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0.2}):Play()
+                TweenService:Create(TopbarButton, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { ImageTransparency = 0.2 })
+                    :Play()
             end
         end)
         TopbarButton.MouseLeave:Connect(function()
-            if TopbarButton.Name ~= "Type" then
-                TweenService:Create(TopbarButton, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0.8}):Play()
+            if TopbarButton.Name ~= 'Type' then
+                TweenService:Create(TopbarButton, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { ImageTransparency = 0.8 })
+                    :Play()
             else
-                TweenService:Create(TopbarButton, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
+                TweenService:Create(TopbarButton, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { ImageTransparency = 0 })
+                    :Play()
             end
         end)
 
         TopbarButton.MouseButton1Click:Connect(function()
-            TweenService:Create(TopbarButton, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0.8}):Play()
+            TweenService:Create(TopbarButton, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { ImageTransparency = 0.8 })
+                :Play()
         end)
     end
 end
 
 
-function HDXLib:LoadConfiguration()
+function RayfieldLibrary:LoadConfiguration()
     if CEnabled then
         pcall(function()
             if isfile(ConfigurationFolder .. "/" .. CFileName .. ConfigurationExtension) then
                 LoadConfiguration(readfile(ConfigurationFolder .. "/" .. CFileName .. ConfigurationExtension))
-                HDXLib:Notify({Title = "Configuration Loaded", Content = "The configuration file for this script has been loaded from a previous session"})
+                RayfieldLibrary:Notify({
+                    Title = "Configuration Loaded",
+                    Content = "The configuration file for this script has been loaded from a previous session"
+                })
             end
         end)
     end
 end
-
--- own
-
-function HDXLib:FindPlayerByPartial(playername)
-    if playername == "me" then 
-        return LocalPlayer
-    else 
-        for index, player in Players:GetPlayers() do
-            if player.Name:lower():find(playername:lower()) then
-                return player
-            end
-        end
-    end
-end
-
-Player = Players.LocalPlayer
-
-VirtualUser = game:GetService("VirtualUser")
-
-function HDXLib:IsNumeric(data)
+function RayfieldLibrary:IsNumeric(data)
     return tonumber(data)
 end
 
-function HDXLib:IsAlpha(data)
+function RayfieldLibrary:IsAlpha(data)
     return not tonumber(data)
 end
 
-function HDXLib:IsAlphaAndOrNumeric(data)
+function RayfieldLibrary:IsAlphaAndOrNumeric(data)
     return data:match("[^%w]") == nil
 end
 
-function HDXLib:GetPlayerThumbnail(data, thumbnailtype)
+function RayfieldLibrary:GetPlayerThumbnail(data, thumbnailtype)
 	local UserId = nil
-	if HDXLib:IsNumeric(data) then
+	if RayfieldLibrary:IsNumeric(data) then
 		UserId = data
-	elseif HDXLib:IsAlpha(data) then
-		UserId = HDXLib:FindPlayer(data).UserId
+	elseif RayfieldLibrary:IsAlpha(data) then
+		UserId = RayfieldLibrary:FindPlayer(data).UserId
 	elseif data.Parent and data.Parent == Players then
 		UserId = data.UserId
 	end
@@ -3504,31 +4027,16 @@ end
 -- HDXLib:GetPlayerThumbnail(userid, "AvatarThumbnail")
 -- HDXLib:GetPlayerThumbnail(userid, "HeadShot")
 
-function HDXLib:IsR15(plr)
-    return HDXLib:FFCOC(plr.Character, "Humanoid").RigType == Enum.RigType.R15
+RayfieldLibrary.Player = {}
+RayfieldLibrary.Player.HeadShot = RayfieldLibrary:GetPlayerThumbnail(Player.UserId, "HeadShot")
+
+function RayfieldLibrary:SaveConfiguration()
+    SaveConfiguration()
 end
 
-HDXLib.Player = {}
-HDXLib.Player.HeadShot = HDXLib:GetPlayerThumbnail(Player.UserId, "HeadShot")
-
-function HDXLib:FFC(instance, name)
-    return instance:FindFirstChild(tostring(name))
+if not getgenv().DisableArrayfieldAutoLoad then
+    task.delay(9, RayfieldLibrary.LoadConfiguration, RayfieldLibrary)
 end
 
-function HDXLib:FFCOC(instance, class)
-    return instance:FindFirstChildOfClass(tostring(class))
-end
-
-function HDXLib:AllTrue(conditions)
-    local count = 0
-    for _, condition in ipairs(conditions) do
-        if condition == true then
-            count = count + 1
-        end
-    end
-    return count == #conditions
-end
-
-task.delay(9, HDXLib.LoadConfiguration, HDXLib)
-
-return HDXLib
+RayfieldLibrary.UI = Rayfield
+return RayfieldLibrary
