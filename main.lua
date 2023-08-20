@@ -1714,7 +1714,7 @@ function HDXLib:CreateWindow(Settings)
         -- Section
          function Tab:CreateSection(SectionName, Display, DefaultHide, Icon)
             local SectionValue = {
-                Holder = Rayfield.Holding,
+                Holder = HDX.Holding,
                 Open = true
             }
             local Debounce = false
