@@ -1111,7 +1111,7 @@ function Minimise()
     Debounce = false
 end
 
-function HDXLib:CreateWindow(Settings)
+function HDXLib:CreateWindow(Settings,Icon)
     HDX.Enabled = false
     local Passthrough = false
     Topbar.Title.Text = Settings.Name
@@ -1131,6 +1131,15 @@ function HDXLib:CreateWindow(Settings)
     Elements.Visible = false
     LoadingFrame.Visible = true
 
+        Window.Icon.Visible = false
+            if not Icon or Icon == nil then
+                Window.Icon.Visible = false
+                Window.Title.Position = UDim2.new(0, 10, 0, 8)
+            else
+                Window.Icon.Image = "rbxassetid://" .. tostring(Icon)
+                Window.Icon.Visible = true
+                Window.Title.Position = UDim2.new(0, 35, 0, 8)
+            end
 
     pcall(function()
         if not Settings.ConfigurationSaving.FileName then
