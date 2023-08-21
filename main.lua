@@ -306,16 +306,16 @@ local neon = (function()  --Open sourced neon module
             continued = IsNotNaN(Camera:ScreenPointToRay(0,0).Origin.x)
         end
     end
-    local RootParent = Camera
-    if false == nil then
-        RootParent = Camera
-    else
-        if not false then
-            RootParent = Camera
-        else 
-            RootParent = nil
-        end
-    end
+	local RootParent = Camera
+	if getgenv().SecureMode == nil then
+		RootParent = Camera
+	else
+		if not getgenv().SecureMode then
+			RootParent = Camera
+		else 
+			RootParent = nil
+		end
+	end
 
 
     local binds = {}
@@ -773,7 +773,7 @@ function Hide()
         spawn(CloseSideBar)
     end
     Debounce = true
-    HDXLib:Notify({Title = "Interface Hidden", Content = "The interface has been hidden, you can unhide the interface by tapping RightControl", Duration = 7})
+    HDXLib:Notify({Title = "Interface Hidden", Content = "The interface has been hidden, you can unhide the interface by tapping Semicolon (;)", Duration = 7})
     TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 470, 0, 400)}):Play()
     TweenService:Create(Main.Topbar, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 470, 0, 45)}):Play()
     TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
@@ -1111,7 +1111,7 @@ function Minimise()
     Debounce = false
 end
 
-function HDXLib:CreateWindow(Settings,Icon)
+function HDXLib:CreateWindow(Settings)
     HDX.Enabled = false
     local Passthrough = false
     Topbar.Title.Text = Settings.Name
@@ -1131,15 +1131,6 @@ function HDXLib:CreateWindow(Settings,Icon)
     Elements.Visible = false
     LoadingFrame.Visible = true
 
-        Window.Icon.Visible = false
-            if not Icon or Icon == nil then
-                Window.Icon.Visible = false
-                Window.Title.Position = UDim2.new(0, 10, 0, 8)
-            else
-                Window.Icon.Image = "rbxassetid://" .. tostring(Icon)
-                Window.Icon.Visible = true
-                Window.Title.Position = UDim2.new(0, 35, 0, 8)
-            end
 
     pcall(function()
         if not Settings.ConfigurationSaving.FileName then
@@ -2471,7 +2462,7 @@ function HDXLib:CreateWindow(Settings,Icon)
             UserInputService.InputBegan:Connect(function(input)
 
                 if CheckingForKey then
-                    if input.KeyCode ~= Enum.KeyCode.Unknown and input.KeyCode ~= Enum.KeyCode.RightControl then
+                    if input.KeyCode ~= Enum.KeyCode.Unknown and input.KeyCode ~= Enum.KeyCode.Semicolon then
                         local SplitMessage = string.split(tostring(input.KeyCode), ".")
                         local NewKeyNoEnum = SplitMessage[3]
                         Keybind.KeybindFrame.KeybindBox.Text = tostring(NewKeyNoEnum)
@@ -3357,7 +3348,7 @@ Topbar.Hide.MouseButton1Click:Connect(function()
 end)
 
 UserInputService.InputBegan:Connect(function(input)
-    if (input.KeyCode == Enum.KeyCode.RightControl) then
+    if (input.KeyCode == Enum.KeyCode.Semicolon) then
         if Debounce then return end
         if Hidden then
             Hidden = false
