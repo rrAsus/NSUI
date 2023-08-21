@@ -1880,7 +1880,6 @@ function HDXLib:CreateWindow(Settings)
         -- Paragraph
         function Tab:CreateParagraph(ParagraphSettings)
             local ParagraphValue = {}
-
             local Paragraph = Elements.Template.Paragraph:Clone()
             Paragraph.Title.Text = ParagraphSettings.Title
             Paragraph.Content.Text = ParagraphSettings.Content
@@ -1894,7 +1893,11 @@ function HDXLib:CreateWindow(Settings)
             Paragraph.Content.Size = UDim2.new(0, 438, 0, Paragraph.Content.TextBounds.Y)
             --Paragraph.Content.Position = UDim2.new(0,465, 0,76)
             Paragraph.Size = UDim2.new(0,465, 0, Paragraph.Content.TextBounds.Y + 40)
-
+			if ParagraphSettings.SectionParent.Holder then
+				Paragraph.Parent = ParagraphSettings.SectionParent.Holder
+			else
+				Paragraph.Parent = TabPage
+			end
             Paragraph.BackgroundTransparency = 1
             Paragraph.UIStroke.Transparency = 1
             Paragraph.Title.TextTransparency = 1
