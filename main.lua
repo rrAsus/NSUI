@@ -1892,7 +1892,7 @@ function HDXLib:CreateWindow(Settings)
             Paragraph.Content.Size = UDim2.new(0, 438, 0, Paragraph.Content.TextBounds.Y)
             --Paragraph.Content.Position = UDim2.new(0,465, 0,76)
             Paragraph.Size = UDim2.new(0,465, 0, Paragraph.Content.TextBounds.Y + 40)
-			if SectionParent or ParagraphSettings.SectionParent then
+			if SectionParent or ParagraphSettings.SectionParent.Holder then
 				Paragraph.Parent = SectionParent or ParagraphSettings.SectionParent.Holder
 			else
 				Paragraph.Parent = TabPage
