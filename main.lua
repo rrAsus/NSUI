@@ -1878,13 +1878,12 @@ function HDXLib:CreateWindow(Settings)
         end
 
         -- Paragraph
-        function Tab:CreateParagraph(ParagraphSettings)
+        function Tab:CreateParagraph(ParagraphSettings,SectionParent)
             local ParagraphValue = {}
             local Paragraph = Elements.Template.Paragraph:Clone()
             Paragraph.Title.Text = ParagraphSettings.Title
             Paragraph.Content.Text = ParagraphSettings.Content
             Paragraph.Visible = true
-            Paragraph.Parent = TabPage
             Tab.Elements[ParagraphSettings.Title] = {
                 type = "paragraph",
                 section = ParagraphSettings.SectionParent,
