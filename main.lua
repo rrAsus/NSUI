@@ -1712,7 +1712,7 @@ function HDXLib:CreateWindow(Settings)
         end
 
         -- Section
-        function Tab:CreateSection(SectionName,Display,DefaultHide,Icon)
+        function Tab:CreateSection(SectionName,Display)
             local SectionValue = {
                 Holder = HDX.Holding,
                 Open = true
@@ -1723,24 +1723,12 @@ function HDXLib:CreateWindow(Settings)
             Section.Title.Text = SectionName
             Section.Visible = true
             Section.Parent = TabPage
-
               Tab.Elements[SectionName] = {
                 type = 'section',
                 display = Display,
                 sectionholder = Section.Holder,
                 element = Section
             }
-
-            Section.Icon.Visible = false
-            if not Icon or Icon == nil then
-                Section.Icon.Visible = false
-                Section.Title.Position = UDim2.new(0, 10, 0, 8)
-            else
-                Section.Icon.Image = "rbxassetid://" .. tostring(Icon)
-                Section.Icon.Visible = true
-                Section.Title.Position = UDim2.new(0, 35, 0, 8)
-            end
-
             Section.Title.TextTransparency = 1
             TweenService:Create(Section.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { TextTransparency = 0 })
                 :Play()
@@ -1755,37 +1743,6 @@ function HDXLib:CreateWindow(Settings)
                 Section.BackgroundTransparency = 1
                 SectionValue.Holder.Parent = Rayfield.Holding
                 Section.Title.ImageButton.Visible = false
-            end
-
-            if DefaultHide and not Display then
-                coroutine.wrap(function()
-                    wait()
-                    Section._UIPadding_.PaddingBottom = UDim.new(0, 4)
-                    for _, element in ipairs(Section.Holder:GetChildren()) do
-                        if element.ClassName == "Frame" then
-                            if element.Name ~= "SectionSpacing" and element.Name ~= "Placeholder" and element.Name ~= 'Topholder' then
-                                if element.Name == "SectionTitle" then
-                                    element.Title.TextTransparency = 1
-                                else
-                                    element.BackgroundTransparency = 1
-                                    element.UIStroke.Transparency = 1
-                                    element.Title.TextTransparency = 1
-                                end
-
-                                for _, child in ipairs(element:GetChildren()) do
-                                    if child.ClassName == "Frame" then
-                                        child.Visible = false
-                                    end
-                                end
-                            end
-                            element.Visible = false
-                        end
-                    end
-                    Section.Title.ImageButton.Rotation = 180
-                    SectionValue.Open = false
-                end)()
-            elseif not DefaultHide and not Display then
-                Section._UIPadding_.PaddingBottom = UDim.new(0, 8)
             end
 
             Section.Clickable.MouseButton1Down:Connect(function()
