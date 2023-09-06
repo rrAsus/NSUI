@@ -1878,7 +1878,7 @@ function HDXLib:CreateWindow(Settings)
         end
 
         -- Paragraph
-        function Tab:CreateParagraph(ParagraphSettings)
+        function Tab:CreateParagraph(ParagraphSettings,SectionParent)
             local ParagraphValue = {}
 
             local Paragraph = Elements.Template.Paragraph:Clone()
@@ -1891,6 +1891,11 @@ function HDXLib:CreateWindow(Settings)
                 section = ParagraphSettings.SectionParent,
                 element = Paragraph
             }
+			if SectionParent then
+				Paragraph.Parent = SectionParent.Holder
+			elseif SectionParent == nil then
+				Paragraph.Parent = TabPage
+			end
             Paragraph.Content.Size = UDim2.new(0, 438, 0, Paragraph.Content.TextBounds.Y)
             --Paragraph.Content.Position = UDim2.new(0,465, 0,76)
             Paragraph.Size = UDim2.new(0,465, 0, Paragraph.Content.TextBounds.Y + 40)
