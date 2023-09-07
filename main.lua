@@ -771,7 +771,7 @@ function Hide()
         task.spawn(CloseSideBar)
     end
     Debounce = true
-    RayfieldLibrary:Notify({
+    HDXLib:Notify({
         Title = "Interface Hidden",
         Content = "The interface has been hidden, you can unhide the interface by pressing Semicolon (;)",
         Duration = 7
