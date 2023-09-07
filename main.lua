@@ -164,7 +164,6 @@ local SearchBar = Main.Searchbar
 local Filler = SearchBar.CanvasGroup.Filler
 local Prompt = Main.Prompt
 local NotePrompt = Main.NotePrompt
-local InfoPrompt = HDX.Info
 
 HDX.DisplayOrder = 100
 LoadingFrame.Version.Text = Release
