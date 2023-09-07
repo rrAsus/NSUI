@@ -241,7 +241,6 @@ local function AddDraggingFunctionality(DragPoint, Main)
             if Input == DragInput and Dragging then
                 local Delta = Input.Position - MousePos
                 TweenService:Create(Main, TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Position  = UDim2.new(FramePos.X.Scale,FramePos.X.Offset + Delta.X, FramePos.Y.Scale, FramePos.Y.Offset + Delta.Y)}):Play()
-                TweenService:Create(InfoPrompt, TweenInfo.new(0.6, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Position  = UDim2.new(FramePos.X.Scale,FramePos.X.Offset + Delta.X+ 370, FramePos.Y.Scale, FramePos.Y.Offset + Delta.Y)}):Play()
             end
         end)
     end)
@@ -1130,6 +1129,7 @@ function HDXLib:CreateWindow(Settings)
     Elements.Visible = false
     LoadingFrame.Visible = true
 
+HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
 
     pcall(function()
         if not Settings.ConfigurationSaving.FileName then
@@ -3342,6 +3342,26 @@ function HDXLib:CreateWindow(Settings)
         end
     end
     return Window
+end
+
+function HDXLib:ToggleOldTabStyle(oldTabStyle)
+    if oldTabStyle == nil then oldTabStyle = true end
+
+    if not oldTabStyle then
+        TopList.Visible = true
+        Elements.Size = UDim2.new(1, 0, 0, 364)
+        Elements.Position = UDim2.new(0.5, 0, 0.5, 45)
+
+        Topbar.Type.Visible = false
+        Topbar.Title.Position = UDim2.new(0, 15, 0.5, 0)
+    else
+        TopList.Visible = false
+        Elements.Size = UDim2.new(1, 0, 0, 409)
+        Elements.Position = UDim2.new(0.5, 0, 0.555, 0)
+
+        Topbar.Type.Visible = true
+        Topbar.Title.Position = UDim2.new(0, 45, 0.5, 0)
+    end
 end
 
 function HDXLib:Destroy()
