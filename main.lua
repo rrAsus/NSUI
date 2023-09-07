@@ -768,31 +768,41 @@ function CloseSideBar()
 end
 function Hide()
     if not SideBarClosed then
-        spawn(CloseSideBar)
+        task.spawn(CloseSideBar)
     end
     Debounce = true
-    HDXLib:Notify({Title = "Interface Hidden", Content = "The interface has been hidden, you can unhide the interface by tapping Semicolon (;)", Duration = 7})
-    TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 470, 0, 400)}):Play()
-    TweenService:Create(Main.Topbar, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 470, 0, 45)}):Play()
-    TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-    TweenService:Create(Main.Topbar, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-    TweenService:Create(Main.Topbar.Divider, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-    TweenService:Create(Main.Topbar.CornerRepair, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-    TweenService:Create(Main.Topbar.Title, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-    TweenService:Create(Main.Shadow.Image, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
-    TweenService:Create(Topbar.UIStroke, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
+    RayfieldLibrary:Notify({
+        Title = "Interface Hidden",
+        Content = "The interface has been hidden, you can unhide the interface by pressing Semicolon (;)",
+        Duration = 7
+    })
+    TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Quint), { Size = UDim2.new(0, 470, 0, 400) }):Play()
+    TweenService:Create(Main.Topbar, TweenInfo.new(0.5, Enum.EasingStyle.Quint), { Size = UDim2.new(0, 470, 0, 45) })
+        :Play()
+    TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Quint), { BackgroundTransparency = 1 }):Play()
+    TweenService:Create(Main.Topbar, TweenInfo.new(0.5, Enum.EasingStyle.Quint), { BackgroundTransparency = 1 }):Play()
+    TweenService:Create(Main.Topbar.Divider, TweenInfo.new(0.5, Enum.EasingStyle.Quint), { BackgroundTransparency = 1 })
+        :Play()
+    TweenService:Create(Main.Topbar.CornerRepair, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+        { BackgroundTransparency = 1 }):Play()
+    TweenService:Create(Main.Topbar.Title, TweenInfo.new(0.5, Enum.EasingStyle.Quint), { TextTransparency = 1 }):Play()
+    TweenService:Create(Main.Shadow.Image, TweenInfo.new(0.5, Enum.EasingStyle.Quint), { ImageTransparency = 1 }):Play()
+    TweenService:Create(Topbar.UIStroke, TweenInfo.new(0.5, Enum.EasingStyle.Quint), { Transparency = 1 }):Play()
     for _, TopbarButton in ipairs(Topbar:GetChildren()) do
         if TopbarButton.ClassName == "ImageButton" then
-            TweenService:Create(TopbarButton, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
+            TweenService:Create(TopbarButton, TweenInfo.new(0.5, Enum.EasingStyle.Quint), { ImageTransparency = 1 })
+                :Play()
         end
     end
     for _, tabbtn in ipairs(TabsList:GetChildren()) do
         if tabbtn.ClassName == "Frame" and tabbtn.Name ~= "Placeholder" then
-            TweenService:Create(tabbtn, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-            TweenService:Create(tabbtn.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-            TweenService:Create(tabbtn.Image, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
-            TweenService:Create(tabbtn.Shadow, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
-            TweenService:Create(tabbtn.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
+            TweenService:Create(tabbtn, TweenInfo.new(0.3, Enum.EasingStyle.Quint), { BackgroundTransparency = 1 }):Play()
+            TweenService:Create(tabbtn.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), { TextTransparency = 1 }):Play()
+            TweenService:Create(tabbtn.Image, TweenInfo.new(0.3, Enum.EasingStyle.Quint), { ImageTransparency = 1 })
+                :Play()
+            TweenService:Create(tabbtn.Shadow, TweenInfo.new(0.3, Enum.EasingStyle.Quint), { ImageTransparency = 1 })
+                :Play()
+            TweenService:Create(tabbtn.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), { Transparency = 1 }):Play()
         end
     end
     for _, tab in ipairs(Elements:GetChildren()) do
@@ -800,15 +810,20 @@ function Hide()
             for _, element in ipairs(tab:GetChildren()) do
                 if element.ClassName == "Frame" then
                     if element.Name ~= "SectionSpacing" and element.Name ~= "Placeholder" then
-                        if element:FindFirstChild("Holder") then
-                            TweenService:Create(element, TweenInfo.new(0.2, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-                            TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
+                        if element:FindFirstChild('Holder') then
+                            TweenService:Create(element, TweenInfo.new(0.2, Enum.EasingStyle.Quint),
+                                { BackgroundTransparency = 1 }):Play()
+                            TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                                { TextTransparency = 1 }):Play()
                         else
-                            TweenService:Create(element, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
+                            TweenService:Create(element, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                                { BackgroundTransparency = 1 }):Play()
                             pcall(function()
-                                TweenService:Create(element.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
+                                TweenService:Create(element.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                                    { Transparency = 1 }):Play()
                             end)
-                            TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
+                            TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                                { TextTransparency = 1 }):Play()
                         end
                         for _, child in ipairs(element:GetChildren()) do
                             if child.ClassName == "Frame" or child.ClassName == "TextLabel" or child.ClassName == "TextBox" or child.ClassName == "ImageButton" or child.ClassName == "ImageLabel" then
@@ -820,7 +835,7 @@ function Hide()
             end
         end
     end
-    task.wait(0.5)
+    wait(0.5)
     Main.Visible = false
     Debounce = false
 end
@@ -828,46 +843,58 @@ function Unhide()
     Debounce = true
     Main.Position = UDim2.new(0.5, 0, 0.5, 0)
     Main.Visible = true
-    TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 500, 0, 475)}):Play()
-    TweenService:Create(Main.Topbar, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 500, 0, 45)}):Play()
-    TweenService:Create(Main.Shadow.Image, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0.4}):Play()
-    TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-    TweenService:Create(Main.Topbar, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-    TweenService:Create(Main.Topbar.Divider, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-    TweenService:Create(Main.Topbar.CornerRepair, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-    TweenService:Create(Main.Topbar.Title, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+    TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Quint), { Size = UDim2.new(0, 500, 0, 475) }):Play()
+    TweenService:Create(Main.Topbar, TweenInfo.new(0.5, Enum.EasingStyle.Quint), { Size = UDim2.new(0, 500, 0, 45) })
+        :Play()
+    TweenService:Create(Main.Shadow.Image, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { ImageTransparency = 0.4 }):Play()
+    TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Quint), { BackgroundTransparency = 0 }):Play()
+    TweenService:Create(Main.Topbar, TweenInfo.new(0.5, Enum.EasingStyle.Quint), { BackgroundTransparency = 0 }):Play()
+    TweenService:Create(Main.Topbar.Divider, TweenInfo.new(0.5, Enum.EasingStyle.Quint), { BackgroundTransparency = 0 })
+        :Play()
+    TweenService:Create(Main.Topbar.CornerRepair, TweenInfo.new(0.5, Enum.EasingStyle.Quint),
+        { BackgroundTransparency = 0 }):Play()
+    TweenService:Create(Main.Topbar.Title, TweenInfo.new(0.5, Enum.EasingStyle.Quint), { TextTransparency = 0 }):Play()
     if Minimised then
         spawn(Maximise)
     end
     for _, TopbarButton in ipairs(Topbar:GetChildren()) do
         if TopbarButton.ClassName == "ImageButton" then
-            TweenService:Create(TopbarButton, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0.8}):Play()
+            TweenService:Create(TopbarButton, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { ImageTransparency = 0.8 })
+                :Play()
         end
     end
     for _, tab in ipairs(Elements:GetChildren()) do
         if tab.Name ~= "Template" and tab.ClassName == "ScrollingFrame" and tab.Name ~= "Placeholder" then
             for _, element in ipairs(tab:GetChildren()) do
                 if element.ClassName == "Frame" then
-                    if element.Name ~= "SectionSpacing" and element.Name ~= "Placeholder" and not element:FindFirstChild("ColorPickerIs") then
-                        if element:FindFirstChild("_UIPadding_") then
-                            TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-                            TweenService:Create(element, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = .25}):Play()
+                    if element.Name ~= "SectionSpacing" and element.Name ~= "Placeholder" and not element:FindFirstChild('ColorPickerIs') then
+                        if element:FindFirstChild('_UIPadding_') then
+                            TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                                { TextTransparency = 0 }):Play()
+                            TweenService:Create(element, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                                { BackgroundTransparency = .25 }):Play()
                         else
-                            if element.Name ~= "SectionTitle" then
-                                TweenService:Create(element, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-                                TweenService:Create(element.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+                            if element.Name ~= 'SectionTitle' then
+                                TweenService:Create(element, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                                    { BackgroundTransparency = 0 }):Play()
+                                TweenService:Create(element.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                                    { Transparency = 0 }):Play()
                             end
-                            TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+                            TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                                { TextTransparency = 0 }):Play()
                         end
                         for _, child in ipairs(element:GetChildren()) do
                             if (child.ClassName == "Frame" or child.ClassName == "TextLabel" or child.ClassName == "TextBox" or child.ClassName == "ImageButton" or child.ClassName == "ImageLabel") then
                                 child.Visible = true
                             end
                         end
-                    elseif element:FindFirstChild("ColorPickerIs") then
-                        TweenService:Create(element, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-                        TweenService:Create(element.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-                        TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+                    elseif element:FindFirstChild('ColorPickerIs') then
+                        TweenService:Create(element, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                            { BackgroundTransparency = 0 }):Play()
+                        TweenService:Create(element.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                            { Transparency = 0 }):Play()
+                        TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                            { TextTransparency = 0 }):Play()
 
                         if element.ColorPickerIs.Value then
                             element.ColorSlider.Visible = true
@@ -883,10 +910,11 @@ function Unhide()
             end
         end
     end
-    task.wait(0.5)
+    wait(0.5)
     Minimised = false
     Debounce = false
 end
+
 function CloseSearch()
     Debounce = true
     TweenService:Create(SearchBar, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 1,Size = UDim2.new(0, 460,0, 35)}):Play()
