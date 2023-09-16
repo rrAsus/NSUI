@@ -2546,7 +2546,7 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
                         Keybind.KeybindFrame.KeybindBox:ReleaseFocus()
                         SaveConfiguration()
                     end
-                elseif KeybindSettings.CurrentKeybind ~= nil and (input.KeyCode == Enum.KeyCode[KeybindSettings.CurrentKeybind] and not processed) then  --Test
+                elseif KeybindSettings.CurrentKeybind ~= nil and (input.KeyCode == Enum.KeyCode[KeybindSettings.CurrentKeybind]) then  --Test
                     local Held = true
                     local Connection
                     Connection = input.Changed:Connect(function(prop)
