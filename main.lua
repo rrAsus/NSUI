@@ -2538,7 +2538,7 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
         UserInputService.InputBegan:Connect(function(input, processed)
 
                 if CheckingForKey then
-                    if input.KeyCode ~= Enum.KeyCode.Unknown and input.KeyCode ~= Enum.KeyCode.Semicolon then
+                    if input.KeyCode ~= Enum.KeyCode.Unknown and input.KeyCode ~= Enum.KeyCode.Semicolon and not processed then
                         local SplitMessage = string.split(tostring(input.KeyCode), ".")
                         local NewKeyNoEnum = SplitMessage[3]
                         Keybind.KeybindFrame.KeybindBox.Text = tostring(NewKeyNoEnum)
