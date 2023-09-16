@@ -2535,10 +2535,10 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
                 TweenService:Create(Keybind, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
             end)
 
-            UserInputService.InputBegan:Connect(function(input)
+        UserInputService.InputBegan:Connect(function(input, processed)
 
                 if CheckingForKey then
-                    if input.KeyCode ~= Enum.KeyCode.Unknown and input.KeyCode ~= Enum.KeyCode.Semicolon then
+                    if input.KeyCode ~= Enum.KeyCode.Unknown and input.KeyCode ~= Enum.KeyCode.Semicolon and not processed then
                         local SplitMessage = string.split(tostring(input.KeyCode), ".")
                         local NewKeyNoEnum = SplitMessage[3]
                         Keybind.KeybindFrame.KeybindBox.Text = tostring(NewKeyNoEnum)
@@ -2546,7 +2546,7 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
                         Keybind.KeybindFrame.KeybindBox:ReleaseFocus()
                         SaveConfiguration()
                     end
-                elseif KeybindSettings.CurrentKeybind ~= nil and (input.KeyCode == Enum.KeyCode[KeybindSettings.CurrentKeybind]) then  --Test
+                elseif KeybindSettings.CurrentKeybind ~= nil and (input.KeyCode == Enum.KeyCode[KeybindSettings.CurrentKeybind] and not processed) then  --Test
                     local Held = true
                     local Connection
                     Connection = input.Changed:Connect(function(prop)
