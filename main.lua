@@ -1725,7 +1725,7 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
         -- Section
         function Tab:CreateSection(SectionName, Display, DefaultHide, Icon)
             local SectionValue = {
-                Holder = Rayfield.Holding,
+                Holder = HDXLib.Holding,
                 Open = true
             }
             local Debounce = false
@@ -1764,7 +1764,7 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
                 Section._UIPadding_.PaddingBottom = UDim.new(0, 4)
                 Section.Holder.Visible = false
                 Section.BackgroundTransparency = 1
-                SectionValue.Holder.Parent = Rayfield.Holding
+                SectionValue.Holder.Parent = HDXLib.Holding
                 Section.Title.ImageButton.Visible = false
             end
 
