@@ -2572,20 +2572,18 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
                         task.wait(0.25)
                         if Held then
                             local Loop; Loop = RunService.Stepped:Connect(function()
-                                pcall(function()
                                 if not Held then
                                     KeybindSettings.Callback(false) -- maybe pcall this
                                     Loop:Disconnect()
                                 else
                                     KeybindSettings.Callback(true) -- maybe pcall this
                                 end
-                            end)
                             end)	
                         end
                     end
                 end
             end)
-        pcall(function()
+            pcall(function()
             Keybind.KeybindFrame.KeybindBox:GetPropertyChangedSignal("Text"):Connect(function()
                 TweenService:Create(Keybind.KeybindFrame, TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, Keybind.KeybindFrame.KeybindBox.TextBounds.X + 24, 0, 30)}):Play()
             end)
