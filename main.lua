@@ -2583,11 +2583,9 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
                     end
                 end
             end)
-            pcall(function()
             Keybind.KeybindFrame.KeybindBox:GetPropertyChangedSignal("Text"):Connect(function()
                 TweenService:Create(Keybind.KeybindFrame, TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, Keybind.KeybindFrame.KeybindBox.TextBounds.X + 24, 0, 30)}):Play()
             end)
-        end)
 
             function KeybindSettings:Set(NewKeybind)
                 Keybind.KeybindFrame.KeybindBox.Text = tostring(NewKeybind)
