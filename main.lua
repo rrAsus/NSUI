@@ -2497,46 +2497,46 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
             else
                 Keybind.Parent = TabPage
             end
-
+        
             Keybind.BackgroundTransparency = 1
             Keybind.UIStroke.Transparency = 1
             Keybind.Title.TextTransparency = 1
-
+        
             Keybind.KeybindFrame.BackgroundColor3 = SelectedTheme.InputBackground
             Keybind.KeybindFrame.UIStroke.Color = SelectedTheme.InputStroke
-
+        
             TweenService:Create(Keybind, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
             TweenService:Create(Keybind.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
             TweenService:Create(Keybind.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()	
-
+        
             Keybind.KeybindFrame.KeybindBox.Text = KeybindSettings.CurrentKeybind
             Keybind.KeybindFrame.Size = UDim2.new(0, Keybind.KeybindFrame.KeybindBox.TextBounds.X + 24, 0, 30)
-
+        
             Keybind.KeybindFrame.KeybindBox.Focused:Connect(function()
                 if KeybindSettings.Locked then
-                    Keybind.KeybindFrame.KeybindBox:ReleaseFocus() return
+                    Keybind.KeybindFrame.KeybindBox:ReleaseFocus() 
+                    return
                 end
                 CheckingForKey = true
                 Keybind.KeybindFrame.KeybindBox.Text = ""
             end)
             Keybind.KeybindFrame.KeybindBox.FocusLost:Connect(function()
                 CheckingForKey = false
-                if Keybind.KeybindFrame.KeybindBox.Text == nil or "" then
+                if Keybind.KeybindFrame.KeybindBox.Text == nil or Keybind.KeybindFrame.KeybindBox.Text == "" then
                     Keybind.KeybindFrame.KeybindBox.Text = KeybindSettings.CurrentKeybind
                     SaveConfiguration()
                 end
             end)
-
+        
             Keybind.MouseEnter:Connect(function()
                 TweenService:Create(Keybind, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
             end)
-
+        
             Keybind.MouseLeave:Connect(function()
                 TweenService:Create(Keybind, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
             end)
-
-        UserInputService.InputBegan:Connect(function(input, processed)
-
+        
+            UserInputService.InputBegan:Connect(function(input, processed)
                 if CheckingForKey then
                     if input.KeyCode ~= Enum.KeyCode.Unknown and input.KeyCode ~= Enum.KeyCode.Semicolon then
                         local SplitMessage = string.split(tostring(input.KeyCode), ".")
@@ -2546,7 +2546,7 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
                         Keybind.KeybindFrame.KeybindBox:ReleaseFocus()
                         SaveConfiguration()
                     end
-                elseif KeybindSettings.CurrentKeybind ~= nil and (input.KeyCode == Enum.KeyCode[KeybindSettings.CurrentKeybind]) then  --Test
+                elseif KeybindSettings.CurrentKeybind ~= nil and KeybindSettings.CurrentKeybind ~= "Set Keybind" and input.KeyCode == Enum.KeyCode[KeybindSettings.CurrentKeybind] then
                     local Held = true
                     local Connection
                     Connection = input.Changed:Connect(function(prop)
@@ -2555,7 +2555,7 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
                             Held = false
                         end
                     end)
-
+        
                     if not KeybindSettings.HoldToInteract then
                         local Success, Response = pcall(KeybindSettings.Callback)
                         if not Success then
@@ -2573,29 +2573,32 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
                         if Held then
                             local Loop; Loop = RunService.Stepped:Connect(function()
                                 if not Held then
-                                    KeybindSettings.Callback(false) -- maybe pcall this
+                                    KeybindSettings.Callback(false)
                                     Loop:Disconnect()
                                 else
-                                    KeybindSettings.Callback(true) -- maybe pcall this
+                                    KeybindSettings.Callback(true)
                                 end
                             end)	
                         end
                     end
                 end
             end)
+        
             Keybind.KeybindFrame.KeybindBox:GetPropertyChangedSignal("Text"):Connect(function()
                 TweenService:Create(Keybind.KeybindFrame, TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, Keybind.KeybindFrame.KeybindBox.TextBounds.X + 24, 0, 30)}):Play()
             end)
-
+        
             function KeybindSettings:Set(NewKeybind)
                 Keybind.KeybindFrame.KeybindBox.Text = tostring(NewKeybind)
                 KeybindSettings.CurrentKeybind = tostring(NewKeybind)
                 Keybind.KeybindFrame.KeybindBox:ReleaseFocus()
                 SaveConfiguration()
             end
+        
             function KeybindSettings:Destroy()
                 Keybind:Destroy()
             end
+        
             function KeybindSettings:Lock(Reason)
                 if KeybindSettings.Locked then return end
                 KeybindSettings.Locked = true
@@ -2603,26 +2606,30 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
                 TweenService:Create(Keybind.Lock,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{BackgroundTransparency = 0}):Play()
                 TweenService:Create(Keybind.Lock.Reason,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{TextTransparency = 0}):Play()
                 task.wait(0.2)
-                if not KeybindSettings.Locked then return end --no icon bug
+                if not KeybindSettings.Locked then return end
                 TweenService:Create(Keybind.Lock.Reason.Icon,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{ImageTransparency = 0}):Play()
             end
+        
             function KeybindSettings:Unlock()
                 if not KeybindSettings.Locked then return end
                 KeybindSettings.Locked = false
                 task.wait(0.2)
                 TweenService:Create(Keybind.Lock.Reason.Icon,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{ImageTransparency = 1}):Play()
-                if KeybindSettings.Locked then return end --no icon bug
+                if KeybindSettings.Locked then return end
                 TweenService:Create(Keybind.Lock,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{BackgroundTransparency = 1}):Play()
                 TweenService:Create(Keybind.Lock.Reason,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{TextTransparency = 1}):Play()
             end
+        
             function KeybindSettings:Visible(bool)
                 Keybind.Visible = bool
             end
+        
             if Settings.ConfigurationSaving then
                 if Settings.ConfigurationSaving.Enabled and KeybindSettings.Flag then
                     HDXLib.Flags[KeybindSettings.Flag] = KeybindSettings
                 end
             end
+        
             return KeybindSettings
         end
 
