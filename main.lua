@@ -2136,7 +2136,7 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
     TweenService:Create(Dropdown.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
     TweenService:Create(Dropdown.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
 
-    for _, ununusedoption in ipairs(Dropdown.List:GetChildren()) do
+    for _, ununusedoption in pairs(Dropdown.List:GetChildren()) do
         if ununusedoption.ClassName == "Frame" and ununusedoption.Name ~= "PlaceHolder" and ununusedoption.Name ~= "-SearchBar" then
             ununusedoption:Destroy()
         end
@@ -2147,7 +2147,7 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
     local function RefreshSelected()
         if #DropdownSettings.Items.Selected > 1 then
             local NT = {}
-            for _, kj in ipairs(DropdownSettings.Items.Selected) do
+            for _, kj in pairs(DropdownSettings.Items.Selected) do
                 NT[#NT + 1] = kj.Option.Name
             end
             Dropdown.Selected.Text = table.concat(NT, ", ")
@@ -2169,7 +2169,7 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
         if Dropdown.List.Visible then
             Debounce = true
             TweenService:Create(Dropdown, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 465, 0, 44)}):Play()
-            for _, DropdownOpt in ipairs(Dropdown.List:GetChildren()) do
+            for _, DropdownOpt in pairs(Dropdown.List:GetChildren()) do
                 if DropdownOpt.ClassName == "Frame" and DropdownOpt.Name ~= "PlaceHolder" and DropdownOpt ~= SearchBar then
                     TweenService:Create(DropdownOpt, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
                     TweenService:Create(DropdownOpt.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
@@ -2186,7 +2186,7 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
             Dropdown.List.Visible = true
             TweenService:Create(Dropdown.List, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ScrollBarImageTransparency = 0.7}):Play()
             TweenService:Create(Dropdown.Toggle, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Rotation = 0}):Play()
-            for _, DropdownOpt in ipairs(Dropdown.List:GetChildren()) do
+            for _, DropdownOpt in pairs(Dropdown.List:GetChildren()) do
                 if DropdownOpt.ClassName == "Frame" and DropdownOpt.Name ~= "PlaceHolder" and DropdownOpt ~= SearchBar then
                     TweenService:Create(DropdownOpt, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
                     TweenService:Create(DropdownOpt.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
@@ -2198,7 +2198,7 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
 
     Dropdown.List["-SearchBar"].Input:GetPropertyChangedSignal("Text"):Connect(function()
         local InputText = string.upper(Dropdown.List["-SearchBar"].Input.Text)
-        for _, item in ipairs(Dropdown.List:GetChildren()) do
+        for _, item in pairs(Dropdown.List:GetChildren()) do
             if item:IsA("Frame") and item.Name ~= "Template" and item ~= SearchBar and item.Name ~= "PlaceHolder" then
                 if InputText == "" or InputText == " " or string.find(string.upper(item.Name), InputText) ~= nil then
                     TweenService:Create(item, TweenInfo.new(0.15, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
@@ -2262,7 +2262,7 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
             if DropdownSettings.Locked then return end
             if Multi then
                 local Found = nil
-                for i, j in ipairs(DropdownSettings.Items.Selected) do
+                for i, j in pairs(DropdownSettings.Items.Selected) do
                     if j.Option == Option then
                         Found = j
                         table.remove(DropdownSettings.Items.Selected, i)
@@ -2280,7 +2280,7 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
                 RefreshSelected()
                 Dropdown.List.Visible = false
                 TweenService:Create(Dropdown, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 465, 0, 44)}):Play()
-                for _, DropdownOpt in ipairs(Dropdown.List:GetChildren()) do
+                for _, DropdownOpt in pairs(Dropdown.List:GetChildren()) do
                     if DropdownOpt.ClassName == "Frame" and DropdownOpt.Name ~= "PlaceHolder" and DropdownOpt ~= SearchBar then
                         TweenService:Create(DropdownOpt, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
                         TweenService:Create(DropdownOpt.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
@@ -2295,7 +2295,7 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
         end)
     end
 
-    for _, option in ipairs(DropdownSettings.Items.Default) do
+    for _, option in pairs(DropdownSettings.Items.Default) do
         AddOption(option, DropdownSettings.Selected == option)
     end
 end
