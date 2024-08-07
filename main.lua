@@ -2575,7 +2575,7 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
             if KeybindSettings.CanBeToggled then
                 CanBeToggled()
             elseif not KeybindSettings.HoldToInteract then
-                local Success, Response = pcall(KeybindSettings.Callback)
+                local Success, Response = pcall(KeybindSettings.Callback, true)
                 if not Success then
                     TweenService:Create(Keybind, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(85, 0, 0)}):Play()
                     TweenService:Create(Keybind.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
