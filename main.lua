@@ -2481,7 +2481,7 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
         end
 
         -- Keybind
-        function Tab:CreateKeybind(KeybindSettings)
+       function Tab:CreateKeybind(KeybindSettings)
     local CheckingForKey = false
     local Keybind = Elements.Template.Keybind:Clone()
     Keybind.Name = KeybindSettings.Name
@@ -2650,6 +2650,190 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
 
     return KeybindSettings
 end
+
+
+-- Toggle
+        function Tab:CreateToggle(ToggleSettings)
+
+            local Toggle = Elements.Template.Toggle:Clone()
+            Toggle.Name = ToggleSettings.Name
+            Toggle.Title.Text = ToggleSettings.Name
+            Toggle.Visible = true
+
+            Toggle.BackgroundTransparency = 1
+            Toggle.UIStroke.Transparency = 1
+            Toggle.Title.TextTransparency = 1
+            Toggle.Switch.BackgroundColor3 = SelectedTheme.ToggleBackground
+            Tab.Elements[Toggle.Name] = {
+                type = "toggle",
+                section = ToggleSettings.SectionParent,
+                element = Toggle
+            }
+			if ToggleSettings.CurrentValue == true then
+				local Success, Response = pcall(function()
+					ToggleSettings.Callback(ToggleSettings.CurrentValue)
+				end)
+			end
+            if ToggleSettings.SectionParent then
+                Toggle.Parent = ToggleSettings.SectionParent.Holder
+            else
+                Toggle.Parent = TabPage
+            end
+            if SelectedTheme ~= HDXLib.Theme.Default then
+                Toggle.Switch.Shadow.Visible = false
+            end
+            ToggleSettings.Locked = false
+            TweenService:Create(Toggle, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
+            TweenService:Create(Toggle.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+            TweenService:Create(Toggle.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()	
+
+
+            if not ToggleSettings.CurrentValue then
+                Toggle.Switch.Indicator.Position = UDim2.new(1, -40, 0.5, 0)
+                Toggle.Switch.Indicator.UIStroke.Color = SelectedTheme.ToggleDisabledStroke
+                Toggle.Switch.Indicator.BackgroundColor3 = SelectedTheme.ToggleDisabled
+                Toggle.Switch.UIStroke.Color = SelectedTheme.ToggleDisabledOuterStroke
+            else
+                Toggle.Switch.Indicator.Position = UDim2.new(1, -20, 0.5, 0)
+                Toggle.Switch.Indicator.UIStroke.Color = SelectedTheme.ToggleEnabledStroke
+                Toggle.Switch.Indicator.BackgroundColor3 = SelectedTheme.ToggleEnabled
+                Toggle.Switch.UIStroke.Color = SelectedTheme.ToggleEnabledOuterStroke
+            end
+
+            Toggle.MouseEnter:Connect(function()
+                TweenService:Create(Toggle, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
+            end)
+
+            Toggle.MouseLeave:Connect(function()
+                TweenService:Create(Toggle, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
+            end)
+            Toggle.Interact.MouseButton1Click:Connect(function()
+                if ToggleSettings.Locked then return end
+                if ToggleSettings.CurrentValue then
+                    ToggleSettings.CurrentValue = false
+                    TweenService:Create(Toggle, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
+                    TweenService:Create(Toggle.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
+                    TweenService:Create(Toggle.Switch.Indicator, TweenInfo.new(0.45, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Position = UDim2.new(1, -40, 0.5, 0)}):Play()
+                    TweenService:Create(Toggle.Switch.Indicator, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0,12,0,12)}):Play()
+                    TweenService:Create(Toggle.Switch.Indicator.UIStroke, TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Color = SelectedTheme.ToggleDisabledStroke}):Play()
+                    TweenService:Create(Toggle.Switch.Indicator, TweenInfo.new(0.8, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = SelectedTheme.ToggleDisabled}):Play()
+                    TweenService:Create(Toggle.Switch.UIStroke, TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Color = SelectedTheme.ToggleDisabledOuterStroke}):Play()
+                    task.wait(0.05)
+                    TweenService:Create(Toggle.Switch.Indicator, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0,17,0,17)}):Play()
+                    task.wait(0.15)
+                    TweenService:Create(Toggle, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
+                    TweenService:Create(Toggle.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 0}):Play()	
+                else
+                    ToggleSettings.CurrentValue = true
+                    TweenService:Create(Toggle, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
+                    TweenService:Create(Toggle.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
+                    TweenService:Create(Toggle.Switch.Indicator, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Position = UDim2.new(1, -20, 0.5, 0)}):Play()
+                    TweenService:Create(Toggle.Switch.Indicator, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0,12,0,12)}):Play()
+                    TweenService:Create(Toggle.Switch.Indicator.UIStroke, TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Color = SelectedTheme.ToggleEnabledStroke}):Play()
+                    TweenService:Create(Toggle.Switch.Indicator, TweenInfo.new(0.8, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = SelectedTheme.ToggleEnabled}):Play()
+                    TweenService:Create(Toggle.Switch.UIStroke, TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Color = SelectedTheme.ToggleEnabledOuterStroke}):Play()
+                    task.wait(0.05)
+                    TweenService:Create(Toggle.Switch.Indicator, TweenInfo.new(0.45, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0,17,0,17)}):Play()	
+                    task.wait(0.15)
+                    TweenService:Create(Toggle, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
+                    TweenService:Create(Toggle.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 0}):Play()		
+                end
+
+                local Success, Response = pcall(function()
+                    ToggleSettings.Callback(ToggleSettings.CurrentValue)
+                end)
+                if not Success then
+                    TweenService:Create(Toggle, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(85, 0, 0)}):Play()
+                    TweenService:Create(Toggle.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
+                    Toggle.Title.Text = "Callback Error"
+                    print("HDX | "..ToggleSettings.Name.." Callback Error " ..tostring(Response))
+                    task.wait(0.5)
+                    Toggle.Title.Text = ToggleSettings.Name
+                    TweenService:Create(Toggle, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
+                    TweenService:Create(Toggle.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+                end
+
+                SaveConfiguration()
+            end)
+            function ToggleSettings:Set(NewToggleValue)
+                if NewToggleValue then
+                    ToggleSettings.CurrentValue = true
+                    TweenService:Create(Toggle, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
+                    TweenService:Create(Toggle.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
+                    TweenService:Create(Toggle.Switch.Indicator, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Position = UDim2.new(1, -20, 0.5, 0)}):Play()
+                    TweenService:Create(Toggle.Switch.Indicator, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0,12,0,12)}):Play()
+                    TweenService:Create(Toggle.Switch.Indicator.UIStroke, TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Color = SelectedTheme.ToggleEnabledStroke}):Play()
+                    TweenService:Create(Toggle.Switch.Indicator, TweenInfo.new(0.8, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = SelectedTheme.ToggleEnabled}):Play()
+                    TweenService:Create(Toggle.Switch.UIStroke, TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Color = Color3.fromRGB(100,100,100)}):Play()
+                    task.wait(0.05)
+                    TweenService:Create(Toggle.Switch.Indicator, TweenInfo.new(0.45, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0,17,0,17)}):Play()	
+                    task.wait(0.15)
+                    TweenService:Create(Toggle, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
+                    TweenService:Create(Toggle.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 0}):Play()	
+                else
+                    ToggleSettings.CurrentValue = false
+                    TweenService:Create(Toggle, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
+                    TweenService:Create(Toggle.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
+                    TweenService:Create(Toggle.Switch.Indicator, TweenInfo.new(0.45, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Position = UDim2.new(1, -40, 0.5, 0)}):Play()
+                    TweenService:Create(Toggle.Switch.Indicator, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0,12,0,12)}):Play()
+                    TweenService:Create(Toggle.Switch.Indicator.UIStroke, TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Color = SelectedTheme.ToggleDisabledStroke}):Play()
+                    TweenService:Create(Toggle.Switch.Indicator, TweenInfo.new(0.8, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = SelectedTheme.ToggleDisabled}):Play()
+                    TweenService:Create(Toggle.Switch.UIStroke, TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Color = Color3.fromRGB(65,65,65)}):Play()
+                    task.wait(0.05)
+                    TweenService:Create(Toggle.Switch.Indicator, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0,17,0,17)}):Play()
+                    task.wait(0.15)
+                    TweenService:Create(Toggle, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
+                    TweenService:Create(Toggle.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 0}):Play()	
+                end
+                local Success, Response = pcall(function()
+                    ToggleSettings.Callback(ToggleSettings.CurrentValue)
+                end)
+                if not Success then
+                    TweenService:Create(Toggle, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(85, 0, 0)}):Play()
+                    TweenService:Create(Toggle.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
+                    Toggle.Title.Text = "Callback Error"
+                    print("HDX | "..ToggleSettings.Name.." Callback Error " ..tostring(Response))
+                    task.wait(0.5)
+                    Toggle.Title.Text = ToggleSettings.Name
+                    TweenService:Create(Toggle, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
+                    TweenService:Create(Toggle.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+                end
+                SaveConfiguration()
+            end
+            function ToggleSettings:Destroy()
+                Toggle:Destroy()
+            end
+            function ToggleSettings:Lock(Reason)
+                if ToggleSettings.Locked then return end
+                ToggleSettings.Locked = true
+                Toggle.Lock.Reason.Text = Reason or "Locked"
+                TweenService:Create(Toggle.Lock,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{BackgroundTransparency = 0}):Play()
+                TweenService:Create(Toggle.Lock.Reason,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{TextTransparency = 0}):Play()
+                task.wait(0.2)
+                if not ToggleSettings.Locked then return end --no icon bug
+                TweenService:Create(Toggle.Lock.Reason.Icon,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{ImageTransparency = 0}):Play()
+            end
+            function ToggleSettings:Unlock()
+                if not ToggleSettings.Locked then return end
+                ToggleSettings.Locked = false
+                task.wait(0.2)
+                TweenService:Create(Toggle.Lock.Reason.Icon,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{ImageTransparency = 1}):Play()
+                if ToggleSettings.Locked then return end --no icon bug
+                TweenService:Create(Toggle.Lock,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{BackgroundTransparency = 1}):Play()
+                TweenService:Create(Toggle.Lock.Reason,TweenInfo.new(0.4,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{TextTransparency = 1}):Play()
+            end
+            function ToggleSettings:Visible(bool)
+                Toggle.Visible = bool
+            end
+
+            if Settings.ConfigurationSaving then
+                if Settings.ConfigurationSaving.Enabled and ToggleSettings.Flag then
+                    HDXLib.Flags[ToggleSettings.Flag] = ToggleSettings
+                end
+            end
+
+            return ToggleSettings
+        end
 
         -- ColorPicker
         function Tab:CreateColorPicker(ColorPickerSettings) -- by Throit
