@@ -2100,72 +2100,31 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
         -- Dropdown
         function Tab:CreateDropdown(DropdownSettings)
             local Dropdown = Elements.Template.Dropdown:Clone()
-    local SearchBar = Dropdown.List["-SearchBar"]
-    local Required = 1
-
-    DropdownSettings.Items = {
-        Selected = {Default = DropdownSettings.Selected or nil}
-    }
-    DropdownSettings.Locked = false
-    local Multi = DropdownSettings.MultiSelection or false
-    
-    -- New setting for sorting
-    local SortOptions = DropdownSettings.Sort or false  -- This can be a boolean or a custom function
-
-    Dropdown.Name = DropdownSettings.Name
-    Dropdown.Title.Text = DropdownSettings.Name
-    Dropdown.Visible = true
-    Tab.Elements[DropdownSettings.Name] = {
-        type = "dropdown",
-        section = DropdownSettings.SectionParent,
-        element = Dropdown
-    }
-
-    if DropdownSettings.SectionParent then
-        Dropdown.Parent = DropdownSettings.SectionParent.Holder
-    else
-        Dropdown.Parent = TabPage
-    end
-local function SortDropdownOptions(options)
-        if SortOptions then
-            if type(SortOptions) == "function" then
-                table.sort(options, SortOptions)
+            local SearchBar = Dropdown.List["-SearchBar"]
+            local Required = 1
+            --local Debounce = false
+            DropdownSettings.Items = {
+                Selected = {Default = DropdownSettings.Selected or nil}
+            }
+            DropdownSettings.Locked = false
+            local Multi = DropdownSettings.MultiSelection or false
+            if string.find(DropdownSettings.Name,"closed") then
+                Dropdown.Name = "Dropdown"
             else
-                table.sort(options, function(a, b)
-                    return a.Name:lower() < b.Name:lower()
-                end)
+                Dropdown.Name = DropdownSettings.Name
             end
-        end
-    end
-
-    local function AddOptions(Options, Selected)
-        if type(Options) == "table" then
-            SortDropdownOptions(Options)
-            for _, Option in ipairs(Options) do
-                AddOption(Option, Selected)
+            Dropdown.Title.Text = DropdownSettings.Name
+            Dropdown.Visible = true
+            Tab.Elements[DropdownSettings.Name] = {
+                type = "dropdown",
+                section = DropdownSettings.SectionParent,
+                element = Dropdown
+            }
+            if DropdownSettings.SectionParent then
+                Dropdown.Parent = DropdownSettings.SectionParent.Holder
+            else
+                Dropdown.Parent = TabPage
             end
-        else
-            AddOption(Options, Selected)
-        end
-        if Settings.ConfigurationSaving then
-            if Settings.ConfigurationSaving.Enabled and DropdownSettings.Flag then
-                HDXLib.Flags[DropdownSettings.Flag] = DropdownSettings
-            end
-        end
-    end
-
-function DropdownSettings:Refresh(NewOptions, Selecteds)
-        DropdownSettings.Items = {}
-        DropdownSettings.Items.Selected = {}
-        for _, option in ipairs(Dropdown.List:GetChildren()) do
-            if option.ClassName == "Frame" and option ~= SearchBar and option.Name ~= "Placeholder" then
-                option:Destroy()
-            end
-        end
-        AddOptions(NewOptions, Selecteds)
-    end
-
-    AddOptions(DropdownSettings.Options, DropdownSettings.CurrentOption)
 
             Dropdown.List.Visible = false
             Dropdown.BackgroundTransparency = 1
