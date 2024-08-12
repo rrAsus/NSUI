@@ -2167,7 +2167,9 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
     task.wait(0.1)
     TweenService:Create(Dropdown, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
     TweenService:Create(Dropdown.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+
     if Debounce then return end
+
     if Dropdown.List.Visible then
         Debounce = true
         TweenService:Create(Dropdown, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 465, 0, 44)}):Play()
@@ -2184,19 +2186,31 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
         Dropdown.List.Visible = false
         Debounce = false
     else
-        local newDropdownHeight = 278 
+        local newDropdownHeight = 278
         TweenService:Create(Dropdown, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 465, 0, newDropdownHeight)}):Play()
         Dropdown.List.Visible = true
-        Dropdown.List.Size = UDim2.new(1, 0, 1, 0)  -- Ensure the list expands with the dropdown
-        TweenService:Create(Dropdown.List, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ScrollBarImageTransparency = 0.7}):Play()
-        TweenService:Create(Dropdown.Toggle, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Rotation = 0}):Play()	
+        
+        Dropdown.List.Size = UDim2.new(1, 0, 1, 0)  
+        
+        local listLayout = Dropdown.List:FindFirstChildOfClass("UIListLayout")
+        if listLayout then
+            listLayout.Padding = UDim.new(0, 5)  
+        end
+
+        Dropdown.ClipsDescendants = false
+        Dropdown.List.ClipsDescendants = false
+
         for _, DropdownOpt in ipairs(Dropdown.List:GetChildren()) do
             if DropdownOpt.ClassName == "Frame" and DropdownOpt.Name ~= "PlaceHolder" and DropdownOpt ~= SearchBar then
+                DropdownOpt.Visible = true
                 TweenService:Create(DropdownOpt, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
                 TweenService:Create(DropdownOpt.UIStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
                 TweenService:Create(DropdownOpt.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
             end
         end
+
+        TweenService:Create(Dropdown.List, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ScrollBarImageTransparency = 0.7}):Play()
+        TweenService:Create(Dropdown.Toggle, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Rotation = 0}):Play()	
     end
 end)
 
