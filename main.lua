@@ -2566,55 +2566,59 @@ end)
     end
 
     UserInputService.InputBegan:Connect(function(input, processed)
+	local isTextBoxFocused = UserInputService:GetFocusedTextBox() ~= nil
 
+    if isTextBoxFocused then
+        return
+    end
         if CheckingForKey then
-            if input.KeyCode ~= Enum.KeyCode.Unknown and input.KeyCode ~= Enum.KeyCode.Semicolon then
-                local SplitMessage = string.split(tostring(input.KeyCode), ".")
-                local NewKeyNoEnum = SplitMessage[3]
-                Keybind.KeybindFrame.KeybindBox.Text = tostring(NewKeyNoEnum)
-                KeybindSettings.CurrentKeybind = tostring(NewKeyNoEnum)
-                Keybind.KeybindFrame.KeybindBox:ReleaseFocus()
-                SaveConfiguration()
+        if input.KeyCode ~= Enum.KeyCode.Unknown and input.KeyCode ~= Enum.KeyCode.Semicolon then
+            local SplitMessage = string.split(tostring(input.KeyCode), ".")
+            local NewKeyNoEnum = SplitMessage[3]
+            Keybind.KeybindFrame.KeybindBox.Text = tostring(NewKeyNoEnum)
+            KeybindSettings.CurrentKeybind = tostring(NewKeyNoEnum)
+            Keybind.KeybindFrame.KeybindBox:ReleaseFocus()
+            SaveConfiguration()
+        end
+    elseif KeybindSettings.CurrentKeybind ~= nil and KeybindSettings.CurrentKeybind ~= "Set Keybind" and input.KeyCode == Enum.KeyCode[KeybindSettings.CurrentKeybind] then
+        local Held = true
+        local Connection
+        Connection = input.Changed:Connect(function(prop)
+            if prop == "UserInputState" then
+                Connection:Disconnect()
+                Held = false
             end
-        elseif KeybindSettings.CurrentKeybind ~= nil and KeybindSettings.CurrentKeybind ~= "Set Keybind" and input.KeyCode == Enum.KeyCode[KeybindSettings.CurrentKeybind] then
-            local Held = true
-            local Connection
-            Connection = input.Changed:Connect(function(prop)
-                if prop == "UserInputState" then
-                    Connection:Disconnect()
-                    Held = false
-                end
-            end)
+        end)
 
-            if KeybindSettings.CanBeToggled then
-                CanBeToggled()
-            elseif not KeybindSettings.HoldToInteract then
-                local Success, Response = pcall(KeybindSettings.Callback, true)
-                if not Success then
-                    TweenService:Create(Keybind, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(85, 0, 0)}):Play()
-                    TweenService:Create(Keybind.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-                    Keybind.Title.Text = "Callback Error"
-                    print("HDX | "..KeybindSettings.Name.." Callback Error " ..tostring(Response))
-                    task.wait(0.5)
-                    Keybind.Title.Text = KeybindSettings.Name
-                    TweenService:Create(Keybind, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
-                    TweenService:Create(Keybind.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-                end
-            else
-                task.wait(0.25)
-                if Held then
-                    local Loop; Loop = RunService.Stepped:Connect(function()
-                        if not Held then
-                            KeybindSettings.Callback(false)
-                            Loop:Disconnect()
-                        else
-                            KeybindSettings.Callback(true)
-                        end
-                    end)
-                end
+        if KeybindSettings.CanBeToggled then
+            CanBeToggled()
+        elseif not KeybindSettings.HoldToInteract then
+            local Success, Response = pcall(KeybindSettings.Callback, true)
+            if not Success then
+                TweenService:Create(Keybind, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(85, 0, 0)}):Play()
+                TweenService:Create(Keybind.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
+                Keybind.Title.Text = "Callback Error"
+                print("HDX | "..KeybindSettings.Name.." Callback Error " ..tostring(Response))
+                task.wait(0.5)
+                Keybind.Title.Text = KeybindSettings.Name
+                TweenService:Create(Keybind, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
+                TweenService:Create(Keybind.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+            end
+        else
+            task.wait(0.25)
+            if Held then
+                local Loop; Loop = RunService.Stepped:Connect(function()
+                    if not Held then
+                        KeybindSettings.Callback(false)
+                        Loop:Disconnect()
+                    else
+                        KeybindSettings.Callback(true)
+                    end
+                end)
             end
         end
-    end)
+    end
+end)
 
     Keybind.KeybindFrame.KeybindBox:GetPropertyChangedSignal("Text"):Connect(function()
         TweenService:Create(Keybind.KeybindFrame, TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, Keybind.KeybindFrame.KeybindBox.TextBounds.X + 24, 0, 30)}):Play()
