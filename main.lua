@@ -2566,7 +2566,6 @@ end)
     end
 
       UserInputService.InputBegan:Connect(function(input, processed)
-        if processed then return end
 
         if CheckingForKey then
             if input.KeyCode ~= Enum.KeyCode.Unknown and input.KeyCode ~= Enum.KeyCode.Semicolon then
