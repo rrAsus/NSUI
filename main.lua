@@ -2565,7 +2565,11 @@ end)
         end
     end
 
-      UserInputService.InputBegan:Connect(function(input, processed)
+    UserInputService.InputBegan:Connect(function(input, processed)
+        -- Check if the keybind should be ignored when typing in chat or other text boxes
+        if processed or UserInputService:GetFocusedTextBox() then
+            return
+        end
 
         if CheckingForKey then
             if input.KeyCode ~= Enum.KeyCode.Unknown and input.KeyCode ~= Enum.KeyCode.Semicolon then
@@ -2615,6 +2619,7 @@ end)
             end
         end
     end)
+
     Keybind.KeybindFrame.KeybindBox:GetPropertyChangedSignal("Text"):Connect(function()
         TweenService:Create(Keybind.KeybindFrame, TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, Keybind.KeybindFrame.KeybindBox.TextBounds.X + 24, 0, 30)}):Play()
     end)
