@@ -2566,11 +2566,7 @@ end)
     end
 
     UserInputService.InputBegan:Connect(function(input, processed)
-	local isTextBoxFocused = UserInputService:GetFocusedTextBox() ~= nil
 
-    if isTextBoxFocused then
-        return
-    end
         if CheckingForKey then
         if input.KeyCode ~= Enum.KeyCode.Unknown and input.KeyCode ~= Enum.KeyCode.Semicolon then
             local SplitMessage = string.split(tostring(input.KeyCode), ".")
