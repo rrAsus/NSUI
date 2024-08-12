@@ -2566,7 +2566,6 @@ end)
     end
 
     UserInputService.InputBegan:Connect(function(input, processed)
-        -- Check if the keybind should be ignored when typing in chat or other text boxes
         if processed or UserInputService:GetFocusedTextBox() then
             return
         end
