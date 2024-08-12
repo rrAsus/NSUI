@@ -2552,7 +2552,10 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
         end
     end
 
-    UserInputService.InputBegan:Connect(function(input, processed)
+      UserInputService.InputBegan:Connect(function(input, processed)
+        -- Check if input is being processed by a GUI element (like the chat)
+        if processed then return end
+
         if CheckingForKey then
             if input.KeyCode ~= Enum.KeyCode.Unknown and input.KeyCode ~= Enum.KeyCode.Semicolon then
                 local SplitMessage = string.split(tostring(input.KeyCode), ".")
@@ -2601,7 +2604,6 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
             end
         end
     end)
-
     Keybind.KeybindFrame.KeybindBox:GetPropertyChangedSignal("Text"):Connect(function()
         TweenService:Create(Keybind.KeybindFrame, TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, Keybind.KeybindFrame.KeybindBox.TextBounds.X + 24, 0, 30)}):Play()
     end)
