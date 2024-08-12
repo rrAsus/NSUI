@@ -2553,7 +2553,6 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
     end
 
       UserInputService.InputBegan:Connect(function(input, processed)
-        -- Check if input is being processed by a GUI element (like the chat)
         if processed then return end
 
         if CheckingForKey then
