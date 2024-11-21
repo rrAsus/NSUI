@@ -39,7 +39,7 @@ The `CanBeToggled` parameter controls whether the keybind can enable or disable 
   - If `false`, the keybind does not toggle functionality—it only triggers the action once when pressed.
 This parameter is part of the following function:
 ```lua
-Tab:CreateKeybind({
+Keybind = Tab:CreateKeybind({
     Name = "Keybind",
     CurrentKeybind = "Set Keybind",
     CanBeToggled = true,
