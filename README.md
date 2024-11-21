@@ -16,6 +16,7 @@
 local NSUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/rrAsus/NSUI/main/main.lua"))()
 ```
 Refer to most things in [Arrayfield](https://arraydocumentation.vercel.app/en/windows), to boot up the window and such, but replace Rayfield with NSUI.
+---
 ##### `SectionName = Tab:CreateSection("Name", Boolean1, Boolean2, data)`
 **Creates a section with optional features.**
 - **Parameters:**
@@ -24,6 +25,7 @@ Refer to most things in [Arrayfield](https://arraydocumentation.vercel.app/en/wi
   - `Boolean2` *(boolean)*: Applies when `Boolean1` is `false`.  
     - If `true`, the section is collapsible (folded).  
     - If `false`, the section displays its contents.
+---
 ##### `Spacing = Tab:CreateSpacing(section, number)`
 **Creates spacing between elements in a section.**
 - **Parameters:**
@@ -31,6 +33,7 @@ Refer to most things in [Arrayfield](https://arraydocumentation.vercel.app/en/wi
   - `number` *(number)*: The amount of spacing, in pixels, between elements in the section.
 - **Notes:**  
   This function only works when a valid `section` is provided (If I'm not wrong).
+---
 ##### About `CanBeToggled`
 The `CanBeToggled` parameter controls whether the keybind can enable or disable a feature when pressed.
 - **Type:** *(boolean)*  
@@ -50,6 +53,7 @@ Keybind = Tab:CreateKeybind({
     end
 })
 ```
+---
 ##### About `Set` Function for Keybinds
 The `Set` function allows you to programmatically change or reset a keybind.
 - **Usage:**  
@@ -65,6 +69,7 @@ Button = Tab:CreateButton({
       end
   })
 ```
+---
 #### Functions :
 
 ##### `HDXLib:IsNumeric(data)`
