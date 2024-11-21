@@ -16,6 +16,21 @@
 local NSUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/rrAsus/NSUI/main/main.lua"))()
 ```
 Refer to most things in [Arrayfield](https://arraydocumentation.vercel.app/en/windows), to boot up the window and such, but replace Rayfield with NSUI.
+##### `SectionName = Tab:CreateSection("Name", Boolean1, Boolean2, data)`
+**Creates a section with optional features.**
+- **Parameters:**
+  - `data` *(number)*: Specifies an image to display in the section's corner. If not provided, no image is shown.
+  - `Boolean1` *(boolean)*: If `true`, the section is static (non-collapsible) and acts as a label with no image.
+  - `Boolean2` *(boolean)*: Applies when `Boolean1` is `false`.  
+    - If `true`, the section is collapsible (folded).  
+    - If `false`, the section displays its contents.
+##### `Spacing = Tab:CreateSpacing(section, number)`
+**Creates spacing between elements in a section.**
+- **Parameters:**
+  - `section` *(Section)*: The section where the spacing will be applied.
+  - `number` *(number)*: The amount of spacing, in pixels, between elements in the section.
+- **Notes:**  
+  This function only works when a valid `section` is provided (If I'm not wrong).
 #### Functions :
 
 ##### `HDXLib:IsNumeric(data)`
