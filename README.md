@@ -16,6 +16,7 @@
 local NSUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/rrAsus/NSUI/main/main.lua"))()
 ```
 Refer to most things in [Arrayfield](https://arraydocumentation.vercel.app/en/windows), to boot up the window and such, but replace Rayfield with NSUI.
+
 ---
 ##### `SectionName = Tab:CreateSection("Name", Boolean1, Boolean2, data)`
 **Creates a section with optional features.**
