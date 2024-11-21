@@ -50,6 +50,21 @@ Keybind = Tab:CreateKeybind({
     end
 })
 ```
+##### About `Set` Function for Keybinds
+The `Set` function allows you to programmatically change or reset a keybind.
+- **Usage:**  
+  You can call `Keybind:Set("Set Keybind")` to reset the keybind. If the string is `"Set Keybind"`, it will unbind the key, making the keybind inactive.
+- **Example:**  
+  Here's how you can create a button to reset a keybind:
+```lua
+Button = Tab:CreateButton({
+      SectionParent = Section,
+      Name = "Reset Keybind Button",
+      Callback = function()
+          Keybind:Set("Set Keybind")
+      end
+  })
+```
 #### Functions :
 
 ##### `HDXLib:IsNumeric(data)`
