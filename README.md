@@ -31,6 +31,25 @@ Refer to most things in [Arrayfield](https://arraydocumentation.vercel.app/en/wi
   - `number` *(number)*: The amount of spacing, in pixels, between elements in the section.
 - **Notes:**  
   This function only works when a valid `section` is provided (If I'm not wrong).
+##### About `CanBeToggled`
+The `CanBeToggled` parameter controls whether the keybind can enable or disable a feature when pressed.
+- **Type:** *(boolean)*  
+- **Functionality:**
+  - If `true`, pressing the keybind toggles the associated feature on or off.
+  - If `false`, the keybind does not toggle functionality—it only triggers the action once when pressed.
+This parameter is part of the following function:
+```lua
+Tab:CreateKeybind({
+    Name = "Keybind",
+    CurrentKeybind = "Set Keybind",
+    CanBeToggled = true,
+    HoldToInteract = false,
+    SectionParent = SectionName,
+    Callback = function(KeyBind)
+        -- Your code here
+    end
+})
+```
 #### Functions :
 
 ##### `HDXLib:IsNumeric(data)`
