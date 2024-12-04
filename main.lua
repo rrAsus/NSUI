@@ -1182,18 +1182,20 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
 
     AddDraggingFunctionality(Topbar,Main)
 	
-Settings = Settings or {}
+    Settings = Settings or {}
 
-Settings.KeySystem = Settings.KeySystem or false
+    Settings.KeySystem = Settings.KeySystem or false
 
-if type(Settings.KeySystem) == "table" then
-    Settings.KeySettings = Settings.KeySystem
-    Settings.KeySystem = true
-else
-    Settings.KeySystem = false
-end
+    if type(Settings.KeySystem) == "table" then
+        Settings.KeySettings = Settings.KeySystem
+        Settings.KeySystem = true
+    else
+        Settings.KeySystem = false
+    end
 
-    if typeof(Settings.KeySettings.Key) == "string" then Settings.KeySettings.Key = {Settings.KeySettings.Key} end
+    if Settings.KeySettings and typeof(Settings.KeySettings.Key) == "string" then
+        Settings.KeySettings.Key = {Settings.KeySettings.Key}
+    end
 
     for _, TabButton in ipairs(TabsList:GetChildren()) do
         if TabButton.ClassName == "Frame" and TabButton.Name ~= "Placeholder" then
