@@ -4,7 +4,7 @@
 
 -- THIS IS STILL NSUI, JUST RENAMED!
 
-local Release = "Release 2A"
+local Release = "Release 77"
 local NotificationDuration = 6.5
 local HDXFolder = "HDX"
 local ConfigurationFolder = HDXFolder.."/Configurations"
@@ -1181,6 +1181,17 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
     end)
 
     AddDraggingFunctionality(Topbar,Main)
+	
+Settings = Settings or {}
+
+Settings.KeySystem = Settings.KeySystem or false
+
+if type(Settings.KeySystem) == "table" then
+    Settings.KeySettings = Settings.KeySystem
+    Settings.KeySystem = true
+else
+    Settings.KeySystem = false
+end
 
     if typeof(Settings.KeySettings.Key) == "string" then Settings.KeySettings.Key = {Settings.KeySettings.Key} end
 
