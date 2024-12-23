@@ -2040,7 +2040,13 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
                 Input.InputFrame.InputBox:GetPropertyChangedSignal("Text"):Connect(function()
                     if Input.InputFrame.InputBox.Text == "" then return end 
                     if InputSettings.CharacterLimit then Input.InputFrame.InputBox.Text = Input.InputFrame.InputBox.Text:sub(1,InputSettings.CharacterLimit) end
-                    if InputSettings.NumbersOnly then Input.InputFrame.InputBox.Text = Input.InputFrame.InputBox.Text:gsub("%D+", "") end
+                    if InputSettings.NumbersOnly then
+    			Input.InputFrame.InputBox.Text = Input.InputFrame.InputBox.Text:gsub("[^%d%.]", "")
+    			local dotCount = select(2, Input.InputFrame.InputBox.Text:gsub("%.", ""))
+    			if dotCount > 1 then
+        			Input.InputFrame.InputBox.Text = Input.InputFrame.InputBox.Text:sub(1, #Input.InputFrame.InputBox.Text - 1)
+    			end
+		end
                 end)
             end
 
