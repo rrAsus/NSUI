@@ -1,6 +1,6 @@
 # NSUI
 ### Info :
-- This is a modified version of Arrayfield which is a modified version of Rayfield
+- This is a modified version of [Arrayfield](https://arraydocumentation.vercel.app/en/introduction) which is a modified version of [Rayfield](https://docs.sirius.menu/rayfield)
 ---
 ### Features : 
 - Fixes
