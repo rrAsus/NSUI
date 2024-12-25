@@ -1915,6 +1915,7 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
     Spacing.BackgroundColor3 = Color3.fromRGB(67, 67, 67)
     Spacing.BackgroundTransparency = 0
     Spacing.BorderSizePixel = 0
+Spacing.Position = UDim2.new(0, 0, 0, PreviousSpacing.Position.Y.Offset + 10)
 
     local Corner = Instance.new("UICorner")
     Corner.CornerRadius = UDim.new(0, 4)
@@ -1925,9 +1926,6 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
     else
         Spacing.Parent = TabPage
     end
-	local Padding = Instance.new("UIPadding")
-    Padding.PaddingTop = UDim.new(0, 20)
-    Padding.Parent = Spacing
 end
 
         -- Label
