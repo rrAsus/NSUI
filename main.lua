@@ -1915,17 +1915,22 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
     Spacing.BackgroundColor3 = Color3.fromRGB(67, 67, 67)
     Spacing.BackgroundTransparency = 0
     Spacing.BorderSizePixel = 0
-Spacing.Position = UDim2.new(0, 0, 0, PreviousSpacing.Position.Y.Offset + 10)
 
     local Corner = Instance.new("UICorner")
     Corner.CornerRadius = UDim.new(0, 4)
     Corner.Parent = Spacing
 
-    if SectionParent then
-        Spacing.Parent = SectionParent.Holder
+    local Parent = SectionParent and SectionParent.Holder or TabPage
+    if #Parent:GetChildren() > 0 then
+        local LastChild = Parent:GetChildren()[#Parent:GetChildren()]
+        if LastChild and LastChild:IsA("GuiObject") then
+            Spacing.Position = UDim2.new(0, 0, 0, LastChild.Position.Y.Offset + LastChild.Size.Y.Offset + 10)
+        end
     else
-        Spacing.Parent = TabPage
+        Spacing.Position = UDim2.new(0, 0, 0, 10)
     end
+
+    Spacing.Parent = Parent
 end
 
         -- Label
