@@ -1925,6 +1925,9 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
     else
         Spacing.Parent = TabPage
     end
+	local Padding = Instance.new("UIPadding")
+    Padding.PaddingTop = UDim.new(0, 10)
+    Padding.Parent = Spacing
 end
 
         -- Label
