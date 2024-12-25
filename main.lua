@@ -2120,11 +2120,10 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
         function Tab:CreateDropdown(DropdownSettings)
             local Dropdown = Elements.Template.Dropdown:Clone()
             local SearchBar = Dropdown.List["-SearchBar"]
-            local Required = 1
+            local Required = 0
             --local Debounce = false
-            DropdownSettings.Items = {
-                Selected = {Default = DropdownSettings.Selected or nil}
-            }
+            DropdownSettings.Items = DropdownSettings.Items or {}
+	DropdownSettings.Items.Selected = DropdownSettings.Items.Selected or {}
             DropdownSettings.Locked = false
             local Multi = DropdownSettings.MultiSelection or false
             if string.find(DropdownSettings.Name,"closed") then
@@ -2157,11 +2156,13 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
             TweenService:Create(Dropdown.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()	
 
 
-            for _, ununusedoption in ipairs(Dropdown.List:GetChildren()) do
-                if ununusedoption.ClassName == "Frame" and ununusedoption.Name ~= "PlaceHolder" and ununusedoption.Name ~= "-SearchBar" then
-                    ununusedoption:Destroy()
-                end
-            end
+            for _, child in ipairs(Dropdown.List:GetChildren()) do
+    		if child.ClassName == "Frame" and child.Name ~= "PlaceHolder" and child.Name ~= "-SearchBar" then
+        		if not DropdownSettings.Items[child.Name] then
+            			child:Destroy()
+        		end
+    		end
+	end
 
             Dropdown.Toggle.Rotation = 180
 
