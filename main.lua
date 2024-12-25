@@ -2227,7 +2227,9 @@ end
     Dropdown.List.CanvasSize = UDim2.new(0, 0, 0, contentHeight)
     Dropdown.List.ScrollBarThickness = Dropdown.List.ScrollingEnabled and 6 or 0
 
-    TweenService:Create(Dropdown, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 465, 0, dropdownHeight + 44) }):Play()
+    TweenService:Create(Dropdown, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {
+        Size = UDim2.new(0, 465, 0, dropdownHeight + 44)
+    }):Play()
 
     for _, DropdownOpt in ipairs(Dropdown.List:GetChildren()) do
         if DropdownOpt.ClassName == "Frame" and DropdownOpt.Name ~= "PlaceHolder" and DropdownOpt ~= SearchBar then
@@ -2240,6 +2242,13 @@ end
 
     TweenService:Create(Dropdown.List, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ScrollBarImageTransparency = 0.7}):Play()
     TweenService:Create(Dropdown.Toggle, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Rotation = 0}):Play()
+
+    Dropdown.MouseLeave:Connect(function()
+        TweenService:Create(Dropdown, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {
+            Size = UDim2.new(0, 465, 0, 44)
+        }):Play()
+        Dropdown.List.Visible = false
+    end)
 end
 end)
 
