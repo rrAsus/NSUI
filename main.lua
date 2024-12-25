@@ -2206,7 +2206,7 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
         Dropdown.List.Visible = false
         Debounce = false
     else
-       local newDropdownHeight = math.min(300, Dropdown.List.UIListLayout.AbsoluteContentSize.Y)
+       local newDropdownHeight = 378
 local dropdownPositionY = Dropdown.AbsolutePosition.Y
 local screenHeight = workspace.CurrentCamera.ViewportSize.Y
 
@@ -2220,6 +2220,11 @@ else
         Size = UDim2.new(0, 465, 0, newDropdownHeight)
     }):Play()
 end
+local listLayout = Dropdown.List:FindFirstChild("UIListLayout")
+if listLayout then
+    Dropdown.List.CanvasSize = UDim2.new(0, 0, 0, listLayout.AbsoluteContentSize.Y)
+end
+Dropdown.List.ScrollBarThickness = 6
         Dropdown.List.Visible = true
 	Dropdown.List.ScrollingEnabled = true
         Dropdown.List.Size = UDim2.new(1, 0, 1, 0)
