@@ -2217,31 +2217,19 @@ end
         Dropdown.List.Visible = false
         Debounce = false
     else
-    local newDropdownHeight = 278
-    local dropdownPositionY = Dropdown.AbsolutePosition.Y
-    local screenHeight = workspace.CurrentCamera.ViewportSize.Y
-
-    if dropdownPositionY + newDropdownHeight > screenHeight then
-        TweenService:Create(Dropdown, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {
-            Position = UDim2.new(0, 0, 0, screenHeight - newDropdownHeight - 10),
-            Size = UDim2.new(0, 465, 0, newDropdownHeight)
-        }):Play()
-    else
-        TweenService:Create(Dropdown, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {
-            Size = UDim2.new(0, 465, 0, newDropdownHeight)
-        }):Play()
-    end
-
+    local maxDropdownHeight = 278
     local listLayout = Dropdown.List:FindFirstChild("UIListLayout")
-    if listLayout then
-        Dropdown.List.CanvasSize = UDim2.new(0, 0, 0, listLayout.AbsoluteContentSize.Y)
-    end
-    Dropdown.List.ScrollBarThickness = 6
+    local contentHeight = listLayout and listLayout.AbsoluteContentSize.Y or 0
+    local dropdownHeight = math.min(contentHeight, maxDropdownHeight)
 
     Dropdown.List.Visible = true
     Dropdown.List.ScrollingEnabled = true
-    Dropdown.ClipsDescendants = true
-    Dropdown.List.ClipsDescendants = true
+    Dropdown.List.CanvasSize = UDim2.new(0, 0, 0, contentHeight)
+    Dropdown.List.ScrollBarThickness = contentHeight > maxDropdownHeight and 6 or 0
+
+    TweenService:Create(Dropdown, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {
+        Size = UDim2.new(0, 465, 0, dropdownHeight + 44)
+    }):Play()
 
     for _, DropdownOpt in ipairs(Dropdown.List:GetChildren()) do
         if DropdownOpt.ClassName == "Frame" and DropdownOpt.Name ~= "PlaceHolder" and DropdownOpt ~= SearchBar then
