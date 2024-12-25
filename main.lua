@@ -1911,8 +1911,8 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
         function Tab:CreateSpacing(SectionParent, Size)
     local Spacing = Elements.Template.SectionSpacing:Clone()
     Spacing.Visible = true
-    Spacing.Size = UDim2.new(0, 200, 0, Size or 6)
-    Spacing.BackgroundColor3 = Color3.fromRGB(150, 150, 150)
+    Spacing.Size = UDim2.new(0, 300, 0, Size or 6)
+    Spacing.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
     Spacing.BackgroundTransparency = 0
     Spacing.BorderSizePixel = 0
 
