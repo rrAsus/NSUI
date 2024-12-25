@@ -2217,7 +2217,6 @@ end
         Dropdown.List.Visible = false
         Debounce = false
     else
-    else
     local maxDropdownHeight = 278
     local listLayout = Dropdown.List:FindFirstChild("UIListLayout")
     local contentHeight = listLayout and listLayout.AbsoluteContentSize.Y or 0
