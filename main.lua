@@ -2206,21 +2206,21 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
         Dropdown.List.Visible = false
         Debounce = false
     else
-       local newDropdownHeight = 300
-        local dropdownPositionY = Dropdown.AbsolutePosition.Y
-        local screenHeight = workspace.CurrentCamera.ViewportSize.Y
-        if dropdownPositionY + newDropdownHeight > screenHeight then
-            TweenService:Create(Dropdown, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Position = UDim2.new(0, 0, 0, dropdownPositionY - newDropdownHeight + Dropdown.Size.Y.Offset), Size = UDim2.new(0, 465, 0, newDropdownHeight)}):Play()
-        else
-            TweenService:Create(Dropdown, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 465, 0, newDropdownHeight)}):Play()
-        end
+       local newDropdownHeight = math.min(300, Dropdown.List.UIListLayout.AbsoluteContentSize.Y)
+local dropdownPositionY = Dropdown.AbsolutePosition.Y
+local screenHeight = workspace.CurrentCamera.ViewportSize.Y
+
+if dropdownPositionY + newDropdownHeight > screenHeight then
+    TweenService:Create(Dropdown, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {
+        Position = UDim2.new(0, 0, 0, screenHeight - newDropdownHeight - 10),
+        Size = UDim2.new(0, 465, 0, newDropdownHeight)
+    }):Play()
+else
+    TweenService:Create(Dropdown, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {
+        Size = UDim2.new(0, 465, 0, newDropdownHeight)
+    }):Play()
+end
         Dropdown.List.Visible = true
-	local listLayout = Dropdown.List:FindFirstChild("UIListLayout")
-	Dropdown.List:GetPropertyChangedSignal("AbsoluteCanvasSize"):Connect(function()
-    	if listLayout then
-        	Dropdown.List.CanvasSize = UDim2.new(0, 0, 0, listLayout.AbsoluteContentSize.Y)
-    	end
-	end)
 	Dropdown.List.ScrollingEnabled = true
         Dropdown.List.Size = UDim2.new(1, 0, 1, 0)
         Dropdown.ClipsDescendants = true
