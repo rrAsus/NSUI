@@ -2163,6 +2163,7 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
         		end
     		end
 	end
+	Dropdown.List.CanvasSize = UDim2.new(0, 0, 0, #DropdownSettings.Items * 44)
 
             Dropdown.Toggle.Rotation = 180
 
@@ -2206,7 +2207,7 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
         Dropdown.List.Visible = false
         Debounce = false
     else
-        local newDropdownHeight = 278
+        local newDropdownHeight = math.min(#DropdownSettings.Items * 44, 278)
         local dropdownPositionY = Dropdown.AbsolutePosition.Y
         local screenHeight = workspace.CurrentCamera.ViewportSize.Y
         if dropdownPositionY + newDropdownHeight > screenHeight then
@@ -2215,6 +2216,8 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
             TweenService:Create(Dropdown, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 465, 0, newDropdownHeight)}):Play()
         end
         Dropdown.List.Visible = true
+	Dropdown.List.ScrollingEnabled = true
+	Dropdown.List.AutomaticCanvasSize = Enum.AutomaticSize.None
         Dropdown.List.Size = UDim2.new(1, 0, 1, 0)
         Dropdown.ClipsDescendants = true
         Dropdown.List.ClipsDescendants = true
