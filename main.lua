@@ -2216,9 +2216,11 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
         end
         Dropdown.List.Visible = true
 	local listLayout = Dropdown.List:FindFirstChild("UIListLayout")
-	if listLayout then
-    		Dropdown.List.CanvasSize = UDim2.new(0, 0, 0, listLayout.AbsoluteContentSize.Y)
-	end
+	Dropdown.List:GetPropertyChangedSignal("AbsoluteCanvasSize"):Connect(function()
+    	if listLayout then
+        	Dropdown.List.CanvasSize = UDim2.new(0, 0, 0, listLayout.AbsoluteContentSize.Y)
+    	end
+	end)
 	Dropdown.List.ScrollingEnabled = true
         Dropdown.List.Size = UDim2.new(1, 0, 1, 0)
         Dropdown.ClipsDescendants = true
