@@ -2217,19 +2217,18 @@ end
         Dropdown.List.Visible = false
         Debounce = false
     else
+    else
     local maxDropdownHeight = 278
     local listLayout = Dropdown.List:FindFirstChild("UIListLayout")
     local contentHeight = listLayout and listLayout.AbsoluteContentSize.Y or 0
     local dropdownHeight = math.min(contentHeight, maxDropdownHeight)
 
     Dropdown.List.Visible = true
-    Dropdown.List.ScrollingEnabled = true
+    Dropdown.List.ScrollingEnabled = contentHeight > maxDropdownHeight
     Dropdown.List.CanvasSize = UDim2.new(0, 0, 0, contentHeight)
-    Dropdown.List.ScrollBarThickness = contentHeight > maxDropdownHeight and 6 or 0
+    Dropdown.List.ScrollBarThickness = Dropdown.List.ScrollingEnabled and 6 or 0
 
-    TweenService:Create(Dropdown, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {
-        Size = UDim2.new(0, 465, 0, dropdownHeight + 44)
-    }):Play()
+    TweenService:Create(Dropdown, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 465, 0, dropdownHeight + 44) }):Play()
 
     for _, DropdownOpt in ipairs(Dropdown.List:GetChildren()) do
         if DropdownOpt.ClassName == "Frame" and DropdownOpt.Name ~= "PlaceHolder" and DropdownOpt ~= SearchBar then
