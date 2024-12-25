@@ -2206,7 +2206,7 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
         Dropdown.List.Visible = false
         Debounce = false
     else
-       local newDropdownHeight = 378
+       local newDropdownHeight = 278
 local dropdownPositionY = Dropdown.AbsolutePosition.Y
 local screenHeight = workspace.CurrentCamera.ViewportSize.Y
 
