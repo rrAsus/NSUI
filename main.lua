@@ -1908,19 +1908,24 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
             return SectionValue
         end
         -- Spacing
-        function Tab:CreateSpacing(SectionParent,Size)
-            local Spacing = Elements.Template.SectionSpacing:Clone()
-            Spacing.Visible = true
-            Spacing.Parent = TabPage
+        function Tab:CreateSpacing(SectionParent, Size)
+    local Spacing = Elements.Template.SectionSpacing:Clone()
+    Spacing.Visible = true
+    Spacing.Size = UDim2.new(0, 200, 0, Size or 6)
+    Spacing.BackgroundColor3 = Color3.fromRGB(150, 150, 150)
+    Spacing.BackgroundTransparency = 0
+    Spacing.BorderSizePixel = 0
 
-            Spacing.Size = UDim2.fromOffset(475,Size or 6)
+    local Corner = Instance.new("UICorner")
+    Corner.CornerRadius = UDim.new(0, 4)
+    Corner.Parent = Spacing
 
-            if SectionParent then
-                Spacing.Parent = SectionParent.Holder
-            else
-                Spacing.Parent = TabPage
-            end
-        end
+    if SectionParent then
+        Spacing.Parent = SectionParent.Holder
+    else
+        Spacing.Parent = TabPage
+    end
+end
 
         -- Label
         function Tab:CreateLabel(LabelText,SectionParent)
