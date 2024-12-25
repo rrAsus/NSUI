@@ -2217,20 +2217,13 @@ end
         Dropdown.List.Visible = false
         Debounce = false
     else
-    local maxDropdownHeight = 278
-    local listLayout = Dropdown.List:FindFirstChild("UIListLayout")
-    local contentHeight = listLayout and listLayout.AbsoluteContentSize.Y or 0
-    local dropdownHeight = math.min(contentHeight, maxDropdownHeight)
-
+    local fixedDropdownHeight = 278
+    Dropdown.List.Size = UDim2.new(1, 0, 0, fixedDropdownHeight)
     Dropdown.List.Visible = true
-    Dropdown.List.ScrollingEnabled = contentHeight > maxDropdownHeight
-    Dropdown.List.CanvasSize = UDim2.new(0, 0, 0, contentHeight)
-    Dropdown.List.ScrollBarThickness = Dropdown.List.ScrollingEnabled and 6 or 0
-
-    TweenService:Create(Dropdown, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {
-        Size = UDim2.new(0, 465, 0, dropdownHeight + 44)
-    }):Play()
-
+    Dropdown.List.ScrollingEnabled = true
+    Dropdown.List.CanvasSize = UDim2.new(0, 0, 0, Dropdown.List.UIListLayout.AbsoluteContentSize.Y)
+    Dropdown.List.ScrollBarThickness = 6
+    TweenService:Create(Dropdown, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 465, 0, fixedDropdownHeight + 44)}):Play()
     for _, DropdownOpt in ipairs(Dropdown.List:GetChildren()) do
         if DropdownOpt.ClassName == "Frame" and DropdownOpt.Name ~= "PlaceHolder" and DropdownOpt ~= SearchBar then
             DropdownOpt.Visible = true
@@ -2239,16 +2232,8 @@ end
             TweenService:Create(DropdownOpt.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
         end
     end
-
     TweenService:Create(Dropdown.List, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {ScrollBarImageTransparency = 0.7}):Play()
     TweenService:Create(Dropdown.Toggle, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Rotation = 0}):Play()
-
-    Dropdown.MouseLeave:Connect(function()
-        TweenService:Create(Dropdown, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {
-            Size = UDim2.new(0, 465, 0, 44)
-        }):Play()
-        Dropdown.List.Visible = false
-    end)
 end
 end)
 
