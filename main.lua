@@ -1146,11 +1146,11 @@ function HDXLib:CreateWindow(Settings)
     Main.BackgroundTransparency = 1
     LoadingFrame.Title.TextTransparency = 1
     LoadingFrame.Subtitle.TextTransparency = 1
-LoadingFrame.Title.TextXAlignment = Enum.TextXAlignment.Center
-LoadingFrame.Title.TextYAlignment = Enum.TextYAlignment.Center
+LoadingFrame.Title.TextXAlignment = Enum.TextXAlignment.Left
+LoadingFrame.Title.TextYAlignment = Enum.TextYAlignment.Left
 LoadingFrame.Title.TextScaled = true
-LoadingFrame.Subtitle.TextXAlignment = Enum.TextXAlignment.Center
-LoadingFrame.Subtitle.TextYAlignment = Enum.TextYAlignment.Center
+LoadingFrame.Subtitle.TextXAlignment = Enum.TextXAlignment.Left
+LoadingFrame.Subtitle.TextYAlignment = Enum.TextYAlignment.Left
 LoadingFrame.Subtitle.TextScaled = true
     Main.Shadow.Image.ImageTransparency = 1
     LoadingFrame.Version.TextTransparency = 1
