@@ -3626,7 +3626,7 @@ function NSUILib:GetPlayerThumbnail(data, thumbnailtype)
 end
 
 if latest ~= Version then
-    NSUILib:Notify({Title = "Outdated Version Detected",Content = string.format("Hello, %s. You are currently using an outdated version of NSUI and we recommend you use the latest version.\nJust Re-Execute.", plr_name),Duration = NotificationDuration,Image = 10709753149})
+    NSUILib:Notify({Title = "Outdated Version Detected",Content = string.format("Hello, %s. You're running a outdated version of the script, please re-execute.", plr_name),Duration = 13.5,Image = 10709753149})
 end
 
 -- NSUILib:GetPlayerThumbnail(userid, "AvatarBust")
