@@ -4,12 +4,22 @@
 
 -- THIS IS STILL NSUI, JUST RENAMED!
 
-local Release = "V. 77"
+local Version = string.gsub("BUILD_V77", "^%s*(.-)%s*$", "%1")
+local Release = "Build 77"
 local NotificationDuration = 6.5
+local plr_name = game:GetService("Players").LocalPlayer.Name
 local NSUIFolder = "NSUI"
 local ConfigurationFolder = NSUIFolder.."/Configurations"
 local ConfigurationExtension = ".NSUI"
 local NSUIQuality = {}
+local latest = string.gsub(game:HttpGet("https://raw.githubusercontent.com/rrAsus/NSUI/refs/heads/main/version.txt"), "^%s*(.-)%s*$", "%1")
+
+    
+    if latest ~= Version then
+        assert(true, warn(`[NSUI]: Hello, {plr_name} , You are currently using an outdated version of NSUI and we recommend you use the latest version`))
+	setclipboard("https://raw.githubusercontent.com/rrAsus/NSUI/refs/heads/main/main.lua")
+	assert(true, warn("[NSUI]: The RAW has been copied into your clipboard. "))
+  end
 
 local NSUILib = {
     Flags = {},
