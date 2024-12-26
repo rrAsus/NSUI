@@ -1171,7 +1171,7 @@ LoadingFrame.Version.TextColor3 = Color3.fromRGB(255, 255, 255)
     LoadingFrame.Title.Text = Settings.LoadingTitle or "NSUI Interface Suite"
     LoadingFrame.Subtitle.Text = Settings.LoadingSubtitle or "by Sirius | Meta"
     if Settings.LoadingTitle ~= "NSUI Interface Suite" then
-        LoadingFrame.Version.Text = "NSUI UI | " .. Release
+        LoadingFrame.Version.Text = Release
     end
     Topbar.Visible = false
     Elements.Visible = false
