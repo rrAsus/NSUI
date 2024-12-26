@@ -1125,8 +1125,8 @@ function Minimise()
     TweenService:Create(Main.Shadow.Image, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
     TweenService:Create(Topbar.CornerRepair, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
     TweenService:Create(Topbar.Divider, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-    TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 495, 0, 45)}):Play()
-    TweenService:Create(Topbar, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 495, 0, 45)}):Play()
+    TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 400, 0, 35)}):Play()
+    TweenService:Create(Topbar, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Size = UDim2.new(0, 400, 0, 45)}):Play()
 
     task.wait(0.3)
 
@@ -1141,7 +1141,7 @@ function HDXLib:CreateWindow(Settings)
     HDX.Enabled = false
     local Passthrough = false
     Topbar.Title.Text = Settings.Name
-    Main.Size = UDim2.new(0, 450, 0, 260)
+    Main.Size = UDim2.new(0, 400, 0, 200)
     Main.Visible = true
     Main.BackgroundTransparency = 1
     LoadingFrame.Title.TextTransparency = 1
