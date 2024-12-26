@@ -3626,7 +3626,9 @@ function NSUILib:GetPlayerThumbnail(data, thumbnailtype)
 end
 
 if latest ~= Version then
-    NSUILib:Notify({Title = "Outdated Version Detected",Content = string.format("Hello, %s. You're running a outdated version of the script, please re-execute.", plr_name),Duration = 13.5,Image = 10709753149})
+    NSUILib:Notify({Title = "Outdated Version Detected",Content = string.format("Hello, %s. You're currently using an outdated version of NSUI and we recommend you use the latest version.", plr_name),Duration = 13.5,Image = 10709753149})
+setclipboard("https://raw.githubusercontent.com/rrAsus/NSUI/refs/heads/main/main.lua")
+NSUILib:Notify({Title = "Copied RAW UI Link",Content = "The RAW version has been copied into your clipboard.",Duration = 13.5,Image = 10709753149})
 end
 
 -- NSUILib:GetPlayerThumbnail(userid, "AvatarBust")
