@@ -1141,17 +1141,23 @@ function HDXLib:CreateWindow(Settings)
     HDX.Enabled = false
     local Passthrough = false
     Topbar.Title.Text = Settings.Name
-    Main.Size = UDim2.new(0, 300, 0, 100)
+    Main.Size = UDim2.new(0, 450, 0, 100)
     Main.Visible = true
     Main.BackgroundTransparency = 1
     LoadingFrame.Title.TextTransparency = 1
     LoadingFrame.Subtitle.TextTransparency = 1
+LoadingFrame.Title.TextXAlignment = Enum.TextXAlignment.Center
+LoadingFrame.Title.TextYAlignment = Enum.TextYAlignment.Center
+LoadingFrame.Title.TextScaled = true
+LoadingFrame.Subtitle.TextXAlignment = Enum.TextXAlignment.Center
+LoadingFrame.Subtitle.TextYAlignment = Enum.TextYAlignment.Center
+LoadingFrame.Subtitle.TextScaled = true
     Main.Shadow.Image.ImageTransparency = 1
     LoadingFrame.Version.TextTransparency = 1
     LoadingFrame.Title.Text = Settings.LoadingTitle or "HDX Interface Suite"
     LoadingFrame.Subtitle.Text = Settings.LoadingSubtitle or "by Sirius | Meta"
     if Settings.LoadingTitle ~= "HDX Interface Suite" then
-        LoadingFrame.Version.Text = "HDX UI"
+        LoadingFrame.Version.Text = "HDX UI " .. Release
     end
     Topbar.Visible = false
     Elements.Visible = false
