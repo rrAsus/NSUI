@@ -4,7 +4,7 @@
 
 -- THIS IS STILL NSUI, JUST RENAMED!
 
-local Release = "Release 77"
+local Release = "V. 77"
 local NotificationDuration = 6.5
 local HDXFolder = "HDX"
 local ConfigurationFolder = HDXFolder.."/Configurations"
@@ -1146,25 +1146,32 @@ function HDXLib:CreateWindow(Settings)
     Main.BackgroundTransparency = 1
     LoadingFrame.Title.TextTransparency = 1
     LoadingFrame.Subtitle.TextTransparency = 1
-LoadingFrame.Title.Position = UDim2.new(0, 10, 0, 10)
-LoadingFrame.Subtitle.Position = UDim2.new(0, 10, 0, 40)
+LoadingFrame.Title.Position = UDim2.new(0, 20, 0, 10)
+LoadingFrame.Title.TextSize = 18 
+LoadingFrame.Subtitle.Position = UDim2.new(0, 20, 0, 35)
+LoadingFrame.Subtitle.TextSize = 14
+
 local padding = Instance.new("UIPadding")
 padding.PaddingLeft = UDim.new(0, 10)
 padding.PaddingRight = UDim.new(0, 10)
 padding.Parent = LoadingFrame
 LoadingFrame.Title.TextXAlignment = Enum.TextXAlignment.Left
 LoadingFrame.Title.TextYAlignment = Enum.TextYAlignment.Center
-LoadingFrame.Title.TextScaled = true
 LoadingFrame.Subtitle.TextXAlignment = Enum.TextXAlignment.Left
 LoadingFrame.Subtitle.TextYAlignment = Enum.TextYAlignment.Center
+LoadingFrame.Title.TextScaled = true
 LoadingFrame.Subtitle.TextScaled = true
+LoadingFrame.Version.TextScaled = true
     Main.Shadow.Image.ImageTransparency = 1
     LoadingFrame.Version.TextTransparency = 1
+LoadingFrame.Version.Position = UDim2.new(1, -100, 1, -30)
+LoadingFrame.Version.AnchorPoint = Vector2.new(1, 1)
+LoadingFrame.Version.TextSize = 14
 LoadingFrame.Version.TextColor3 = Color3.fromRGB(255, 255, 255)
     LoadingFrame.Title.Text = Settings.LoadingTitle or "HDX Interface Suite"
     LoadingFrame.Subtitle.Text = Settings.LoadingSubtitle or "by Sirius | Meta"
     if Settings.LoadingTitle ~= "HDX Interface Suite" then
-        LoadingFrame.Version.Text = "HDX UI " .. Release
+        LoadingFrame.Version.Text = "HDX UI | " .. Release
     end
     Topbar.Visible = false
     Elements.Visible = false
