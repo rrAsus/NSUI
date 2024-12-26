@@ -13,14 +13,6 @@ local ConfigurationFolder = NSUIFolder.."/Configurations"
 local ConfigurationExtension = ".NSUI"
 local NSUIQuality = {}
 local latest = string.gsub(game:HttpGet("https://raw.githubusercontent.com/rrAsus/NSUI/refs/heads/main/version.txt"), "^%s*(.-)%s*$", "%1")
-
-    
-    if latest ~= Version then
-        assert(true, warn(`[NSUI]: Hello, {plr_name} , You are currently using an outdated version of NSUI and we recommend you use the latest version`))
-	setclipboard("https://raw.githubusercontent.com/rrAsus/NSUI/refs/heads/main/main.lua")
-	assert(true, warn("[NSUI]: The RAW has been copied into your clipboard. "))
-  end
-
 local NSUILib = {
     Flags = {},
     Theme = {
@@ -3631,6 +3623,10 @@ function NSUILib:GetPlayerThumbnail(data, thumbnailtype)
 	else
 		return "rbxassetid://284402785"
 	end
+end
+
+if latest ~= Version then
+    NSUILib:Notify({Title = "Outdated Version Detected",Content = string.format("Hello, %s. You are currently using an outdated version of NSUI and we recommend you use the latest version.\nJust Re-Execute.", plr_name),Duration = NotificationDuration,Image = 10709753149})
 end
 
 -- NSUILib:GetPlayerThumbnail(userid, "AvatarBust")
