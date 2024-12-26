@@ -6,16 +6,16 @@
 
 local Release = "V. 77"
 local NotificationDuration = 6.5
-local HDXFolder = "HDX"
-local ConfigurationFolder = HDXFolder.."/Configurations"
-local ConfigurationExtension = ".hdx"
-local HDXQuality = {}
+local NSUIFolder = "NSUI"
+local ConfigurationFolder = NSUIFolder.."/Configurations"
+local ConfigurationExtension = ".NSUI"
+local NSUIQuality = {}
 
-local HDXLib = {
+local NSUILib = {
     Flags = {},
     Theme = {
         Default = {
-            TextFont = "Default", -- Default will use the various font faces used across HDX
+            TextFont = "Default", -- Default will use the various font faces used across NSUI
             TextColor = Color3.fromRGB(240, 240, 240),
 
             Background = Color3.fromRGB(25, 25, 25),
@@ -54,7 +54,7 @@ local HDXLib = {
             PlaceholderColor = Color3.fromRGB(178, 178, 178)
         },
         Light = {
-            TextFont = "Gotham",  -- Default will use the various font faces used across HDX
+            TextFont = "Gotham",  -- Default will use the various font faces used across NSUI
             TextColor = Color3.fromRGB(50, 50, 50), -- i need to make all text 240, 240, 240 and base gray on transparency not color to do this
 
             Background = Color3.fromRGB(255, 255, 255),
@@ -106,8 +106,8 @@ local CoreGui = game:GetService("CoreGui")
 local LocalPlayer = game:GetService("Players").LocalPlayer
 
 -- Interface Management
-local HDX = game:GetObjects("rbxassetid://13067385695")[1]
-HDX.Enabled = false
+local NSUI = game:GetObjects("rbxassetid://13067385695")[1]
+NSUI.Enabled = false
 
 local spawn = task.spawn
 local delay = task.delay
@@ -123,11 +123,11 @@ if RunService:IsStudio() then
     function makefolder(t) end
     function isfile(r) end
     function readfile(t) end
-    function gethui() return HDX end
+    function gethui() return NSUI end
 end
 
 pcall(function()
-    _G.LastNSUI.Name = "Old HDX"
+    _G.LastNSUI.Name = "Old NSUI"
     _G.LastNSUI.Enabled = false
 end)
 
@@ -146,14 +146,14 @@ local ParentObject = function(Gui)
     if not success and failure then
         Gui.Parent = LocalPlayer:FindFirstChildWhichIsA("PlayerGui")
     end
-    _G.LastNSUI = HDX
+    _G.LastNSUI = NSUI
 end
-ParentObject(HDX)
+ParentObject(NSUI)
 
 --Object Variables
 
 local Camera = workspace.CurrentCamera
-local Main = HDX.Main
+local Main = NSUI.Main
 local Topbar = Main.Topbar
 local Elements = Main.Elements
 local LoadingFrame = Main.LoadingFrame
@@ -165,7 +165,7 @@ local Filler = SearchBar.CanvasGroup.Filler
 local Prompt = Main.Prompt
 local NotePrompt = Main.NotePrompt
 
-HDX.DisplayOrder = 100
+NSUI.DisplayOrder = 100
 LoadingFrame.Version.Text = Release
 
 
@@ -182,13 +182,13 @@ local SideBarClosed = true
 local InfoPromptOpen = false
 local BarType = "Side"
 local HoverTime = 0.3
-local Notifications = HDX.Notifications
+local Notifications = NSUI.Notifications
 
-local SelectedTheme = HDXLib.Theme.Default
+local SelectedTheme = NSUILib.Theme.Default
 
 function ChangeTheme(ThemeName)
-    SelectedTheme = HDX.Theme[ThemeName]
-    for _, obj in ipairs(HDX:GetDescendants()) do
+    SelectedTheme = NSUI.Theme[ThemeName]
+    for _, obj in ipairs(NSUI:GetDescendants()) do
         if obj.ClassName == "TextLabel" or obj.ClassName == "TextBox" or obj.ClassName == "TextButton" then
             if SelectedTheme.TextFont ~= "Default" then 
                 obj.TextColor3 = SelectedTheme.TextColor
@@ -197,14 +197,14 @@ function ChangeTheme(ThemeName)
         end
     end
 
-    HDX.Main.BackgroundColor3 = SelectedTheme.Background
-    HDX.Main.Topbar.BackgroundColor3 = SelectedTheme.Topbar
-    HDX.Main.Topbar.CornerRepair.BackgroundColor3 = SelectedTheme.Topbar
-    HDX.Main.Shadow.Image.ImageColor3 = SelectedTheme.Shadow
+    NSUI.Main.BackgroundColor3 = SelectedTheme.Background
+    NSUI.Main.Topbar.BackgroundColor3 = SelectedTheme.Topbar
+    NSUI.Main.Topbar.CornerRepair.BackgroundColor3 = SelectedTheme.Topbar
+    NSUI.Main.Shadow.Image.ImageColor3 = SelectedTheme.Shadow
 
-    HDX.Main.Topbar.ChangeSize.ImageColor3 = SelectedTheme.TextColor
-    HDX.Main.Topbar.Hide.ImageColor3 = SelectedTheme.TextColor
-    HDX.Main.Topbar.Theme.ImageColor3 = SelectedTheme.TextColor
+    NSUI.Main.Topbar.ChangeSize.ImageColor3 = SelectedTheme.TextColor
+    NSUI.Main.Topbar.Hide.ImageColor3 = SelectedTheme.TextColor
+    NSUI.Main.Topbar.Theme.ImageColor3 = SelectedTheme.TextColor
 
     for _, TabPage in ipairs(Elements:GetChildren()) do
         for _, Element in ipairs(TabPage:GetChildren()) do
@@ -264,16 +264,16 @@ end
 local function LoadConfiguration(Configuration)
     local Data = HttpService:JSONDecode(Configuration)
     for FlagName, FlagValue in next, Data do
-        if HDXLib.Flags[FlagName] then
+        if NSUILib.Flags[FlagName] then
             spawn(function() 
-                if HDXLib.Flags[FlagName].Type == "ColorPicker" then
-                    HDXLib.Flags[FlagName]:Set(UnpackColor(FlagValue))
+                if NSUILib.Flags[FlagName].Type == "ColorPicker" then
+                    NSUILib.Flags[FlagName]:Set(UnpackColor(FlagValue))
                 else
-                    if HDXLib.Flags[FlagName].CurrentValue or HDXLib.Flags[FlagName].CurrentKeybind or HDXLib.Flags[FlagName].CurrentOption or HDXLib.Flags[FlagName].Color ~= FlagValue then HDXLib.Flags[FlagName]:Set(FlagValue) end
+                    if NSUILib.Flags[FlagName].CurrentValue or NSUILib.Flags[FlagName].CurrentKeybind or NSUILib.Flags[FlagName].CurrentOption or NSUILib.Flags[FlagName].Color ~= FlagValue then NSUILib.Flags[FlagName]:Set(FlagValue) end
                 end    
             end)
         else
-            HDXLib:Notify({Title = "Flag Error", Content = "HDX was unable to find "..FlagName.. " in the current script"})
+            NSUILib:Notify({Title = "Flag Error", Content = "NSUI was unable to find "..FlagName.. " in the current script"})
         end
     end
 end
@@ -281,7 +281,7 @@ end
 local function SaveConfiguration()
     if not CEnabled then return end
     local Data = {}
-    for i,v in pairs(HDXLib.Flags) do
+    for i,v in pairs(NSUILib.Flags) do
         if v.Type == "ColorPicker" then
             Data[i] = PackColor(v.Color)
         else
@@ -601,7 +601,7 @@ function ClosePrompt()
     task.wait(.5)
     Prompt.Visible = false
 end
-function HDXLib:Notify(NotificationSettings)
+function NSUILib:Notify(NotificationSettings)
     spawn(function()
         local ActionCompleted = true
         local Notification = Notifications.Template:Clone()
@@ -627,7 +627,7 @@ function HDXLib:Notify(NotificationSettings)
 				ActionCompleted = false
 				local NewAction = Notification.Actions.Template:Clone()
 				NewAction.BackgroundColor3 = SelectedTheme.NotificationActionsBackground
-				if SelectedTheme ~= HDXLib.Theme.Default then
+				if SelectedTheme ~= NSUILib.Theme.Default then
 					NewAction.TextColor3 = SelectedTheme.TextColor
 				end
 				NewAction.Name = Action.Name
@@ -641,7 +641,7 @@ function HDXLib:Notify(NotificationSettings)
                 NewAction.MouseButton1Click:Connect(function()
                     local Success, Response = pcall(Action.Callback)
                     if not Success then
-                        print("HDX | Action: "..Action.Name.." Callback Error " ..tostring(Response))
+                        print("NSUI | Action: "..Action.Name.." Callback Error " ..tostring(Response))
                     end
                     ActionCompleted = true
                 end)
@@ -694,7 +694,7 @@ function HDXLib:Notify(NotificationSettings)
             end
         end
 
-        if HDX.Name == "HDX" then
+        if NSUI.Name == "NSUI" then
             neon:BindFrame(Notification.BlurModule, {
                 Transparency = 0.98;
                 BrickColor = BrickColor.new("Institutional white");
@@ -771,7 +771,7 @@ function Hide()
         task.spawn(CloseSideBar)
     end
     Debounce = true
-    HDXLib:Notify({
+    NSUILib:Notify({
         Title = "Interface Hidden",
         Content = "The interface has been hidden, you can unhide the interface by pressing Semicolon (;)",
         Duration = 7
@@ -1137,8 +1137,8 @@ function Minimise()
     Debounce = false
 end
 
-function HDXLib:CreateWindow(Settings)
-    HDX.Enabled = false
+function NSUILib:CreateWindow(Settings)
+    NSUI.Enabled = false
     local Passthrough = false
     Topbar.Title.Text = Settings.Name
     Main.Size = UDim2.new(0, 420, 0, 100)
@@ -1168,22 +1168,22 @@ LoadingFrame.Version.Position = UDim2.new(1, -5, 1, -10)
 LoadingFrame.Version.AnchorPoint = Vector2.new(1, 1)
 LoadingFrame.Version.TextSize = 11
 LoadingFrame.Version.TextColor3 = Color3.fromRGB(255, 255, 255)
-    LoadingFrame.Title.Text = Settings.LoadingTitle or "HDX Interface Suite"
+    LoadingFrame.Title.Text = Settings.LoadingTitle or "NSUI Interface Suite"
     LoadingFrame.Subtitle.Text = Settings.LoadingSubtitle or "by Sirius | Meta"
-    if Settings.LoadingTitle ~= "HDX Interface Suite" then
-        LoadingFrame.Version.Text = "HDX UI | " .. Release
+    if Settings.LoadingTitle ~= "NSUI Interface Suite" then
+        LoadingFrame.Version.Text = "NSUI UI | " .. Release
     end
     Topbar.Visible = false
     Elements.Visible = false
     LoadingFrame.Visible = true
 
-HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
+NSUILib:ToggleOldTabStyle(Settings.OldTabLayout)
 
     pcall(function()
         if not Settings.ConfigurationSaving.FileName then
             Settings.ConfigurationSaving.FileName = tostring(game.PlaceId)
         end
-        if not isfolder(HDXFolder.."/Configuration Folders") then
+        if not isfolder(NSUIFolder.."/Configuration Folders") then
 
         end
         if Settings.ConfigurationSaving.Enabled == nil then
@@ -1228,10 +1228,10 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
     end
 
     if Settings.Discord then
-        if not isfolder(HDXFolder.."/Discord Invites") then
-            makefolder(HDXFolder.."/Discord Invites")
+        if not isfolder(NSUIFolder.."/Discord Invites") then
+            makefolder(NSUIFolder.."/Discord Invites")
         end
-        if not isfile(HDXFolder.."/Discord Invites".."/"..Settings.Discord.Invite..ConfigurationExtension) then
+        if not isfile(NSUIFolder.."/Discord Invites".."/"..Settings.Discord.Invite..ConfigurationExtension) then
             if request then
                 request({
                     Url = "http://127.0.0.1:6463/rpc?v=1",
@@ -1249,7 +1249,7 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
             end
 
             if Settings.Discord.RememberJoins then -- We do logic this way so if the developer changes this setting, the user still won"t be prompted, only new users
-                writefile(HDXFolder.."/Discord Invites".."/"..Settings.Discord.Invite..ConfigurationExtension,"HDX RememberJoins is true for this invite, this invite will not ask you to join again")
+                writefile(NSUIFolder.."/Discord Invites".."/"..Settings.Discord.Invite..ConfigurationExtension,"NSUI RememberJoins is true for this invite, this invite will not ask you to join again")
             end
         else
 
@@ -1262,8 +1262,8 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
             return
         end
 
-        if not isfolder(HDXFolder.."/Key System") then
-            makefolder(HDXFolder.."/Key System")
+        if not isfolder(NSUIFolder.."/Key System") then
+            makefolder(NSUIFolder.."/Key System")
         end
 
         if Settings.KeySettings.GrabKeyFromSite then
@@ -1273,7 +1273,7 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
                     Settings.KeySettings.Key[i] = string.gsub(Settings.KeySettings.Key[i], " ", "")
                 end)
                 if not Success then
-                    print("HDX | "..Key.." Error " ..tostring(Response))
+                    print("NSUI | "..Key.." Error " ..tostring(Response))
                 end
             end
         end
@@ -1282,9 +1282,9 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
             Settings.KeySettings.FileName = "No file name specified"
         end
 
-        if isfile(HDXFolder.."/Key System".."/"..Settings.KeySettings.FileName..ConfigurationExtension) then
+        if isfile(NSUIFolder.."/Key System".."/"..Settings.KeySettings.FileName..ConfigurationExtension) then
         for _, MKey in ipairs(Settings.KeySettings.Key) do
-            if string.find(readfile(HDXFolder.."/Key System".."/"..Settings.KeySettings.FileName..ConfigurationExtension), MKey) then
+            if string.find(readfile(NSUIFolder.."/Key System".."/"..Settings.KeySettings.FileName..ConfigurationExtension), MKey) then
                 Passthrough = true
                 end
             end
@@ -1292,7 +1292,7 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
 
         if not Passthrough then
             local AttemptsRemaining = math.random(2,6)
-            HDX.Enabled = false
+            NSUI.Enabled = false
             local KeyUI = game:GetObjects("rbxassetid://11695805160")[1]
             KeyUI.Enabled = true
             pcall(function()
@@ -1401,9 +1401,9 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
                     if Settings.KeySettings.SaveKey then
                         if writefile then
                             local keyToSave = Settings.KeySettings.Key[1]
-                            writefile(HDXFolder.."/Key System".."/"..Settings.KeySettings.FileName..ConfigurationExtension, FoundKey)
+                            writefile(NSUIFolder.."/Key System".."/"..Settings.KeySettings.FileName..ConfigurationExtension, FoundKey)
                         end
-                        HDXLib:Notify({Title = "Key System", Content = "The key for this script has been saved successfully"})
+                        NSUILib:Notify({Title = "Key System", Content = "The key for this script has been saved successfully"})
                     end
                 else
                     if AttemptsRemaining == 0 then
@@ -1465,7 +1465,7 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
                 TweenService:Create(KeyMain.Hide, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
                 TweenService:Create(KeyMain.HideP, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
                 task.wait(0.51)
-                HDXLib:Destroy()
+                NSUILib:Destroy()
                 KeyUI:Destroy()
             end)
         else
@@ -1475,7 +1475,7 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
     if Settings.KeySystem then
         repeat task.wait() until Passthrough
     end
-    HDX.Enabled = true
+    NSUI.Enabled = true
     for _,tabbtn in pairs(SideList:GetChildren()) do
         if tabbtn.ClassName == "Frame" and tabbtn.Name ~= "Placeholder" then
             TweenService:Create(tabbtn.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint),{TextTransparency = 1}):Play()
@@ -1488,7 +1488,7 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
     --delay(4,function()
     --	qNotePrompt({
     --		Title = "Preview",
-    --		Description = "This is a preview for the official HDX forum post. Remember that things are subject to change.",
+    --		Description = "This is a preview for the official NSUI forum post. Remember that things are subject to change.",
 
     --	})
     --end)
@@ -1514,8 +1514,8 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
 
     -- Tab
     local FirstTab = false
-    HDXQuality.Window = {Tabs = {}}
-    local Window = HDXQuality.Window
+    NSUIQuality.Window = {Tabs = {}}
+    local Window = NSUIQuality.Window
     
     function Window:SetTopbarTitle(text)
         Topbar.Title.Text = text
@@ -1581,7 +1581,7 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
             Elements.UIPageLayout.Animated = true
         end
 
-        if SelectedTheme ~= HDXLib.Theme.Default then
+        if SelectedTheme ~= NSUILib.Theme.Default then
             TopTabButton.Shadow.Visible = false
         end
         TopTabButton.UIStroke.Color = SelectedTheme.TabStroke
@@ -1693,7 +1693,7 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
                     TweenService:Create(Button.ElementIndicator, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
                     TweenService:Create(Button.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
                     Button.Title.Text = "Callback Error"
-                    print("HDX | "..ButtonSettings.Name.." Callback Error " ..tostring(Response))
+                    print("NSUI | "..ButtonSettings.Name.." Callback Error " ..tostring(Response))
                     task.wait(0.5)
                     Button.Title.Text = ButtonSettings.Name
                     TweenService:Create(Button, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
@@ -1758,7 +1758,7 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
         -- Section
         function Tab:CreateSection(SectionName, Display, DefaultHide, Icon)
             local SectionValue = {
-                Holder = HDXLib.Holding,
+                Holder = NSUILib.Holding,
                 Open = true
             }
             local Debounce = false
@@ -1797,7 +1797,7 @@ HDXLib:ToggleOldTabStyle(Settings.OldTabLayout)
                 Section._UIPadding_.PaddingBottom = UDim.new(0, 4)
                 Section.Holder.Visible = false
                 Section.BackgroundTransparency = 1
-                SectionValue.Holder.Parent = HDXLib.Holding
+                SectionValue.Holder.Parent = NSUILib.Holding
                 Section.Title.ImageButton.Visible = false
             end
 
@@ -2090,7 +2090,7 @@ end
                     TweenService:Create(Input, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(85, 0, 0)}):Play()
                     TweenService:Create(Input.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
                     Input.Title.Text = "Callback Error"
-                    print("HDX | "..InputSettings.Name.." Callback Error " ..tostring(Response))
+                    print("NSUI | "..InputSettings.Name.." Callback Error " ..tostring(Response))
                     task.wait(0.5)
                     Input.Title.Text = InputSettings.Name
                     TweenService:Create(Input, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
@@ -2370,7 +2370,7 @@ end)
                     end)
                     if not Success then
                         Error("Callback Error")
-                        print("HDX | "..DropdownSettings.Name.." Callback Error " ..tostring(Response))
+                        print("NSUI | "..DropdownSettings.Name.." Callback Error " ..tostring(Response))
                     end
 
                     OptionInTable.Selected = true
@@ -2415,7 +2415,7 @@ end)
                 end
                 if Settings.ConfigurationSaving then
                     if Settings.ConfigurationSaving.Enabled and DropdownSettings.Flag then
-                        HDXLib.Flags[DropdownSettings.Flag] = DropdownSettings
+                        NSUILib.Flags[DropdownSettings.Flag] = DropdownSettings
                     end
                 end
             end
@@ -2443,7 +2443,7 @@ end)
                         TweenService:Create(Dropdown, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(85, 0, 0)}):Play()
                         TweenService:Create(Dropdown.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
                         Dropdown.Title.Text = "Callback Error"
-                        print("HDX | "..DropdownSettings.Name.." Callback Error " ..tostring(Response))
+                        print("NSUI | "..DropdownSettings.Name.." Callback Error " ..tostring(Response))
                         task.wait(0.5)
                         Dropdown.Title.Text = DropdownSettings.Name
                         TweenService:Create(Dropdown, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
@@ -2603,7 +2603,7 @@ end)
             TweenService:Create(Keybind, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(85, 0, 0)}):Play()
             TweenService:Create(Keybind.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
             Keybind.Title.Text = "Callback Error"
-            print("HDX | "..KeybindSettings.Name.." Callback Error " ..tostring(Response))
+            print("NSUI | "..KeybindSettings.Name.." Callback Error " ..tostring(Response))
             task.wait(0.5)
             Keybind.Title.Text = KeybindSettings.Name
             TweenService:Create(Keybind, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
@@ -2640,7 +2640,7 @@ end)
                 TweenService:Create(Keybind, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(85, 0, 0)}):Play()
                 TweenService:Create(Keybind.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
                 Keybind.Title.Text = "Callback Error"
-                print("HDX | "..KeybindSettings.Name.." Callback Error " ..tostring(Response))
+                print("NSUI | "..KeybindSettings.Name.." Callback Error " ..tostring(Response))
                 task.wait(0.5)
                 Keybind.Title.Text = KeybindSettings.Name
                 TweenService:Create(Keybind, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
@@ -2704,7 +2704,7 @@ end)
 
     if Settings.ConfigurationSaving then
         if Settings.ConfigurationSaving.Enabled and KeybindSettings.Flag then
-            HDXLib.Flags[KeybindSettings.Flag] = KeybindSettings
+            NSUILib.Flags[KeybindSettings.Flag] = KeybindSettings
         end
     end
 
@@ -2739,7 +2739,7 @@ end
             else
                 Toggle.Parent = TabPage
             end
-            if SelectedTheme ~= HDXLib.Theme.Default then
+            if SelectedTheme ~= NSUILib.Theme.Default then
                 Toggle.Switch.Shadow.Visible = false
             end
             ToggleSettings.Locked = false
@@ -2806,7 +2806,7 @@ end
                     TweenService:Create(Toggle, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(85, 0, 0)}):Play()
                     TweenService:Create(Toggle.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
                     Toggle.Title.Text = "Callback Error"
-                    print("HDX | "..ToggleSettings.Name.." Callback Error " ..tostring(Response))
+                    print("NSUI | "..ToggleSettings.Name.." Callback Error " ..tostring(Response))
                     task.wait(0.5)
                     Toggle.Title.Text = ToggleSettings.Name
                     TweenService:Create(Toggle, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
@@ -2852,7 +2852,7 @@ end
                     TweenService:Create(Toggle, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(85, 0, 0)}):Play()
                     TweenService:Create(Toggle.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
                     Toggle.Title.Text = "Callback Error"
-                    print("HDX | "..ToggleSettings.Name.." Callback Error " ..tostring(Response))
+                    print("NSUI | "..ToggleSettings.Name.." Callback Error " ..tostring(Response))
                     task.wait(0.5)
                     Toggle.Title.Text = ToggleSettings.Name
                     TweenService:Create(Toggle, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
@@ -2888,7 +2888,7 @@ end
 
             if Settings.ConfigurationSaving then
                 if Settings.ConfigurationSaving.Enabled and ToggleSettings.Flag then
-                    HDXLib.Flags[ToggleSettings.Flag] = ToggleSettings
+                    NSUILib.Flags[ToggleSettings.Flag] = ToggleSettings
                 end
             end
 
@@ -3124,7 +3124,7 @@ end
 
             if Settings.ConfigurationSaving then
                 if Settings.ConfigurationSaving.Enabled and ColorPickerSettings.Flag then
-                    HDXLib.Flags[ColorPickerSettings.Flag] = ColorPickerSettings
+                    NSUILib.Flags[ColorPickerSettings.Flag] = ColorPickerSettings
                 end
             end
 
@@ -3198,7 +3198,7 @@ end
             Slider.UIStroke.Transparency = 1
             Slider.Title.TextTransparency = 1
 
-            if SelectedTheme ~= HDXLib.Theme.Default then
+            if SelectedTheme ~= NSUILib.Theme.Default then
                 Slider.Main.Shadow.Visible = false
             end
 
@@ -3271,7 +3271,7 @@ end
                         TweenService:Create(Slider, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(85, 0, 0)}):Play()
                         TweenService:Create(Slider.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
                         Slider.Title.Text = "Callback Error"
-                        print("HDX | "..SliderSettings.Name.." Callback Error " ..tostring(Response))
+                        print("NSUI | "..SliderSettings.Name.." Callback Error " ..tostring(Response))
                         task.wait(0.5)
                         Slider.Title.Text = SliderSettings.Name
                         TweenService:Create(Slider, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
@@ -3308,7 +3308,7 @@ end
                     TweenService:Create(Slider, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(85, 0, 0)}):Play()
                     TweenService:Create(Slider.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
                     Slider.Title.Text = "Callback Error"
-                    print("HDX | "..SliderSettings.Name.." Callback Error " ..tostring(Response))
+                    print("NSUI | "..SliderSettings.Name.." Callback Error " ..tostring(Response))
                     task.wait(0.5)
                     Slider.Title.Text = SliderSettings.Name
                     TweenService:Create(Slider, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
@@ -3344,7 +3344,7 @@ end
             end
             if Settings.ConfigurationSaving then
                 if Settings.ConfigurationSaving.Enabled and SliderSettings.Flag then
-                    HDXLib.Flags[SliderSettings.Flag] = SliderSettings
+                    NSUILib.Flags[SliderSettings.Flag] = SliderSettings
                 end
             end
             return SliderSettings
@@ -3419,7 +3419,7 @@ end
                         clicked = true
                         if not Success then
                             ClosePrompt()
-                            print("HDX | "..info.Name.." Callback Error " ..tostring(Response))
+                            print("NSUI | "..info.Name.." Callback Error " ..tostring(Response))
                         else
                             ClosePrompt()
                         end
@@ -3457,7 +3457,7 @@ end
     return Window
 end
 
-function HDXLib:ToggleOldTabStyle(oldTabStyle)
+function NSUILib:ToggleOldTabStyle(oldTabStyle)
     if oldTabStyle == nil then oldTabStyle = true end
 
     if not oldTabStyle then
@@ -3477,8 +3477,8 @@ function HDXLib:ToggleOldTabStyle(oldTabStyle)
     end
 end
 
-function HDXLib:Destroy()
-    HDX:Destroy()
+function NSUILib:Destroy()
+    NSUI:Destroy()
 end
 
 Topbar.ChangeSize.MouseButton1Click:Connect(function()
@@ -3566,12 +3566,12 @@ for _, TopbarButton in ipairs(Topbar:GetChildren()) do
 end
 
 
-function HDXLib:LoadConfiguration()
+function NSUILib:LoadConfiguration()
     if CEnabled then
         pcall(function()
             if isfile(ConfigurationFolder .. "/" .. CFileName .. ConfigurationExtension) then
                 LoadConfiguration(readfile(ConfigurationFolder .. "/" .. CFileName .. ConfigurationExtension))
-                HDXLib:Notify({Title = "Configuration Loaded", Content = "The configuration file for this script has been loaded from a previous session"})
+                NSUILib:Notify({Title = "Configuration Loaded", Content = "The configuration file for this script has been loaded from a previous session"})
             end
         end)
     end
@@ -3579,7 +3579,7 @@ end
 
 -- own
 
-function HDXLib:FindPlayerByPartial(playername)
+function NSUILib:FindPlayerByPartial(playername)
     if playername == "me" then 
         return LocalPlayer
     else 
@@ -3595,24 +3595,24 @@ Player = Players.LocalPlayer
 
 VirtualUser = game:GetService("VirtualUser")
 
-function HDXLib:IsNumeric(data)
+function NSUILib:IsNumeric(data)
     return tonumber(data)
 end
 
-function HDXLib:IsAlpha(data)
+function NSUILib:IsAlpha(data)
     return not tonumber(data)
 end
 
-function HDXLib:IsAlphaAndOrNumeric(data)
+function NSUILib:IsAlphaAndOrNumeric(data)
     return data:match("[^%w]") == nil
 end
 
-function HDXLib:GetPlayerThumbnail(data, thumbnailtype)
+function NSUILib:GetPlayerThumbnail(data, thumbnailtype)
 	local UserId = nil
-	if HDXLib:IsNumeric(data) then
+	if NSUILib:IsNumeric(data) then
 		UserId = data
-	elseif HDXLib:IsAlpha(data) then
-		UserId = HDXLib:FindPlayer(data).UserId
+	elseif NSUILib:IsAlpha(data) then
+		UserId = NSUILib:FindPlayer(data).UserId
 	elseif data.Parent and data.Parent == Players then
 		UserId = data.UserId
 	end
@@ -3623,26 +3623,26 @@ function HDXLib:GetPlayerThumbnail(data, thumbnailtype)
 	end
 end
 
--- HDXLib:GetPlayerThumbnail(userid, "AvatarBust")
--- HDXLib:GetPlayerThumbnail(userid, "AvatarThumbnail")
--- HDXLib:GetPlayerThumbnail(userid, "HeadShot")
+-- NSUILib:GetPlayerThumbnail(userid, "AvatarBust")
+-- NSUILib:GetPlayerThumbnail(userid, "AvatarThumbnail")
+-- NSUILib:GetPlayerThumbnail(userid, "HeadShot")
 
-function HDXLib:IsR15(plr)
-    return HDXLib:FFCOC(plr.Character, "Humanoid").RigType == Enum.RigType.R15
+function NSUILib:IsR15(plr)
+    return NSUILib:FFCOC(plr.Character, "Humanoid").RigType == Enum.RigType.R15
 end
 
-HDXLib.Player = {}
-HDXLib.Player.HeadShot = HDXLib:GetPlayerThumbnail(Player.UserId, "HeadShot")
+NSUILib.Player = {}
+NSUILib.Player.HeadShot = NSUILib:GetPlayerThumbnail(Player.UserId, "HeadShot")
 
-function HDXLib:FFC(instance, name)
+function NSUILib:FFC(instance, name)
     return instance:FindFirstChild(tostring(name))
 end
 
-function HDXLib:FFCOC(instance, class)
+function NSUILib:FFCOC(instance, class)
     return instance:FindFirstChildOfClass(tostring(class))
 end
 
-function HDXLib:AllTrue(conditions)
+function NSUILib:AllTrue(conditions)
     local count = 0
     for _, condition in ipairs(conditions) do
         if condition == true then
@@ -3652,6 +3652,6 @@ function HDXLib:AllTrue(conditions)
     return count == #conditions
 end
 
-task.delay(9, HDXLib.LoadConfiguration, HDXLib)
+task.delay(9, NSUILib.LoadConfiguration, NSUILib)
 
-return HDXLib
+return NSUILib
