@@ -1141,7 +1141,7 @@ function HDXLib:CreateWindow(Settings)
     HDX.Enabled = false
     local Passthrough = false
     Topbar.Title.Text = Settings.Name
-    Main.Size = UDim2.new(0, 400, 0, 200)
+    Main.Size = UDim2.new(0, 300, 0, 100)
     Main.Visible = true
     Main.BackgroundTransparency = 1
     LoadingFrame.Title.TextTransparency = 1
