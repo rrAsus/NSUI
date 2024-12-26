@@ -1146,9 +1146,9 @@ function HDXLib:CreateWindow(Settings)
     Main.BackgroundTransparency = 1
     LoadingFrame.Title.TextTransparency = 1
     LoadingFrame.Subtitle.TextTransparency = 1
-LoadingFrame.Title.Position = UDim2.new(0, 20, 0, 30)
+LoadingFrame.Title.Position = UDim2.new(0, 20, 0, 35)
 LoadingFrame.Title.TextSize = 18 
-LoadingFrame.Subtitle.Position = UDim2.new(0, 20, 0, 45)
+LoadingFrame.Subtitle.Position = UDim2.new(0, 20, 0, 50)
 LoadingFrame.Subtitle.TextSize = 14
 
 local padding = Instance.new("UIPadding")
@@ -1164,8 +1164,7 @@ LoadingFrame.Subtitle.TextScaled = true
 LoadingFrame.Version.TextScaled = true
     Main.Shadow.Image.ImageTransparency = 1
     LoadingFrame.Version.TextTransparency = 1
-LoadingFrame.Version.Position = UDim2.new(1, 100, 1, 30)
-LoadingFrame.Version.AnchorPoint = Vector2.new(1, 1)
+LoadingFrame.Version.Position = UDim2.new(1, -50, 1, 100)
 LoadingFrame.Version.TextSize = 12
 LoadingFrame.Version.TextColor3 = Color3.fromRGB(255, 255, 255)
     LoadingFrame.Title.Text = Settings.LoadingTitle or "HDX Interface Suite"
