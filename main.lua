@@ -775,7 +775,7 @@ function Hide()
     Debounce = true
     NSUILib:Notify({
         Title = "Interface Hidden",
-        Content = "The interface has been hidden, you can unhide the interface by pressing Semicolon (;)",
+        Content = "The interface has been hidden, you can unhide the interface by pressing Semicolon (')",
         Duration = 7
     })
     TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Quint), { Size = UDim2.new(0, 470, 0, 400) }):Play()
@@ -2616,7 +2616,7 @@ end)
     UserInputService.InputBegan:Connect(function(input, processed)
 
         if CheckingForKey then
-        if input.KeyCode ~= Enum.KeyCode.Unknown and input.KeyCode ~= Enum.KeyCode.Semicolon then
+        if input.KeyCode ~= Enum.KeyCode.Unknown and input.KeyCode ~= Enum.KeyCode.Quote then
             local SplitMessage = string.split(tostring(input.KeyCode), ".")
             local NewKeyNoEnum = SplitMessage[3]
             Keybind.KeybindFrame.KeybindBox.Text = tostring(NewKeyNoEnum)
