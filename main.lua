@@ -4,8 +4,8 @@
 
 -- THIS IS STILL NSUI, JUST RENAMED!
 
-local Version = string.gsub("BUILD_V77", "^%s*(.-)%s*$", "%1")
-local Release = "Build 77"
+local Version = string.gsub("BUILD_V78", "^%s*(.-)%s*$", "%1")
+local Release = "Build 78"
 local NotificationDuration = 6.5
 local plr_name = game:GetService("Players").LocalPlayer.Name
 local NSUIFolder = "NSUI"
@@ -775,7 +775,7 @@ function Hide()
     Debounce = true
     NSUILib:Notify({
         Title = "Interface Hidden",
-        Content = "The interface has been hidden, you can unhide the interface by pressing Semicolon (')",
+        Content = "The interface has been hidden, you can unhide the interface by pressing Quote (')",
         Duration = 7
     })
     TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Quint), { Size = UDim2.new(0, 470, 0, 400) }):Play()
@@ -2548,6 +2548,7 @@ end)
     Keybind.Name = KeybindSettings.Name
     Keybind.Title.Text = KeybindSettings.Name
     Keybind.Visible = true
+local BlockedKeybinds = KeybindSettings.BlockedKeybinds or {}
     Tab.Elements[KeybindSettings.Name] = {
         type = "keybind",
         section = KeybindSettings.SectionParent,
@@ -2619,6 +2620,16 @@ end)
         if input.KeyCode ~= Enum.KeyCode.Unknown and input.KeyCode ~= Enum.KeyCode.Quote then
             local SplitMessage = string.split(tostring(input.KeyCode), ".")
             local NewKeyNoEnum = SplitMessage[3]
+if table.find(BlockedKeybinds, NewKeyNoEnum) then
+    NSUILib:Notify({
+        Title = "Blocked Key",
+        Content = "You can't use that key as a keybind!",
+        Duration = 2.5
+    })
+    task.wait(0.5)
+    Keybind.KeybindFrame.KeybindBox.Text = KeybindSettings.CurrentKeybind
+    return
+end
             Keybind.KeybindFrame.KeybindBox.Text = tostring(NewKeyNoEnum)
             KeybindSettings.CurrentKeybind = tostring(NewKeyNoEnum)
             Keybind.KeybindFrame.KeybindBox:ReleaseFocus()
