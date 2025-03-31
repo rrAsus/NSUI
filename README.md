@@ -40,7 +40,7 @@ The `CanBeToggled` parameter controls whether the keybind can enable or disable 
 - **Type:** *(boolean)*  
 - **Functionality:**
   - If `true`, pressing the keybind toggles the associated feature on or off.
-  - If `false`, the keybind does not toggle functionality—it only triggers the action once when pressed.
+  - If `false`, the keybind does not toggle functionality it only triggers the action once when pressed.
 This parameter is part of the following function:
 ```lua
 Keybind = Tab:CreateKeybind({
@@ -55,20 +55,28 @@ Keybind = Tab:CreateKeybind({
 })
 ```
 ---
-##### About `Set` Function for Keybinds
-The `Set` function allows you to programmatically change or reset a keybind.
-- **Usage:**  
-  You can call `Keybind:Set("Set Keybind")` to reset the keybind. If the string is `"Set Keybind"`, it will unbind the key, making the keybind inactive.
-- **Example:**  
-  Here's how you can create a button to reset a keybind:
+##### About `BlockedKeybinds`
+The `BlockedKeybinds` parameter prevents specific keys from being assigned as keybinds.
+
+- **Type:** *(table of strings)*  
+- **Functionality:**  
+  - If a key in this list is selected as a keybind, the system will reject it and restore the previous keybind.  
+  - If `BlockedKeybinds` is not provided, all keys can be assigned.
+
+This parameter is part of the following function:
+
 ```lua
-Button = Tab:CreateButton({
-      SectionParent = Section,
-      Name = "Reset Keybind Button",
-      Callback = function()
-          Keybind:Set("Set Keybind")
-      end
-  })
+Keybind = Tab:CreateKeybind({
+    Name = "Keybind",
+    CurrentKeybind = "Set Keybind",
+    BlockedKeybinds = {"Q", "E"},
+    CanBeToggled = true,
+    HoldToInteract = false,
+    SectionParent = SectionName,
+    Callback = function(KeyBind)
+        -- Your code here
+    end
+})
 ```
 ---
 #### Functions :
