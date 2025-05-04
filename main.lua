@@ -3636,6 +3636,20 @@ function NSUILib:GetPlayerThumbnail(data, thumbnailtype)
 	end
 end
 
+function NSUILib:KeybindUnassignAll()
+    for name, data in pairs(Tab.Elements) do
+        if data.type == "keybind" then
+            local keybind = data.element
+            local settings = NSUILib.Flags and NSUILib.Flags[name]
+            if settings and settings.CurrentKeybind and settings.CurrentKeybind ~= "Set Keybind" then
+                settings.CurrentKeybind = "Set Keybind"
+                keybind.KeybindFrame.KeybindBox.Text = "Set Keybind"
+            end
+        end
+    end
+    SaveConfiguration()
+end
+
 if latest ~= Version then
     NSUILib:Notify({Title = "Outdated Version Detected",Content = string.format("Hello, %s. You're currently using an outdated version of NSUI and we recommend you use the latest version.", plr_name),Duration = 13.5,Image = 10709753149})
 setclipboard("https://raw.githubusercontent.com/rrAsus/NSUI/refs/heads/main/main.lua")
