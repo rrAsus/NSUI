@@ -2623,7 +2623,7 @@ UserInputService.InputBegan:Connect(function(input, processed)
         if CheckingForKey then
         if input.KeyCode ~= Enum.KeyCode.Unknown and input.KeyCode ~= Enum.KeyCode.Quote then
             local SplitMessage = string.split(tostring(input.KeyCode), ".")
-            local NewKeyNoEnum = SplitMessage[3]:upper()
+            local NewKeyNoEnum = SplitMessage[3]
 if table.find(BlockedKeybinds, NewKeyNoEnum) then
     NSUILib:Notify({
         Title = "Blocked Key",
@@ -2680,13 +2680,7 @@ end
 end)
 
     Keybind.KeybindFrame.KeybindBox:GetPropertyChangedSignal("Text"):Connect(function()
-    local box = Keybind.KeybindFrame.KeybindBox
-    local txt = box.Text
-    if txt:upper() ~= txt then
-        box.Text = txt:upper()
-    end
         TweenService:Create(Keybind.KeybindFrame, TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, Keybind.KeybindFrame.KeybindBox.TextBounds.X + 24, 0, 30)}):Play()
-       TweenService:Create(box.Parent, TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, box.TextBounds.X + 24, 0, 30)}):Play()
     end)
 
     function KeybindSettings:Set(NewKeybind)
