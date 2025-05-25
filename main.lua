@@ -2585,10 +2585,14 @@ local BlockedKeybinds = KeybindSettings.BlockedKeybinds or {}
 
     Keybind.KeybindFrame.KeybindBox.FocusLost:Connect(function()
         CheckingForKey = false
-        if Keybind.KeybindFrame.KeybindBox.Text == nil or Keybind.KeybindFrame.KeybindBox.Text == "" then
-            Keybind.KeybindFrame.KeybindBox.Text = KeybindSettings.CurrentKeybind
-            SaveConfiguration()
-        end
+    	local box = Keybind.KeybindFrame.KeybindBox
+    	local txt = box.Text:upper() or ""
+    	if txt == "" then
+        	txt = KeybindSettings.CurrentKeybind or ""
+    	end
+    	box.Text = txt
+    	KeybindSettings.CurrentKeybind = txt
+    	SaveConfiguration()
     end)
 
     Keybind.MouseEnter:Connect(function()
@@ -2619,7 +2623,7 @@ local BlockedKeybinds = KeybindSettings.BlockedKeybinds or {}
         if CheckingForKey then
         if input.KeyCode ~= Enum.KeyCode.Unknown and input.KeyCode ~= Enum.KeyCode.Quote then
             local SplitMessage = string.split(tostring(input.KeyCode), ".")
-            local NewKeyNoEnum = SplitMessage[3]
+            local NewKeyNoEnum = SplitMessage[3]:upper()
 if table.find(BlockedKeybinds, NewKeyNoEnum) then
     NSUILib:Notify({
         Title = "Blocked Key",
@@ -2676,7 +2680,13 @@ end
 end)
 
     Keybind.KeybindFrame.KeybindBox:GetPropertyChangedSignal("Text"):Connect(function()
+    local box = Keybind.KeybindFrame.KeybindBox
+    local txt = box.Text
+    if txt:upper() ~= txt then
+        box.Text = txt:upper()
+    end
         TweenService:Create(Keybind.KeybindFrame, TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, Keybind.KeybindFrame.KeybindBox.TextBounds.X + 24, 0, 30)}):Play()
+        TweenService:Create(box.Parent, TweenInfo.new(0.55, ...), {Size = UDim2.new(0, box.TextBounds.X + 24, 0, 30)}):Play()
     end)
 
     function KeybindSettings:Set(NewKeybind)
