@@ -2618,7 +2618,7 @@ local BlockedKeybinds = KeybindSettings.BlockedKeybinds or {}
         end
     end
 
-    local connInput = UserInputService.InputBegan:Connect(function(input, processed)
+UserInputService.InputBegan:Connect(function(input, processed)
 
         if CheckingForKey then
         if input.KeyCode ~= Enum.KeyCode.Unknown and input.KeyCode ~= Enum.KeyCode.Quote then
@@ -2639,7 +2639,7 @@ end
             Keybind.KeybindFrame.KeybindBox:ReleaseFocus()
             SaveConfiguration()
         end
-    elseif KeybindSettings.CurrentKeybind ~= nil and KeybindSettings.CurrentKeybind ~= "Set Keybind" and input.KeyCode == Enum.KeyCode[KeybindSettings.CurrentKeybind] then
+    elseif KeybindSettings.CurrentKeybind ~= nil and KeybindSettings.CurrentKeybind ~= "Unknown" and KeybindSettings.CurrentKeybind ~= "Set Keybind" and input.KeyCode == Enum.KeyCode[KeybindSettings.CurrentKeybind] then
         local Held = true
         local Connection
         Connection = input.Changed:Connect(function(prop)
@@ -2726,13 +2726,10 @@ end)
     end
 
  function KeybindSettings:Clear()
-        if connInput then
-            pcall(connInput.Disconnect, connInput)
-            connInput = nil
-        end
-        Keybind.KeybindFrame.KeybindBox.Text = "Set Keybind"
-        KeybindSettings.CurrentKeybind = nil
-        SaveConfiguration()
+    CheckingForKey = false
+    Keybind.KeybindFrame.KeybindBox.Text = "Set Keybind"
+    KeybindSettings.CurrentKeybind = "Unknown"
+    SaveConfiguration()
     end
 
     if Settings.ConfigurationSaving then
