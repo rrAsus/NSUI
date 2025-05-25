@@ -2686,7 +2686,7 @@ end)
         box.Text = txt:upper()
     end
         TweenService:Create(Keybind.KeybindFrame, TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, Keybind.KeybindFrame.KeybindBox.TextBounds.X + 24, 0, 30)}):Play()
-        TweenService:Create(box.Parent, TweenInfo.new(0.55, ...), {Size = UDim2.new(0, box.TextBounds.X + 24, 0, 30)}):Play()
+       TweenService:Create(box.Parent, TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, box.TextBounds.X + 24, 0, 30)}):Play()
     end)
 
     function KeybindSettings:Set(NewKeybind)
