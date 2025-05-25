@@ -2614,7 +2614,7 @@ local BlockedKeybinds = KeybindSettings.BlockedKeybinds or {}
         end
     end
 
-    UserInputService.InputBegan:Connect(function(input, processed)
+    local connInput = UserInputService.InputBegan:Connect(function(input, processed)
 
         if CheckingForKey then
         if input.KeyCode ~= Enum.KeyCode.Unknown and input.KeyCode ~= Enum.KeyCode.Quote then
@@ -2713,6 +2713,16 @@ end)
 
     function KeybindSettings:Visible(bool)
         Keybind.Visible = bool
+    end
+
+ function KeybindSettings:Clear()
+        if connInput then
+            pcall(connInput.Disconnect, connInput)
+            connInput = nil
+        end
+        Keybind.KeybindFrame.KeybindBox.Text = "Set Keybind"
+        KeybindSettings.CurrentKeybind = nil
+        SaveConfiguration()
     end
 
     if Settings.ConfigurationSaving then
