@@ -3657,10 +3657,6 @@ end
 -- NSUILib:GetPlayerThumbnail(userid, "AvatarThumbnail")
 -- NSUILib:GetPlayerThumbnail(userid, "HeadShot")
 
-function NSUILib:IsR15(plr)
-    return NSUILib:FFCOC(plr.Character, "Humanoid").RigType == Enum.RigType.R15
-end
-
 NSUILib.Player = {}
 NSUILib.Player.HeadShot = NSUILib:GetPlayerThumbnail(Player.UserId, "HeadShot")
 
