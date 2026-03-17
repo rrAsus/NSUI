@@ -110,13 +110,6 @@ Keybind = Tab:CreateKeybind({
 - **Returns:**  
   A URL to the thumbnail image. Defaults to `rbxassetid://284402785` if invalid.
 ---
-##### `NSUILib:IsR15(plr)`
-**Checks if a player's character uses the R15 rig.**  
-- **Parameters:**  
-  `plr` *(Player)* – The player to check.  
-- **Returns:**  
-  `true` if the character is R15, `false` otherwise.
----
 ##### `NSUILib:FFC(instance, name)`
 **Finds a child of the given instance by name.**  
 - **Parameters:**  
