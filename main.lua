@@ -1585,8 +1585,8 @@ function Window:CreateSpacerTab(px)
 
     local TopLine = Instance.new("Frame")
 TopLine.Name = "SpacerLine"
-TopLine.BackgroundColor3 = Color3.fromRGB(100, 100, 100) 
-TopLine.BackgroundTransparency = 0                         
+TopLine.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+TopLine.BackgroundTransparency = 0.65                
 TopLine.BorderSizePixel = 0
 TopLine.AnchorPoint = Vector2.new(0.5, 0)
 TopLine.Size = UDim2.new(0, px, 0.55, 0)
@@ -1605,8 +1605,8 @@ MakeDummies(SideSpacer)
 
 local SideLine = Instance.new("Frame")
 SideLine.Name = "SpacerLine"
-SideLine.BackgroundColor3 = Color3.fromRGB(200, 200, 200) 
-SideLine.BackgroundTransparency = 1            
+SideLine.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+SideLine.BackgroundTransparency = 0.65
 SideLine.BorderSizePixel = 0
 SideLine.AnchorPoint = Vector2.new(0.5, 0.5)
 SideLine.Size = UDim2.new(0.72, 0, 0, px)  
