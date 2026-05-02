@@ -1075,7 +1075,7 @@ function OpenSideBar()
         if tabbtn.Name == "SpacerTab" then
             local line = tabbtn:FindFirstChild("SpacerLine")
             if line then
-                TweenService:Create(line, TweenInfo.new(0.25, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.65}):Play()
+                TweenService:Create(line, TweenInfo.new(0.25, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.25}):Play()
             end
         else
             if tabbtn.Title.TextColor3 ~= Color3.fromRGB(255,255,255) then
