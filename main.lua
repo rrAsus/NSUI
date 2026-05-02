@@ -766,6 +766,12 @@ function CloseSideBar()
             TweenService:Create(tabbtn.Image, TweenInfo.new(0.3, Enum.EasingStyle.Quint),{ImageTransparency = 1}):Play()
         end
     end
+		for _, child in pairs(Main:GetChildren()) do
+    if child.Name == "SpacerLine" then
+        TweenService:Create(child, TweenInfo.new(0.25, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
+        -- or 1 for CloseSideBar
+    end
+end
 end
     TweenService:Create(Main.SideTabList, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 1,Size = UDim2.new(0,150,0,390),Position = UDim2.new(0,10,0.5,22)}):Play()
     TweenService:Create(Main.SideTabList.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{Transparency = 1}):Play()
@@ -1086,6 +1092,12 @@ function OpenSideBar()
             TweenService:Create(tabbtn.Image, TweenInfo.new(0.25, Enum.EasingStyle.Quint),{ImageTransparency = 0}):Play()
         end
     end
+		for _, child in pairs(Main:GetChildren()) do
+    if child.Name == "SpacerLine" then
+        TweenService:Create(child, TweenInfo.new(0.25, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
+        -- or 1 for CloseSideBar
+    end
+	end
     task.wait(0.12)
 end
     SideBarClosed = false
@@ -1612,14 +1624,25 @@ MakeDummies(SideSpacer)
 local SideLine = Instance.new("Frame")
 SideLine.Name = "SpacerLine"
 SideLine.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-SideLine.BackgroundTransparency = 0.25
+SideLine.BackgroundTransparency = 1  
 SideLine.BorderSizePixel = 0
+SideLine.ZIndex = 10  
 SideLine.AnchorPoint = Vector2.new(0.5, 0.5)
-SideLine.Size = UDim2.new(0.72, 0, 0, px)  
-SideLine.Position = UDim2.new(0.5, 0, 0.5, 0)
+SideLine.Size = UDim2.new(0, 0, 0, 2) 
+SideLine.Parent = Main  
+
 Instance.new("UICorner", SideLine).CornerRadius = UDim.new(1, 0)
-SideLine.Parent = SideSpacer
-SideSpacer.Parent = SideList
+
+local yOffset = 0
+for _, child in pairs(SideList:GetChildren()) do
+    if child == SideSpacer then break end
+    if child.ClassName == "Frame" and child.Name ~= "Placeholder" then
+        yOffset = yOffset + 38
+    end
+end
+
+SideLine.Position = UDim2.new(0, 94, 0, 60 + yOffset) 
+SideLine.Size = UDim2.new(0, 108, 0, 2)
 
     return {
         Destroy = function()
