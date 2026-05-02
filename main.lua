@@ -1630,7 +1630,7 @@ function Window:CreateSpacerTab(px)
     local TopLine = Instance.new("Frame")
     TopLine.Name = "SpacerLine"
     TopLine.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    TopLine.BackgroundTransparency = 1
+    TopLine.BackgroundTransparency = 0.75
     TopLine.BorderSizePixel = 0
     TopLine.AnchorPoint = Vector2.new(0.5, 0)
     TopLine.Size = UDim2.new(0, math.max(px, 2), 0.55, 0)
@@ -1638,6 +1638,10 @@ function Window:CreateSpacerTab(px)
     Instance.new("UICorner", TopLine).CornerRadius = UDim.new(1, 0)
     TopLine.Parent = TopSpacer
     TopSpacer.Parent = TopList
+
+	task.defer(function()
+    	TweenService:Create(TopLine, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.75}):Play()
+	end)
 
     return {
         Destroy = function()
