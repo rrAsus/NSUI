@@ -1522,6 +1522,97 @@ NSUILib:ToggleOldTabStyle(Settings.OldTabLayout)
     function Window:SetTopbarTitle(text)
         Topbar.Title.Text = text
     end
+
+	-- Paste this right after the Window:CreateTab function definition
+function Window:CreateSpacerTab(px)
+    px = math.clamp(px or 2, 1, 2)
+
+    -- Helper to add the dummy children that existing tab loops expect
+    local function MakeDummies(parent)
+        local title = Instance.new("TextLabel")
+        title.Name = "Title"
+        title.Text = ""
+        title.BackgroundTransparency = 1
+        title.TextTransparency = 1
+        title.Size = UDim2.new(1, 0, 1, 0)
+        title.Parent = parent
+
+        local img = Instance.new("ImageLabel")
+        img.Name = "Image"
+        img.BackgroundTransparency = 1
+        img.ImageTransparency = 1
+        img.Size = UDim2.new(1, 0, 1, 0)
+        img.Parent = parent
+
+        local shadow = Instance.new("ImageLabel")
+        shadow.Name = "Shadow"
+        shadow.BackgroundTransparency = 1
+        shadow.ImageTransparency = 1
+        shadow.Size = UDim2.new(1, 0, 1, 0)
+        shadow.Parent = parent
+
+        local stroke = Instance.new("UIStroke")
+        stroke.Name = "UIStroke"
+        stroke.Transparency = 1
+        stroke.Parent = parent
+
+        -- Non-functional Interact so click loops don't error
+        local interact = Instance.new("TextButton")
+        interact.Name = "Interact"
+        interact.Text = ""
+        interact.BackgroundTransparency = 1
+        interact.Size = UDim2.new(1, 0, 1, 0)
+        interact.Parent = parent
+    end
+
+    -- ── Top tab bar spacer (vertical line) ─────────────────────────────────
+    local TopSpacer = Instance.new("Frame")
+    TopSpacer.Name = "SpacerTab"
+    TopSpacer.BackgroundTransparency = 1
+    TopSpacer.BorderSizePixel = 0
+    TopSpacer.Size = UDim2.new(0, 16, 0, 30) -- same height as tab buttons
+
+    MakeDummies(TopSpacer)
+
+    local TopLine = Instance.new("Frame")
+    TopLine.Name = "SpacerLine"
+    TopLine.BackgroundColor3 = Color3.fromRGB(75, 75, 75)
+    TopLine.BorderSizePixel = 0
+    TopLine.AnchorPoint = Vector2.new(0.5, 0)
+    TopLine.Size = UDim2.new(0, px, 0.55, 0)       -- thin vertical bar
+    TopLine.Position = UDim2.new(0.5, 0, 0.225, 0) -- centred vertically
+    Instance.new("UICorner", TopLine).CornerRadius = UDim.new(1, 0)
+    TopLine.Parent = TopSpacer
+    TopSpacer.Parent = TopList
+
+    -- ── Side tab list spacer (horizontal line) ──────────────────────────────
+    local SideSpacer = Instance.new("Frame")
+    SideSpacer.Name = "SpacerTab"
+    SideSpacer.BackgroundTransparency = 1
+    SideSpacer.BorderSizePixel = 0
+    SideSpacer.Size = UDim2.new(1, 0, 0, px + 10) -- slim row in the list
+
+    MakeDummies(SideSpacer)
+
+    local SideLine = Instance.new("Frame")
+    SideLine.Name = "SpacerLine"
+    SideLine.BackgroundColor3 = Color3.fromRGB(75, 75, 75)
+    SideLine.BorderSizePixel = 0
+    SideLine.AnchorPoint = Vector2.new(0.5, 0.5)
+    SideLine.Size = UDim2.new(0.65, 0, 0, px)  -- ~65 % width, same look as image 1
+    SideLine.Position = UDim2.new(0.5, 0, 0.5, 0)
+    Instance.new("UICorner", SideLine).CornerRadius = UDim.new(1, 0)
+    SideLine.Parent = SideSpacer
+    SideSpacer.Parent = SideList
+
+    -- Return handle so callers can destroy the spacer later if needed
+    return {
+        Destroy = function()
+            TopSpacer:Destroy()
+            SideSpacer:Destroy()
+        end
+    }
+end
     
     function Window:CreateTab(Name,Image)
         Window.Tabs[Name]={Elements = {}}
