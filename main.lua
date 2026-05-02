@@ -1072,7 +1072,7 @@ function OpenSideBar()
     TweenService:Create(Main.SideTabList.RDMT, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{TextTransparency = 0}):Play()
     for _, child in pairs(Main:GetChildren()) do
         if child.Name == "SpacerLine" then
-            TweenService:Create(child, TweenInfo.new(0.25, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.4}):Play()
+            TweenService:Create(child, TweenInfo.new(0.25, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.75}):Play()
         end
     end
     for _,tabbtn in pairs(SideList:GetChildren()) do
@@ -1085,11 +1085,6 @@ function OpenSideBar()
             TweenService:Create(tabbtn.Image, TweenInfo.new(0.25, Enum.EasingStyle.Quint),{ImageTransparency = 0}):Play()
         end
         task.wait(0.12)
-    end
-    for _, child in pairs(Main:GetChildren()) do
-        if child.Name == "SpacerLine" then
-            TweenService:Create(child, TweenInfo.new(0.25, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-        end
     end
     SideBarClosed = false
     task.wait(0.2)
