@@ -1630,7 +1630,7 @@ function Window:CreateSpacerTab(px)
     local TopLine = Instance.new("Frame")
     TopLine.Name = "SpacerLine"
     TopLine.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    TopLine.BackgroundTransparency = 0.75
+    TopLine.BackgroundTransparency = 1
     TopLine.BorderSizePixel = 0
     TopLine.AnchorPoint = Vector2.new(0.5, 0)
     TopLine.Size = UDim2.new(0, math.max(px, 2), 0.55, 0)
@@ -1638,10 +1638,6 @@ function Window:CreateSpacerTab(px)
     Instance.new("UICorner", TopLine).CornerRadius = UDim.new(1, 0)
     TopLine.Parent = TopSpacer
     TopSpacer.Parent = TopList
-
-	task.defer(function()
-    	TweenService:Create(TopLine, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.75}):Play()
-	end)
 
     return {
         Destroy = function()
@@ -2677,12 +2673,14 @@ end)
     Keybind.Name = KeybindSettings.Name
     Keybind.Title.Text = KeybindSettings.Name
     Keybind.Visible = true
-local BlockedKeybinds = KeybindSettings.BlockedKeybinds or {}
+    local BlockedKeybinds = KeybindSettings.BlockedKeybinds or {}
+
     Tab.Elements[KeybindSettings.Name] = {
         type = "keybind",
         section = KeybindSettings.SectionParent,
         element = Keybind
     }
+
     if KeybindSettings.SectionParent then
         Keybind.Parent = KeybindSettings.SectionParent.Holder
     else
@@ -2700,7 +2698,21 @@ local BlockedKeybinds = KeybindSettings.BlockedKeybinds or {}
     TweenService:Create(Keybind.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
     TweenService:Create(Keybind.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
 
-    Keybind.KeybindFrame.KeybindBox.Text = KeybindSettings.CurrentKeybind
+    local function GetKeyCodeName(str)
+        if not str or str == "" then return nil end
+        for _, kc in ipairs(Enum.KeyCode:GetEnumItems()) do
+            if kc.Name:upper() == str:upper() then
+                return kc.Name
+            end
+        end
+        return nil
+    end
+
+    local displayText = (KeybindSettings.CurrentKeybind and KeybindSettings.CurrentKeybind ~= "Unknown")
+        and KeybindSettings.CurrentKeybind
+        or "Set Keybind"
+
+    Keybind.KeybindFrame.KeybindBox.Text = displayText
     Keybind.KeybindFrame.Size = UDim2.new(0, Keybind.KeybindFrame.KeybindBox.TextBounds.X + 24, 0, 30)
 
     Keybind.KeybindFrame.KeybindBox.Focused:Connect(function()
@@ -2714,14 +2726,34 @@ local BlockedKeybinds = KeybindSettings.BlockedKeybinds or {}
 
     Keybind.KeybindFrame.KeybindBox.FocusLost:Connect(function()
         CheckingForKey = false
-    	local box = Keybind.KeybindFrame.KeybindBox
-    	local txt = box.Text:upper() or ""
-    	if txt == "" then
-        	txt = KeybindSettings.CurrentKeybind or ""
-    	end
-    	box.Text = txt
-    	KeybindSettings.CurrentKeybind = txt
-    	SaveConfiguration()
+        local box = Keybind.KeybindFrame.KeybindBox
+        local txt = box.Text
+
+        if txt == "" then
+            local current = KeybindSettings.CurrentKeybind
+            if not current or current == "Unknown" then
+                box.Text = "Set Keybind"
+            else
+                box.Text = current
+            end
+            return
+        end
+
+        local matchedName = GetKeyCodeName(txt)
+
+        if matchedName then
+            KeybindSettings.CurrentKeybind = matchedName
+            box.Text = matchedName
+        else
+            local current = KeybindSettings.CurrentKeybind
+            if not current or current == "Unknown" then
+                box.Text = "Set Keybind"
+            else
+                box.Text = current
+            end
+        end
+
+        SaveConfiguration()
     end)
 
     Keybind.MouseEnter:Connect(function()
@@ -2747,74 +2779,84 @@ local BlockedKeybinds = KeybindSettings.BlockedKeybinds or {}
         end
     end
 
-UserInputService.InputBegan:Connect(function(input, processed)
-
+    UserInputService.InputBegan:Connect(function(input, processed)
         if CheckingForKey then
-        if input.KeyCode ~= Enum.KeyCode.Unknown and input.KeyCode ~= Enum.KeyCode.Quote then
-            local SplitMessage = string.split(tostring(input.KeyCode), ".")
-            local NewKeyNoEnum = SplitMessage[3]
-if table.find(BlockedKeybinds, NewKeyNoEnum) then
-    NSUILib:Notify({
-        Title = "Blocked Key",
-        Content = "You can't use that key as a keybind!",
-        Duration = 2.5
-    })
-    task.wait(0.5)
-    Keybind.KeybindFrame.KeybindBox.Text = KeybindSettings.CurrentKeybind
-    return
-end
-            Keybind.KeybindFrame.KeybindBox.Text = tostring(NewKeyNoEnum)
-            KeybindSettings.CurrentKeybind = tostring(NewKeyNoEnum)
-            Keybind.KeybindFrame.KeybindBox:ReleaseFocus()
-            SaveConfiguration()
-        end
-    elseif KeybindSettings.CurrentKeybind ~= nil and KeybindSettings.CurrentKeybind ~= "Unknown" and KeybindSettings.CurrentKeybind ~= "Set Keybind" and input.KeyCode == Enum.KeyCode[KeybindSettings.CurrentKeybind] then
-        local Held = true
-        local Connection
-        Connection = input.Changed:Connect(function(prop)
-            if prop == "UserInputState" then
-                Connection:Disconnect()
-                Held = false
-            end
-        end)
+            if input.KeyCode ~= Enum.KeyCode.Unknown and input.KeyCode ~= Enum.KeyCode.Quote then
+                local SplitMessage = string.split(tostring(input.KeyCode), ".")
+                local NewKeyNoEnum = SplitMessage[3]
 
-        if KeybindSettings.CanBeToggled then
-            CanBeToggled()
-        elseif not KeybindSettings.HoldToInteract then
-            local Success, Response = pcall(KeybindSettings.Callback, true)
-            if not Success then
-                TweenService:Create(Keybind, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(85, 0, 0)}):Play()
-                TweenService:Create(Keybind.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-                Keybind.Title.Text = "Callback Error"
-                print("NSUI | "..KeybindSettings.Name.." Callback Error " ..tostring(Response))
-                task.wait(0.5)
-                Keybind.Title.Text = KeybindSettings.Name
-                TweenService:Create(Keybind, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
-                TweenService:Create(Keybind.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+                if table.find(BlockedKeybinds, NewKeyNoEnum) then
+                    NSUILib:Notify({
+                        Title = "Blocked Key",
+                        Content = "You can't use that key as a keybind!",
+                        Duration = 2.5
+                    })
+                    task.wait(0.5)
+                    local current = KeybindSettings.CurrentKeybind
+                    Keybind.KeybindFrame.KeybindBox.Text = (not current or current == "Unknown") and "Set Keybind" or current
+                    return
+                end
+
+                Keybind.KeybindFrame.KeybindBox.Text = NewKeyNoEnum
+                KeybindSettings.CurrentKeybind = NewKeyNoEnum
+                Keybind.KeybindFrame.KeybindBox:ReleaseFocus()
+                SaveConfiguration()
             end
         else
-            task.wait(0.25)
-            if Held then
-                local Loop; Loop = RunService.Stepped:Connect(function()
-                    if not Held then
-                        KeybindSettings.Callback(false)
-                        Loop:Disconnect()
-                    else
-                        KeybindSettings.Callback(true)
-                    end
-                end)
+            local current = KeybindSettings.CurrentKeybind
+            if not current or current == "Unknown" or current == "Set Keybind" then return end
+
+            local ok, keyCode = pcall(function() return Enum.KeyCode[current] end)
+            if not ok or not keyCode or input.KeyCode ~= keyCode then return end
+
+            local Held = true
+            local Connection
+            Connection = input.Changed:Connect(function(prop)
+                if prop == "UserInputState" then
+                    Connection:Disconnect()
+                    Held = false
+                end
+            end)
+
+            if KeybindSettings.CanBeToggled then
+                CanBeToggled()
+            elseif not KeybindSettings.HoldToInteract then
+                local Success, Response = pcall(KeybindSettings.Callback, true)
+                if not Success then
+                    TweenService:Create(Keybind, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(85, 0, 0)}):Play()
+                    TweenService:Create(Keybind.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
+                    Keybind.Title.Text = "Callback Error"
+                    print("NSUI | "..KeybindSettings.Name.." Callback Error " ..tostring(Response))
+                    task.wait(0.5)
+                    Keybind.Title.Text = KeybindSettings.Name
+                    TweenService:Create(Keybind, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
+                    TweenService:Create(Keybind.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+                end
+            else
+                task.wait(0.25)
+                if Held then
+                    local Loop; Loop = RunService.Stepped:Connect(function()
+                        if not Held then
+                            KeybindSettings.Callback(false)
+                            Loop:Disconnect()
+                        else
+                            KeybindSettings.Callback(true)
+                        end
+                    end)
+                end
             end
         end
-    end
-end)
+    end)
 
     Keybind.KeybindFrame.KeybindBox:GetPropertyChangedSignal("Text"):Connect(function()
         TweenService:Create(Keybind.KeybindFrame, TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, Keybind.KeybindFrame.KeybindBox.TextBounds.X + 24, 0, 30)}):Play()
     end)
 
     function KeybindSettings:Set(NewKeybind)
-        Keybind.KeybindFrame.KeybindBox.Text = tostring(NewKeybind)
-        KeybindSettings.CurrentKeybind = tostring(NewKeybind)
+        local matchedName = GetKeyCodeName(tostring(NewKeybind))
+        local display = matchedName or tostring(NewKeybind)
+        Keybind.KeybindFrame.KeybindBox.Text = display
+        KeybindSettings.CurrentKeybind = display
         Keybind.KeybindFrame.KeybindBox:ReleaseFocus()
         SaveConfiguration()
     end
@@ -2848,11 +2890,11 @@ end)
         Keybind.Visible = bool
     end
 
- function KeybindSettings:Clear()
-    CheckingForKey = false
-    Keybind.KeybindFrame.KeybindBox.Text = "Set Keybind"
-    KeybindSettings.CurrentKeybind = "Unknown"
-    SaveConfiguration()
+    function KeybindSettings:Clear()
+        CheckingForKey = false
+        Keybind.KeybindFrame.KeybindBox.Text = "Set Keybind"
+        KeybindSettings.CurrentKeybind = "Unknown"
+        SaveConfiguration()
     end
 
     if Settings.ConfigurationSaving then
@@ -2863,7 +2905,6 @@ end)
 
     return KeybindSettings
 end
-
 
 -- Toggle
         function Tab:CreateToggle(ToggleSettings)
