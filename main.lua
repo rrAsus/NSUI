@@ -758,6 +758,10 @@ function CloseSideBar()
         if tabbtn.ClassName == "Frame" and tabbtn.Name ~= "Placeholder" then
             TweenService:Create(tabbtn.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint),{TextTransparency = 1}):Play()
             TweenService:Create(tabbtn.Image, TweenInfo.new(0.3, Enum.EasingStyle.Quint),{ImageTransparency = 1}):Play()
+			
+			if tabbtn.Name == "SpacerTab" and tabbtn:FindFirstChild("SpacerLine") then
+    			TweenService:Create(tabbtn.SpacerLine, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
+			end
         end
     end
     TweenService:Create(Main.SideTabList, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 1,Size = UDim2.new(0,150,0,390),Position = UDim2.new(0,10,0.5,22)}):Play()
@@ -1071,6 +1075,10 @@ function OpenSideBar()
                 TweenService:Create(tabbtn.Title, TweenInfo.new(0.25, Enum.EasingStyle.Quint),{TextTransparency = 0}):Play()
             end
             TweenService:Create(tabbtn.Image, TweenInfo.new(0.25, Enum.EasingStyle.Quint),{ImageTransparency = 0}):Play()
+			
+			if tabbtn.Name == "SpacerTab" and tabbtn:FindFirstChild("SpacerLine") then
+    			TweenService:Create(tabbtn.SpacerLine, TweenInfo.new(0.25, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
+			end
         end
         task.wait(0.12)
     end
@@ -1482,6 +1490,10 @@ NSUILib:ToggleOldTabStyle(Settings.OldTabLayout)
         if tabbtn.ClassName == "Frame" and tabbtn.Name ~= "Placeholder" then
             TweenService:Create(tabbtn.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint),{TextTransparency = 1}):Play()
             TweenService:Create(tabbtn.Image, TweenInfo.new(0.3, Enum.EasingStyle.Quint),{ImageTransparency = 1}):Play()
+
+			if tabbtn.Name == "SpacerTab" and tabbtn:FindFirstChild("SpacerLine") then
+    			TweenService:Create(tabbtn.SpacerLine, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
+			end
         end
     end
     TweenService:Create(Main.SideTabList, TweenInfo.new(0, Enum.EasingStyle.Quint), {BackgroundTransparency = 1,Size = UDim2.new(0,150,0,390),Position = UDim2.new(0,10,0.5,22)}):Play()
@@ -1593,8 +1605,8 @@ MakeDummies(SideSpacer)
 
 local SideLine = Instance.new("Frame")
 SideLine.Name = "SpacerLine"
-SideLine.BackgroundColor3 = Color3.fromRGB(160, 160, 160) 
-SideLine.BackgroundTransparency = 0                
+SideLine.BackgroundColor3 = Color3.fromRGB(200, 200, 200) 
+SideLine.BackgroundTransparency = 1            
 SideLine.BorderSizePixel = 0
 SideLine.AnchorPoint = Vector2.new(0.5, 0.5)
 SideLine.Size = UDim2.new(0.72, 0, 0, px)  
