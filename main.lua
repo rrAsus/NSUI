@@ -955,16 +955,42 @@ function OpenSearch()
     Debounce = false
 end
 SearchBar.Input:GetPropertyChangedSignal("Text"):Connect(function()
-    local InputText=string.upper(SearchBar.Input.Text)
-    for _,page in ipairs(Elements:GetChildren()) do
-        if page ~= "Template" then
-            for _,Element in pairs(page:GetChildren())do
+    local InputText = string.upper(SearchBar.Input.Text)
+    for _, page in ipairs(Elements:GetChildren()) do
+        if page ~= "Template" and page:IsA("ScrollingFrame") then
+            for _, Element in pairs(page:GetChildren()) do
                 if Element:IsA("Frame") and Element.Name ~= "Placeholder" then
-                    if InputText==""or string.find(string.upper(Element.Name),InputText)~=nil then
-                        Element.Visible=true
+
+                    if Element:FindFirstChild("Holder") then
+                        if InputText == "" then
+                            Element.Visible = true
+                            for _, child in pairs(Element.Holder:GetChildren()) do
+                                if child:IsA("Frame") and child.Name ~= "Placeholder" then
+                                    child.Visible = true
+                                end
+                            end
+                        else
+                            local anyMatch = false
+                            for _, child in pairs(Element.Holder:GetChildren()) do
+                                if child:IsA("Frame") and child.Name ~= "Placeholder" then
+                                    if string.find(string.upper(child.Name), InputText) ~= nil then
+                                        child.Visible = true
+                                        anyMatch = true
+                                    else
+                                        child.Visible = false
+                                    end
+                                end
+                            end
+                            Element.Visible = anyMatch
+                        end
                     else
-                        Element.Visible=false
+                        if InputText == "" or string.find(string.upper(Element.Name), InputText) ~= nil then
+                            Element.Visible = true
+                        else
+                            Element.Visible = false
+                        end
                     end
+
                 end
             end
         end
