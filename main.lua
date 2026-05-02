@@ -753,6 +753,11 @@ end
 
 function CloseSideBar()
     Debounce = true
+	for _, child in pairs(Main:GetChildren()) do
+    if child.Name == "SpacerLine" then
+        TweenService:Create(child, TweenInfo.new(0.25, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
+    	end
+	end
     SideBarClosed = true
    for _,tabbtn in pairs(SideList:GetChildren()) do
     if tabbtn.ClassName == "Frame" and tabbtn.Name ~= "Placeholder" then
@@ -766,12 +771,6 @@ function CloseSideBar()
             TweenService:Create(tabbtn.Image, TweenInfo.new(0.3, Enum.EasingStyle.Quint),{ImageTransparency = 1}):Play()
         end
     end
-		for _, child in pairs(Main:GetChildren()) do
-    if child.Name == "SpacerLine" then
-        TweenService:Create(child, TweenInfo.new(0.25, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-        -- or 1 for CloseSideBar
-    end
-end
 end
     TweenService:Create(Main.SideTabList, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 1,Size = UDim2.new(0,150,0,390),Position = UDim2.new(0,10,0.5,22)}):Play()
     TweenService:Create(Main.SideTabList.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{Transparency = 1}):Play()
@@ -1072,6 +1071,11 @@ function Maximise()
 end
 function OpenSideBar()
     Debounce = true
+	for _, child in pairs(Main:GetChildren()) do
+    if child.Name == "SpacerLine" then
+        TweenService:Create(child, TweenInfo.new(0.25, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
+    	end
+	end
     Main.SideTabList.Visible = true 
     TweenService:Create(Main.SideTabList, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = .03,Size = UDim2.new(0,160,0,405),Position = UDim2.new(0,14,0.5,22)}):Play()
     TweenService:Create(Main.SideTabList.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{Transparency = 0}):Play()
@@ -1092,12 +1096,6 @@ function OpenSideBar()
             TweenService:Create(tabbtn.Image, TweenInfo.new(0.25, Enum.EasingStyle.Quint),{ImageTransparency = 0}):Play()
         end
     end
-		for _, child in pairs(Main:GetChildren()) do
-    if child.Name == "SpacerLine" then
-        TweenService:Create(child, TweenInfo.new(0.25, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-        -- or 1 for CloseSideBar
-    end
-	end
     task.wait(0.12)
 end
     SideBarClosed = false
