@@ -764,6 +764,14 @@ function CloseSideBar()
 			end
         end
     end
+	for _, tabbtn in pairs(SideList:GetChildren()) do
+    if tabbtn.Name == "SpacerTab" then
+        local line = tabbtn:FindFirstChild("SpacerLine")
+        if line then
+            TweenService:Create(line, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
+        end
+    end
+	end
     TweenService:Create(Main.SideTabList, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 1,Size = UDim2.new(0,150,0,390),Position = UDim2.new(0,10,0.5,22)}):Play()
     TweenService:Create(Main.SideTabList.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{Transparency = 1}):Play()
     TweenService:Create(Main.SideTabList.RDMT, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{TextTransparency = 1}):Play()
@@ -1082,6 +1090,14 @@ function OpenSideBar()
         end
         task.wait(0.12)
     end
+	for _, tabbtn in pairs(SideList:GetChildren()) do
+    if tabbtn.Name == "SpacerTab" then
+        local line = tabbtn:FindFirstChild("SpacerLine")
+        if line then
+            TweenService:Create(line, TweenInfo.new(0.25, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.65}):Play()
+        end
+    end
+	end
     SideBarClosed = false
     task.wait(0.2)
     Debounce = false
