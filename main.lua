@@ -1523,11 +1523,10 @@ NSUILib:ToggleOldTabStyle(Settings.OldTabLayout)
         Topbar.Title.Text = text
     end
 
-	-- Paste this right after the Window:CreateTab function definition
+
 function Window:CreateSpacerTab(px)
     px = math.clamp(px or 2, 1, 2)
 
-    -- Helper to add the dummy children that existing tab loops expect
     local function MakeDummies(parent)
         local title = Instance.new("TextLabel")
         title.Name = "Title"
@@ -1556,7 +1555,6 @@ function Window:CreateSpacerTab(px)
         stroke.Transparency = 1
         stroke.Parent = parent
 
-        -- Non-functional Interact so click loops don't error
         local interact = Instance.new("TextButton")
         interact.Name = "Interact"
         interact.Text = ""
@@ -1565,47 +1563,46 @@ function Window:CreateSpacerTab(px)
         interact.Parent = parent
     end
 
-    -- ── Top tab bar spacer (vertical line) ─────────────────────────────────
     local TopSpacer = Instance.new("Frame")
     TopSpacer.Name = "SpacerTab"
     TopSpacer.BackgroundTransparency = 1
     TopSpacer.BorderSizePixel = 0
-    TopSpacer.Size = UDim2.new(0, 16, 0, 30) -- same height as tab buttons
+    TopSpacer.Size = UDim2.new(0, 16, 0, 30) 
 
     MakeDummies(TopSpacer)
 
     local TopLine = Instance.new("Frame")
-    TopLine.Name = "SpacerLine"
-    TopLine.BackgroundColor3 = Color3.fromRGB(75, 75, 75)
-    TopLine.BorderSizePixel = 0
-    TopLine.AnchorPoint = Vector2.new(0.5, 0)
-    TopLine.Size = UDim2.new(0, px, 0.55, 0)       -- thin vertical bar
-    TopLine.Position = UDim2.new(0.5, 0, 0.225, 0) -- centred vertically
-    Instance.new("UICorner", TopLine).CornerRadius = UDim.new(1, 0)
-    TopLine.Parent = TopSpacer
-    TopSpacer.Parent = TopList
+TopLine.Name = "SpacerLine"
+TopLine.BackgroundColor3 = Color3.fromRGB(100, 100, 100) 
+TopLine.BackgroundTransparency = 0                         
+TopLine.BorderSizePixel = 0
+TopLine.AnchorPoint = Vector2.new(0.5, 0)
+TopLine.Size = UDim2.new(0, px, 0.55, 0)
+TopLine.Position = UDim2.new(0.5, 0, 0.225, 0)
+Instance.new("UICorner", TopLine).CornerRadius = UDim.new(1, 0)
+TopLine.Parent = TopSpacer
+TopSpacer.Parent = TopList
 
-    -- ── Side tab list spacer (horizontal line) ──────────────────────────────
-    local SideSpacer = Instance.new("Frame")
-    SideSpacer.Name = "SpacerTab"
-    SideSpacer.BackgroundTransparency = 1
-    SideSpacer.BorderSizePixel = 0
-    SideSpacer.Size = UDim2.new(1, 0, 0, px + 10) -- slim row in the list
+local SideSpacer = Instance.new("Frame")
+SideSpacer.Name = "SpacerTab"
+SideSpacer.BackgroundTransparency = 1
+SideSpacer.BorderSizePixel = 0
+SideSpacer.Size = UDim2.new(1, 0, 0, px + 6)  
 
-    MakeDummies(SideSpacer)
+MakeDummies(SideSpacer)
 
-    local SideLine = Instance.new("Frame")
-    SideLine.Name = "SpacerLine"
-    SideLine.BackgroundColor3 = Color3.fromRGB(75, 75, 75)
-    SideLine.BorderSizePixel = 0
-    SideLine.AnchorPoint = Vector2.new(0.5, 0.5)
-    SideLine.Size = UDim2.new(0.65, 0, 0, px)  -- ~65 % width, same look as image 1
-    SideLine.Position = UDim2.new(0.5, 0, 0.5, 0)
-    Instance.new("UICorner", SideLine).CornerRadius = UDim.new(1, 0)
-    SideLine.Parent = SideSpacer
-    SideSpacer.Parent = SideList
+local SideLine = Instance.new("Frame")
+SideLine.Name = "SpacerLine"
+SideLine.BackgroundColor3 = Color3.fromRGB(100, 100, 100) 
+SideLine.BackgroundTransparency = 0                
+SideLine.BorderSizePixel = 0
+SideLine.AnchorPoint = Vector2.new(0.5, 0.5)
+SideLine.Size = UDim2.new(0.72, 0, 0, px)  
+SideLine.Position = UDim2.new(0.5, 0, 0.5, 0)
+Instance.new("UICorner", SideLine).CornerRadius = UDim.new(1, 0)
+SideLine.Parent = SideSpacer
+SideSpacer.Parent = SideList
 
-    -- Return handle so callers can destroy the spacer later if needed
     return {
         Destroy = function()
             TopSpacer:Destroy()
