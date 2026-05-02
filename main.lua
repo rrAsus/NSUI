@@ -754,23 +754,18 @@ end
 function CloseSideBar()
     Debounce = true
 	for _, child in pairs(Main:GetChildren()) do
-    if child.Name == "SpacerLine" then
-        TweenService:Create(child, TweenInfo.new(0.25, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-    	end
-	end
     SideBarClosed = true
-   for _,tabbtn in pairs(SideList:GetChildren()) do
-    if tabbtn.ClassName == "Frame" and tabbtn.Name ~= "Placeholder" then
-        if tabbtn.Name == "SpacerTab" then
-            local line = tabbtn:FindFirstChild("SpacerLine")
-            if line then
-                TweenService:Create(line, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
-            end
-        else
-            TweenService:Create(tabbtn.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint),{TextTransparency = 1}):Play()
-            TweenService:Create(tabbtn.Image, TweenInfo.new(0.3, Enum.EasingStyle.Quint),{ImageTransparency = 1}):Play()
-        end
+  for _,tabbtn in pairs(SideList:GetChildren()) do
+    if tabbtn.ClassName == "Frame" and tabbtn.Name ~= "Placeholder" and tabbtn.Name ~= "SpacerTab" then
+        TweenService:Create(tabbtn.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint),{TextTransparency = 1}):Play()
+        TweenService:Create(tabbtn.Image, TweenInfo.new(0.3, Enum.EasingStyle.Quint),{ImageTransparency = 1}):Play()
     end
+end
+for _, child in pairs(Main:GetChildren()) do
+    if child.Name == "SpacerLine" then
+        TweenService:Create(child, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundTransparency = 1}):Play()
+    end
+end
 end
     TweenService:Create(Main.SideTabList, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 1,Size = UDim2.new(0,150,0,390),Position = UDim2.new(0,10,0.5,22)}):Play()
     TweenService:Create(Main.SideTabList.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{Transparency = 1}):Play()
@@ -1071,31 +1066,26 @@ function Maximise()
 end
 function OpenSideBar()
     Debounce = true
-	for _, child in pairs(Main:GetChildren()) do
-    if child.Name == "SpacerLine" then
-        TweenService:Create(child, TweenInfo.new(0.25, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
-    	end
-	end
     Main.SideTabList.Visible = true 
     TweenService:Create(Main.SideTabList, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = .03,Size = UDim2.new(0,160,0,405),Position = UDim2.new(0,14,0.5,22)}):Play()
     TweenService:Create(Main.SideTabList.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{Transparency = 0}):Play()
     TweenService:Create(Main.SideTabList.RDMT, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{TextTransparency = 0}):Play()
-    for _,tabbtn in pairs(SideList:GetChildren()) do
-    if tabbtn.ClassName == "Frame" and tabbtn.Name ~= "Placeholder" then
-        if tabbtn.Name == "SpacerTab" then
-            local line = tabbtn:FindFirstChild("SpacerLine")
-            if line then
-                TweenService:Create(line, TweenInfo.new(0.25, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.25}):Play()
-            end
+for _,tabbtn in pairs(SideList:GetChildren()) do
+    if tabbtn.ClassName == "Frame" and tabbtn.Name ~= "Placeholder" and tabbtn.Name ~= "SpacerTab" then
+        if tabbtn.Title.TextColor3 ~= Color3.fromRGB(255,255,255) then
+            TweenService:Create(tabbtn.Title, TweenInfo.new(0.25, Enum.EasingStyle.Quint),{TextTransparency = .2}):Play()
         else
-            if tabbtn.Title.TextColor3 ~= Color3.fromRGB(255,255,255) then
-                TweenService:Create(tabbtn.Title, TweenInfo.new(0.25, Enum.EasingStyle.Quint),{TextTransparency = .2}):Play()
-            else
-                TweenService:Create(tabbtn.Title, TweenInfo.new(0.25, Enum.EasingStyle.Quint),{TextTransparency = 0}):Play()
-            end
-            TweenService:Create(tabbtn.Image, TweenInfo.new(0.25, Enum.EasingStyle.Quint),{ImageTransparency = 0}):Play()
+            TweenService:Create(tabbtn.Title, TweenInfo.new(0.25, Enum.EasingStyle.Quint),{TextTransparency = 0}):Play()
         end
+        TweenService:Create(tabbtn.Image, TweenInfo.new(0.25, Enum.EasingStyle.Quint),{ImageTransparency = 0}):Play()
     end
+    task.wait(0.12)
+end
+for _, child in pairs(Main:GetChildren()) do
+    if child.Name == "SpacerLine" then
+        TweenService:Create(child, TweenInfo.new(0.25, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
+    end
+end
     task.wait(0.12)
 end
     SideBarClosed = false
@@ -1553,99 +1543,83 @@ NSUILib:ToggleOldTabStyle(Settings.OldTabLayout)
 
 
 function Window:CreateSpacerTab(px)
-    px = math.clamp(px or 2, 1, 2)
+    px = px or 2
 
     local function MakeDummies(parent)
-        local title = Instance.new("TextLabel")
-        title.Name = "Title"
-        title.Text = ""
-        title.BackgroundTransparency = 1
-        title.TextTransparency = 1
-        title.Size = UDim2.new(1, 0, 1, 0)
-        title.Parent = parent
+        local t = Instance.new("TextLabel")
+        t.Name = "Title" t.Text = "" t.BackgroundTransparency = 1
+        t.TextTransparency = 1 t.Size = UDim2.new(1,0,1,0) t.Parent = parent
 
-        local img = Instance.new("ImageLabel")
-        img.Name = "Image"
-        img.BackgroundTransparency = 1
-        img.ImageTransparency = 1
-        img.Size = UDim2.new(1, 0, 1, 0)
-        img.Parent = parent
+        local i = Instance.new("ImageLabel")
+        i.Name = "Image" i.BackgroundTransparency = 1
+        i.ImageTransparency = 1 i.Size = UDim2.new(1,0,1,0) i.Parent = parent
 
-        local shadow = Instance.new("ImageLabel")
-        shadow.Name = "Shadow"
-        shadow.BackgroundTransparency = 1
-        shadow.ImageTransparency = 1
-        shadow.Size = UDim2.new(1, 0, 1, 0)
-        shadow.Parent = parent
+        local s = Instance.new("ImageLabel")
+        s.Name = "Shadow" s.BackgroundTransparency = 1
+        s.ImageTransparency = 1 s.Size = UDim2.new(1,0,1,0) s.Parent = parent
 
-        local stroke = Instance.new("UIStroke")
-        stroke.Name = "UIStroke"
-        stroke.Transparency = 1
-        stroke.Parent = parent
+        local st = Instance.new("UIStroke")
+        st.Name = "UIStroke" st.Transparency = 1 st.Parent = parent
 
-        local interact = Instance.new("TextButton")
-        interact.Name = "Interact"
-        interact.Text = ""
-        interact.BackgroundTransparency = 1
-        interact.Size = UDim2.new(1, 0, 1, 0)
-        interact.Parent = parent
+        local b = Instance.new("TextButton")
+        b.Name = "Interact" b.Text = "" b.BackgroundTransparency = 1
+        b.Size = UDim2.new(1,0,1,0) b.Parent = parent
     end
+
+    local SideSpacer = Instance.new("Frame")
+    SideSpacer.Name = "SpacerTab"
+    SideSpacer.BackgroundTransparency = 1
+    SideSpacer.BorderSizePixel = 0
+    SideSpacer.Size = UDim2.new(1, 0, 0, px + 8)
+    MakeDummies(SideSpacer)
+    SideSpacer.Parent = SideList
+
+    local SideLine = Instance.new("Frame")
+    SideLine.Name = "SpacerLine"
+    SideLine.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    SideLine.BackgroundTransparency = 1
+    SideLine.BorderSizePixel = 0
+    SideLine.ZIndex = 15
+    SideLine.AnchorPoint = Vector2.new(0.5, 0.5)
+    SideLine.Size = UDim2.new(0, 108, 0, math.max(px, 2))
+    Instance.new("UICorner", SideLine).CornerRadius = UDim.new(1, 0)
+    SideLine.Parent = Main
+
+    local function UpdateLinePos()
+        local abs = SideSpacer.AbsolutePosition
+        local mainAbs = Main.AbsolutePosition
+        SideLine.Position = UDim2.new(
+            0, (abs.X - mainAbs.X) + SideSpacer.AbsoluteSize.X * 0.5,
+            0, (abs.Y - mainAbs.Y) + SideSpacer.AbsoluteSize.Y * 0.5
+        )
+    end
+    SideSpacer:GetPropertyChangedSignal("AbsolutePosition"):Connect(UpdateLinePos)
+    task.defer(UpdateLinePos)
 
     local TopSpacer = Instance.new("Frame")
     TopSpacer.Name = "SpacerTab"
     TopSpacer.BackgroundTransparency = 1
     TopSpacer.BorderSizePixel = 0
-    TopSpacer.Size = UDim2.new(0, 16, 0, 30) 
-
+    TopSpacer.Size = UDim2.new(0, 16, 0, 30)
     MakeDummies(TopSpacer)
 
     local TopLine = Instance.new("Frame")
-TopLine.Name = "SpacerLine"
-TopLine.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-TopLine.BackgroundTransparency = 0.25                
-TopLine.BorderSizePixel = 0
-TopLine.AnchorPoint = Vector2.new(0.5, 0)
-TopLine.Size = UDim2.new(0, px, 0.55, 0)
-TopLine.Position = UDim2.new(0.5, 0, 0.225, 0)
-Instance.new("UICorner", TopLine).CornerRadius = UDim.new(1, 0)
-TopLine.Parent = TopSpacer
-TopSpacer.Parent = TopList
-
-local SideSpacer = Instance.new("Frame")
-SideSpacer.Name = "SpacerTab"
-SideSpacer.BackgroundTransparency = 1
-SideSpacer.BorderSizePixel = 0
-SideSpacer.Size = UDim2.new(1, 0, 0, px + 6)  
-
-MakeDummies(SideSpacer)
-
-local SideLine = Instance.new("Frame")
-SideLine.Name = "SpacerLine"
-SideLine.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-SideLine.BackgroundTransparency = 1  
-SideLine.BorderSizePixel = 0
-SideLine.ZIndex = 10  
-SideLine.AnchorPoint = Vector2.new(0.5, 0.5)
-SideLine.Size = UDim2.new(0, 0, 0, 2) 
-SideLine.Parent = Main  
-
-Instance.new("UICorner", SideLine).CornerRadius = UDim.new(1, 0)
-
-local yOffset = 0
-for _, child in pairs(SideList:GetChildren()) do
-    if child == SideSpacer then break end
-    if child.ClassName == "Frame" and child.Name ~= "Placeholder" then
-        yOffset = yOffset + 38
-    end
-end
-
-SideLine.Position = UDim2.new(0, 94, 0, 60 + yOffset) 
-SideLine.Size = UDim2.new(0, 108, 0, 2)
+    TopLine.Name = "SpacerLine"
+    TopLine.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    TopLine.BackgroundTransparency = 1
+    TopLine.BorderSizePixel = 0
+    TopLine.AnchorPoint = Vector2.new(0.5, 0)
+    TopLine.Size = UDim2.new(0, math.max(px, 2), 0.55, 0)
+    TopLine.Position = UDim2.new(0.5, 0, 0.225, 0)
+    Instance.new("UICorner", TopLine).CornerRadius = UDim.new(1, 0)
+    TopLine.Parent = TopSpacer
+    TopSpacer.Parent = TopList
 
     return {
         Destroy = function()
-            TopSpacer:Destroy()
             SideSpacer:Destroy()
+            SideLine:Destroy()
+            TopSpacer:Destroy()
         end
     }
 end
