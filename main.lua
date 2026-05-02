@@ -1593,7 +1593,7 @@ MakeDummies(SideSpacer)
 
 local SideLine = Instance.new("Frame")
 SideLine.Name = "SpacerLine"
-SideLine.BackgroundColor3 = Color3.fromRGB(100, 100, 100) 
+SideLine.BackgroundColor3 = Color3.fromRGB(160, 160, 160) 
 SideLine.BackgroundTransparency = 0                
 SideLine.BorderSizePixel = 0
 SideLine.AnchorPoint = Vector2.new(0.5, 0.5)
