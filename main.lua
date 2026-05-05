@@ -2790,14 +2790,14 @@ end)
                 local NewKeyNoEnum = SplitMessage[3]
 
                 if table.find(BlockedKeybinds, NewKeyNoEnum) then
+                    CheckingForKey = false
+                    Keybind.KeybindFrame.KeybindBox.Text = ""
+                    Keybind.KeybindFrame.KeybindBox:ReleaseFocus()
                     NSUILib:Notify({
                         Title = "Blocked Key",
                         Content = "You can't use that key as a keybind!",
                         Duration = 2.5
                     })
-                    task.wait(0.5)
-                    local current = KeybindSettings.CurrentKeybind
-                    Keybind.KeybindFrame.KeybindBox.Text = (not current or current == "Unknown") and "Set Keybind" or current
                     return
                 end
 
