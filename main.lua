@@ -2796,7 +2796,8 @@ end)
                     NSUILib:Notify({
                         Title = "Blocked Key",
                         Content = "You can't use that key as a keybind!",
-                        Duration = 2.5
+                        Duration = 2.5,
+						Image = 10747384394
                     })
                     return
                 end
