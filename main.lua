@@ -3220,8 +3220,12 @@ end
                 local PIcon = Instance.new("ImageLabel")
                 PIcon.Name                   = "ParagraphIcon"
                 PIcon.Size                   = UDim2.new(0, 18, 0, 18)
-                PIcon.AnchorPoint            = Vector2.new(0, 0.5)
-                PIcon.Position               = UDim2.new(0, 10, 0, 27)
+                PIcon.AnchorPoint = Vector2.new(0, 0)
+                PIcon.Position    = UDim2.new(
+                    0, 10,
+                    Paragraph.Title.Position.Y.Scale,
+                    Paragraph.Title.Position.Y.Offset
+                )
                 PIcon.BackgroundTransparency = 1
                 PIcon.Image                  = "rbxassetid://" .. tostring(ParagraphSettings.Icon)
                 PIcon.ImageColor3            = Color3.fromRGB(210, 210, 210)
