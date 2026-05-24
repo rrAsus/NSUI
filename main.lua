@@ -3643,7 +3643,8 @@ end
                 AddOptions(Items,Selected)
             end
 
-            AddOptions(DropdownSettings.Options,DropdownSettings.CurrentOption)
+            AddOptions(DropdownSettings.Options, DropdownSettings.CurrentOption)
+            RefreshSelected()
 
             --fix
             function DropdownSettings:Set(NewOption)
@@ -3713,6 +3714,7 @@ end
                     end
                 end
                 AddOptions(NewOptions, Selecteds)
+                RefreshSelected()
             end
             function DropdownSettings:Remove(Item)
                 if Item.Name ~= "Placeholder" and Item ~= SearchBar then
@@ -3727,7 +3729,8 @@ end
                     Error("why you trynna remove the searchbar? FINE")
                 end
                 if Dropdown.Selected.Text == Item then
-                    Dropdown.Selected.Text = ""
+                    DropdownSettings.Items.Selected = {}
+                    RefreshSelected()
                 end
             end
 
