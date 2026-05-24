@@ -3688,7 +3688,7 @@ end)
             function DropdownSettings:Error(text)
                 Error(text)
             end
-            function DropdownSettings:Refresh(NewOptions,Selecteds)
+            function DropdownSettings:Refresh(NewOptions, Selecteds)
                 DropdownSettings.Items = {}
                 DropdownSettings.Items.Selected = {}
                 for _, option in ipairs(Dropdown.List:GetChildren()) do
@@ -3696,7 +3696,21 @@ end)
                         option:Destroy()
                     end
                 end
-                AddOptions(NewOptions,Selecteds)
+                if typeof(Selecteds) == "string" then
+                    local isRealOption = false
+                    if typeof(NewOptions) == "table" then
+                        for _, opt in ipairs(NewOptions) do
+                            if opt == Selecteds then isRealOption = true break end
+                        end
+                    end
+                    if not isRealOption then
+                        DropdownSettings.PlaceholderText = Selecteds
+                        Dropdown.Selected.Text = Selecteds
+                        AddOptions(NewOptions, nil)
+                        return
+                    end
+                end
+                AddOptions(NewOptions, Selecteds)
             end
             function DropdownSettings:Remove(Item)
                 if Item.Name ~= "Placeholder" and Item ~= SearchBar then
@@ -4941,5 +4955,63 @@ function NSUILib:AllTrue(conditions)
 end
 
 task.delay(9, NSUILib.LoadConfiguration, NSUILib)
+
+-- NSUI Search Bar Diagnostic Logger
+-- Paste and run this AFTER the main NSUI script loads
+-- Then open the search bar and start typing
+
+-- Diagnostic (uses variables already in scope)
+task.delay(14, function()
+    warn("[DIAG] === SNAPSHOT ===")
+    warn("[DIAG] SearchBar.BackgroundColor3 = " .. tostring(SearchBar.BackgroundColor3))
+    warn("[DIAG] SearchBar.BackgroundTransparency = " .. tostring(SearchBar.BackgroundTransparency))
+    warn("[DIAG] SearchBar.Visible = " .. tostring(SearchBar.Visible))
+    for _, desc in ipairs(SearchBar:GetDescendants()) do
+        if desc:IsA("GuiObject") then
+            local info = string.format("  %s | Vis=%s | BgTrans=%.2f | ZIndex=%d", desc.Name, tostring(desc.Visible), desc.BackgroundTransparency, desc.ZIndex)
+            if desc:IsA("TextBox") or desc:IsA("TextLabel") then
+                info = info .. string.format(" | TextTrans=%.2f", desc.TextTransparency)
+            end
+            if desc.ClassName == "CanvasGroup" then
+                info = info .. string.format(" | GroupTrans=%.2f", desc.GroupTransparency)
+            end
+            warn("[DIAG]" .. info)
+        end
+    end
+    warn("[DIAG] === Now open search bar, then type. Monitors active. ===")
+
+    local function monitor(obj, path)
+        if obj:IsA("GuiObject") then
+            obj:GetPropertyChangedSignal("BackgroundTransparency"):Connect(function()
+                if obj.BackgroundTransparency > 0.5 then
+                    warn(string.format("[DIAG] BgTrans=%.2f → %s", obj.BackgroundTransparency, path))
+                end
+            end)
+            obj:GetPropertyChangedSignal("Visible"):Connect(function()
+                warn(string.format("[DIAG] Visible=%s → %s", tostring(obj.Visible), path))
+            end)
+        end
+        if obj:IsA("TextBox") or obj:IsA("TextLabel") then
+            obj:GetPropertyChangedSignal("TextTransparency"):Connect(function()
+                warn(string.format("[DIAG] TextTrans=%.2f → %s", obj.TextTransparency, path))
+            end)
+        end
+        if obj.ClassName == "CanvasGroup" then
+            obj:GetPropertyChangedSignal("GroupTransparency"):Connect(function()
+                warn(string.format("[DIAG] GroupTrans=%.2f → %s", obj.GroupTransparency, path))
+            end)
+        end
+        obj:GetPropertyChangedSignal("ZIndex"):Connect(function()
+            warn(string.format("[DIAG] ZIndex=%d → %s", obj.ZIndex, path))
+        end)
+    end
+
+    monitor(SearchBar, "SearchBar")
+    for _, desc in ipairs(SearchBar:GetDescendants()) do
+        if desc:IsA("GuiObject") then
+            monitor(desc, "SearchBar." .. desc.Name)
+        end
+    end
+end)
 
 return NSUILib
