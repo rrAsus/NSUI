@@ -3217,8 +3217,11 @@ end
             local ParagraphValue = {}
 
             local Paragraph = Elements.Template.Paragraph:Clone()
+            for _, child in ipairs(Paragraph:GetChildren()) do
+                print(child.ClassName, child.Name)
+            end
             Paragraph.Title.Text = ParagraphSettings.Title
-		Paragraph.Title.RichText = true
+		    Paragraph.Title.RichText = true
             Paragraph.Content.Text = ParagraphSettings.Content
             Paragraph.Content.RichText = true
             if ParagraphSettings.Icon then
