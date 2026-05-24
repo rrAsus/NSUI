@@ -186,6 +186,658 @@ local BarType = "Side"
 local HoverTime = 0.3
 local Notifications = NSUI.Notifications
 
+-- ── NSUI Global Search & Pin System ──────────────────────────────────────────
+local LastActivePage       = nil
+local NSUIPinnedFile       = NSUIFolder .. "/Pinned.NSUI"
+local TabNavRegistry       = {}   -- [tabName] = { page, navigate }
+local GlobalSearchActive   = false
+local SearchResultsPage    = nil
+
+-- Active pinned windows: key = "tabName|sectionName" → Frame
+local ActivePinnedWindows  = {}
+
+-- Save all open pinned windows to file
+local function SavePinnedFile()
+    pcall(function()
+        if not isfolder then return end
+        if not isfolder(NSUIFolder) then makefolder(NSUIFolder) end
+        local tbl = {}
+        for key, win in pairs(ActivePinnedWindows) do
+            if win and win.Parent then
+                tbl[#tbl + 1] = {
+                    key     = key,
+                    tab     = win:GetAttribute("_PinTab"),
+                    section = win:GetAttribute("_PinSection"),
+                    x       = win.Position.X.Offset,
+                    y       = win.Position.Y.Offset,
+                }
+            end
+        end
+        writefile(NSUIPinnedFile, HttpService:JSONEncode(tbl))
+    end)
+end
+
+-- Build a row inside a pinned window for one element from the section holder
+local function BuildPinnedRow(element, winContent, zBase)
+    if not element:IsA("Frame") then return end
+    if element.Name == "Placeholder" or element.Name == "SectionSpacing" then return end
+
+    -- Detect element type from its children structure
+    local isToggle      = element:FindFirstChild("Switch") ~= nil
+    local isSlider      = element:FindFirstChild("Main") ~= nil and element:FindFirstChild("Main"):FindFirstChild("Progress") ~= nil
+    local isColorPicker = element:FindFirstChild("CPBackground") ~= nil
+    local isDropdown    = element:FindFirstChild("Selected") ~= nil and element:FindFirstChild("List") ~= nil
+    local isInput       = element:FindFirstChild("InputFrame") ~= nil and not isDropdown
+    local isKeybind     = element:FindFirstChild("KeybindFrame") ~= nil
+    local isButton      = element:FindFirstChild("ElementIndicator") ~= nil and not isToggle and not isSlider and not isDropdown and not isColorPicker
+    local isParagraph   = element:FindFirstChild("Content") ~= nil
+    local isLabel       = not isToggle and not isSlider and not isButton and not isInput and not isKeybind and not isDropdown and not isColorPicker and not isParagraph
+
+    -- Row height by type
+    local rowH = 38
+    if isSlider       then rowH = 54 end
+    if isInput        then rowH = 46 end
+    if isKeybind      then rowH = 46 end
+    if isDropdown     then rowH = 42 end
+    if isColorPicker  then rowH = 42 end
+    if isParagraph    then rowH = 50 end
+
+    -- Get label text
+    local labelText = element.Name
+    pcall(function()
+        if element:FindFirstChild("Title") and element.Title.Text ~= "" then
+            labelText = element.Title.Text
+        end
+    end)
+
+    -- ── Row container ────────────────────────────────────────────────────
+    local Row = Instance.new("Frame")
+    Row.Name                    = element.Name
+    Row.Size                    = UDim2.new(1, -2, 0, rowH)
+    Row.BackgroundColor3        = Color3.fromRGB(32, 32, 32)
+    Row.BackgroundTransparency  = 0
+    Row.BorderSizePixel         = 0
+    Row.ZIndex                  = zBase + 1
+    Row.ClipsDescendants        = true
+    Row.Parent                  = winContent
+
+    local rc = Instance.new("UICorner")
+    rc.CornerRadius = UDim.new(0, 6)
+    rc.Parent = Row
+
+    local rs = Instance.new("UIStroke")
+    rs.Color     = Color3.fromRGB(50, 50, 50)
+    rs.Thickness = 1
+    rs.Parent    = Row
+
+    -- Label
+    local Lbl = Instance.new("TextLabel")
+    Lbl.Size               = UDim2.new(0.54, -4, 0, 18)
+    Lbl.Position           = UDim2.new(0, 9, 0, if isSlider then 4 else 0)
+    Lbl.AnchorPoint        = Vector2.new(0, if isSlider then 0 else 0.5)
+    if not isSlider then Lbl.Position = UDim2.new(0, 9, 0.5, 0) end
+    Lbl.BackgroundTransparency = 1
+    Lbl.Text               = labelText
+    Lbl.TextColor3         = Color3.fromRGB(210, 210, 210)
+    Lbl.Font               = Enum.Font.GothamBold
+    Lbl.TextSize           = 11
+    Lbl.TextXAlignment     = Enum.TextXAlignment.Left
+    Lbl.TextTruncate       = Enum.TextTruncate.AtEnd
+    Lbl.ZIndex             = zBase + 2
+    Lbl.Parent             = Row
+
+    -- ── TOGGLE ──────────────────────────────────────────────────────────
+    if isToggle then
+        -- Mini switch housing
+        local SwBg = Instance.new("Frame")
+        SwBg.Size            = UDim2.new(0, 44, 0, 22)
+        SwBg.AnchorPoint     = Vector2.new(1, 0.5)
+        SwBg.Position        = UDim2.new(1, -8, 0.5, 0)
+        SwBg.BorderSizePixel = 0
+        SwBg.ZIndex          = zBase + 2
+        SwBg.Parent          = Row
+        local swCorner = Instance.new("UICorner")
+        swCorner.CornerRadius = UDim.new(1, 0)
+        swCorner.Parent = SwBg
+        local swStroke = Instance.new("UIStroke")
+        swStroke.Thickness = 1
+        swStroke.Parent = SwBg
+
+        local Dot = Instance.new("Frame")
+        Dot.Size             = UDim2.new(0, 14, 0, 14)
+        Dot.AnchorPoint      = Vector2.new(0.5, 0.5)
+        Dot.Position         = UDim2.new(0, 13, 0.5, 0)
+        Dot.BorderSizePixel  = 0
+        Dot.ZIndex           = zBase + 3
+        Dot.Parent           = SwBg
+        local dotCorner = Instance.new("UICorner")
+        dotCorner.CornerRadius = UDim.new(1, 0)
+        dotCorner.Parent = Dot
+
+        local function SyncSwitch()
+            pcall(function()
+                local orig = element.Switch
+                local origInd = orig.Indicator
+                SwBg.BackgroundColor3 = orig.BackgroundColor3
+                swStroke.Color        = orig.UIStroke.Color
+                Dot.BackgroundColor3  = origInd.BackgroundColor3
+                -- on = indicator offset -20 from right; off = -40
+                local offX = origInd.Position.X.Offset
+                if offX > -32 then -- ON state
+                    TweenService:Create(Dot, TweenInfo.new(0.25, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Position = UDim2.new(0, 31, 0.5, 0)}):Play()
+                else -- OFF state
+                    TweenService:Create(Dot, TweenInfo.new(0.25, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Position = UDim2.new(0, 13, 0.5, 0)}):Play()
+                end
+            end)
+        end
+        SyncSwitch()
+        pcall(function()
+            element.Switch.Indicator:GetPropertyChangedSignal("BackgroundColor3"):Connect(SyncSwitch)
+            element.Switch.Indicator:GetPropertyChangedSignal("Position"):Connect(SyncSwitch)
+            element.Switch.UIStroke:GetPropertyChangedSignal("Color"):Connect(swStroke and function()
+                swStroke.Color = element.Switch.UIStroke.Color
+            end or function() end)
+        end)
+
+        local Btn = Instance.new("TextButton")
+        Btn.Size = UDim2.new(1,0,1,0); Btn.BackgroundTransparency=1; Btn.Text=""; Btn.ZIndex=zBase+5; Btn.Parent=Row
+        Btn.MouseButton1Click:Connect(function() pcall(function() element.Interact:Activate() end) end)
+        Btn.MouseEnter:Connect(function() TweenService:Create(Row,TweenInfo.new(0.2,Enum.EasingStyle.Quint),{BackgroundColor3=Color3.fromRGB(42,42,42)}):Play() end)
+        Btn.MouseLeave:Connect(function() TweenService:Create(Row,TweenInfo.new(0.2,Enum.EasingStyle.Quint),{BackgroundColor3=Color3.fromRGB(32,32,32)}):Play() end)
+
+    -- ── SLIDER ──────────────────────────────────────────────────────────
+    elseif isSlider then
+        Lbl.AnchorPoint = Vector2.new(0, 0)
+        Lbl.Position    = UDim2.new(0, 9, 0, 5)
+
+        local ValLbl = Instance.new("TextLabel")
+        ValLbl.Size = UDim2.new(0.45, 0, 0, 14)
+        ValLbl.AnchorPoint = Vector2.new(1, 0)
+        ValLbl.Position = UDim2.new(1, -8, 0, 5)
+        ValLbl.BackgroundTransparency = 1
+        ValLbl.TextColor3 = Color3.fromRGB(100, 160, 220)
+        ValLbl.Font = Enum.Font.GothamBold
+        ValLbl.TextSize = 11
+        ValLbl.TextXAlignment = Enum.TextXAlignment.Right
+        ValLbl.ZIndex = zBase + 2
+        ValLbl.Parent = Row
+        pcall(function()
+            ValLbl.Text = element.Main.Information.Text
+            element.Main.Information:GetPropertyChangedSignal("Text"):Connect(function()
+                ValLbl.Text = element.Main.Information.Text
+            end)
+        end)
+
+        -- Mini slider track
+        local Track = Instance.new("Frame")
+        Track.Size = UDim2.new(1, -18, 0, 7)
+        Track.Position = UDim2.new(0, 9, 0, 32)
+        Track.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+        Track.BorderSizePixel = 0
+        Track.ZIndex = zBase + 2
+        Track.Parent = Row
+        local tkCorner = Instance.new("UICorner"); tkCorner.CornerRadius = UDim.new(1,0); tkCorner.Parent = Track
+
+        local Fill = Instance.new("Frame")
+        Fill.Size = UDim2.new(0, 0, 1, 0)
+        Fill.BackgroundColor3 = Color3.fromRGB(43, 105, 159)
+        Fill.BorderSizePixel = 0
+        Fill.ZIndex = zBase + 3
+        Fill.Parent = Track
+        local fillCorner = Instance.new("UICorner"); fillCorner.CornerRadius = UDim.new(1,0); fillCorner.Parent = Fill
+
+        local function SyncSlider()
+            pcall(function()
+                local origProg = element.Main.Progress
+                local origMain = element.Main
+                if origMain.AbsoluteSize.X > 0 then
+                    local pct = math.clamp(origProg.AbsoluteSize.X / origMain.AbsoluteSize.X, 0, 1)
+                    Fill.Size = UDim2.new(pct, 0, 1, 0)
+                end
+                Fill.BackgroundColor3 = origProg.BackgroundColor3
+            end)
+        end
+        task.delay(0.5, SyncSlider)
+        pcall(function() element.Main.Progress:GetPropertyChangedSignal("AbsoluteSize"):Connect(SyncSlider) end)
+
+        local Btn = Instance.new("TextButton")
+        Btn.Size=UDim2.new(1,0,1,0); Btn.BackgroundTransparency=1; Btn.Text=""; Btn.ZIndex=zBase+5; Btn.Parent=Row
+        Btn.MouseEnter:Connect(function() TweenService:Create(Row,TweenInfo.new(0.2,Enum.EasingStyle.Quint),{BackgroundColor3=Color3.fromRGB(42,42,42)}):Play() end)
+        Btn.MouseLeave:Connect(function() TweenService:Create(Row,TweenInfo.new(0.2,Enum.EasingStyle.Quint),{BackgroundColor3=Color3.fromRGB(32,32,32)}):Play() end)
+
+    -- ── INPUT ────────────────────────────────────────────────────────────
+    elseif isInput then
+        Lbl.Size = UDim2.new(0.42, -4, 1, 0)
+
+        local MiniBox = Instance.new("TextBox")
+        MiniBox.Size = UDim2.new(0.54, -4, 0, 26)
+        MiniBox.AnchorPoint = Vector2.new(1, 0.5)
+        MiniBox.Position = UDim2.new(1, -8, 0.5, 0)
+        MiniBox.BackgroundColor3 = Color3.fromRGB(28, 28, 28)
+        MiniBox.BorderSizePixel = 0
+        MiniBox.Font = Enum.Font.Gotham
+        MiniBox.TextSize = 11
+        MiniBox.TextColor3 = Color3.fromRGB(200, 200, 200)
+        MiniBox.PlaceholderColor3 = Color3.fromRGB(100, 100, 100)
+        MiniBox.ClearTextOnFocus = false
+        MiniBox.ZIndex = zBase + 2
+        MiniBox.Parent = Row
+        local mbCorner = Instance.new("UICorner"); mbCorner.CornerRadius = UDim.new(0,5); mbCorner.Parent = MiniBox
+        local mbStroke = Instance.new("UIStroke"); mbStroke.Color=Color3.fromRGB(60,60,60); mbStroke.Thickness=1; mbStroke.Parent=MiniBox
+
+        pcall(function()
+            local origBox = element.InputFrame.InputBox
+            MiniBox.PlaceholderText = origBox.PlaceholderText or ""
+            MiniBox.Text = origBox.Text
+            origBox:GetPropertyChangedSignal("Text"):Connect(function()
+                if not MiniBox:IsFocused() then MiniBox.Text = origBox.Text end
+            end)
+            MiniBox.FocusLost:Connect(function(enter)
+                origBox.Text = MiniBox.Text
+                if enter then origBox:CaptureFocus() task.wait() origBox:ReleaseFocus(true) end
+            end)
+            MiniBox.Focused:Connect(function()
+                TweenService:Create(mbStroke, TweenInfo.new(0.2), {Color = Color3.fromRGB(80,130,200)}):Play()
+            end)
+            MiniBox.FocusLost:Connect(function()
+                TweenService:Create(mbStroke, TweenInfo.new(0.2), {Color = Color3.fromRGB(60,60,60)}):Play()
+            end)
+        end)
+
+    -- ── KEYBIND ──────────────────────────────────────────────────────────
+    elseif isKeybind then
+        Lbl.Size = UDim2.new(0.42, -4, 1, 0)
+
+        local KbBox = Instance.new("TextBox")
+        KbBox.Size = UDim2.new(0.54, -4, 0, 26)
+        KbBox.AnchorPoint = Vector2.new(1, 0.5)
+        KbBox.Position = UDim2.new(1, -8, 0.5, 0)
+        KbBox.BackgroundColor3 = Color3.fromRGB(28, 28, 28)
+        KbBox.BorderSizePixel = 0
+        KbBox.Font = Enum.Font.GothamBold
+        KbBox.TextSize = 10
+        KbBox.TextColor3 = Color3.fromRGB(180, 180, 180)
+        KbBox.PlaceholderText = "Set Keybind"
+        KbBox.PlaceholderColor3 = Color3.fromRGB(90, 90, 90)
+        KbBox.ClearTextOnFocus = false
+        KbBox.ZIndex = zBase + 2
+        KbBox.Parent = Row
+        local kbCorner = Instance.new("UICorner"); kbCorner.CornerRadius = UDim.new(0,5); kbCorner.Parent = KbBox
+        local kbStroke = Instance.new("UIStroke"); kbStroke.Color=Color3.fromRGB(60,60,60); kbStroke.Thickness=1; kbStroke.Parent=KbBox
+
+        pcall(function()
+            local origBox = element.KeybindFrame.KeybindBox
+            KbBox.Text = origBox.Text
+            origBox:GetPropertyChangedSignal("Text"):Connect(function()
+                if not KbBox:IsFocused() then KbBox.Text = origBox.Text end
+            end)
+            KbBox.FocusLost:Connect(function(enter)
+                if enter then
+                    origBox.Text = KbBox.Text
+                    origBox:CaptureFocus() task.wait() origBox:ReleaseFocus(true)
+                else
+                    KbBox.Text = origBox.Text
+                end
+            end)
+        end)
+
+    -- ── DROPDOWN ────────────────────────────────────────────────────────
+    elseif isDropdown then
+        Lbl.Size = UDim2.new(0.42, -4, 1, 0)
+
+        local SelLbl = Instance.new("TextLabel")
+        SelLbl.Size = UDim2.new(0.54, -4, 0, 22)
+        SelLbl.AnchorPoint = Vector2.new(1, 0.5)
+        SelLbl.Position = UDim2.new(1, -8, 0.5, 0)
+        SelLbl.BackgroundColor3 = Color3.fromRGB(28, 28, 28)
+        SelLbl.BorderSizePixel = 0
+        SelLbl.Font = Enum.Font.Gotham
+        SelLbl.TextSize = 10
+        SelLbl.TextColor3 = Color3.fromRGB(180, 180, 180)
+        SelLbl.ZIndex = zBase + 2
+        SelLbl.Parent = Row
+        local selCorner = Instance.new("UICorner"); selCorner.CornerRadius = UDim.new(0,5); selCorner.Parent = SelLbl
+        local selStroke = Instance.new("UIStroke"); selStroke.Color=Color3.fromRGB(55,55,55); selStroke.Thickness=1; selStroke.Parent=SelLbl
+        pcall(function()
+            SelLbl.Text = element.Selected.Text
+            element.Selected:GetPropertyChangedSignal("Text"):Connect(function()
+                SelLbl.Text = element.Selected.Text
+            end)
+        end)
+
+        local Btn = Instance.new("TextButton")
+        Btn.Size=UDim2.new(1,0,1,0); Btn.BackgroundTransparency=1; Btn.Text=""; Btn.ZIndex=zBase+5; Btn.Parent=Row
+        Btn.MouseButton1Click:Connect(function() pcall(function() element.Interact:Activate() end) end)
+        Btn.MouseEnter:Connect(function() TweenService:Create(Row,TweenInfo.new(0.2,Enum.EasingStyle.Quint),{BackgroundColor3=Color3.fromRGB(42,42,42)}):Play() end)
+        Btn.MouseLeave:Connect(function() TweenService:Create(Row,TweenInfo.new(0.2,Enum.EasingStyle.Quint),{BackgroundColor3=Color3.fromRGB(32,32,32)}):Play() end)
+
+    -- ── COLOR PICKER ─────────────────────────────────────────────────────
+    elseif isColorPicker then
+        Lbl.Size = UDim2.new(0.54, -4, 1, 0)
+
+        local ColorDot = Instance.new("Frame")
+        ColorDot.Size = UDim2.new(0, 30, 0, 20)
+        ColorDot.AnchorPoint = Vector2.new(1, 0.5)
+        ColorDot.Position = UDim2.new(1, -8, 0.5, 0)
+        ColorDot.BorderSizePixel = 0
+        ColorDot.ZIndex = zBase + 2
+        ColorDot.Parent = Row
+        local cdCorner = Instance.new("UICorner"); cdCorner.CornerRadius = UDim.new(0,5); cdCorner.Parent = ColorDot
+        local cdStroke = Instance.new("UIStroke"); cdStroke.Color=Color3.fromRGB(65,65,65); cdStroke.Thickness=1; cdStroke.Parent=ColorDot
+        pcall(function()
+            ColorDot.BackgroundColor3 = element.CPBackground.Display.BackgroundColor3
+            element.CPBackground.Display:GetPropertyChangedSignal("BackgroundColor3"):Connect(function()
+                ColorDot.BackgroundColor3 = element.CPBackground.Display.BackgroundColor3
+            end)
+        end)
+
+        local Btn = Instance.new("TextButton")
+        Btn.Size=UDim2.new(1,0,1,0); Btn.BackgroundTransparency=1; Btn.Text=""; Btn.ZIndex=zBase+5; Btn.Parent=Row
+        Btn.MouseButton1Click:Connect(function() pcall(function() element.Interact:Activate() end) end)
+        Btn.MouseEnter:Connect(function() TweenService:Create(Row,TweenInfo.new(0.2,Enum.EasingStyle.Quint),{BackgroundColor3=Color3.fromRGB(42,42,42)}):Play() end)
+        Btn.MouseLeave:Connect(function() TweenService:Create(Row,TweenInfo.new(0.2,Enum.EasingStyle.Quint),{BackgroundColor3=Color3.fromRGB(32,32,32)}):Play() end)
+
+    -- ── BUTTON / GENERIC ─────────────────────────────────────────────────
+    else
+        Lbl.Size = UDim2.new(0.55, -4, 1, 0)
+
+        local IndLbl = Instance.new("TextLabel")
+        IndLbl.Size = UDim2.new(0.42, 0, 1, 0)
+        IndLbl.AnchorPoint = Vector2.new(1, 0.5)
+        IndLbl.Position = UDim2.new(1, -8, 0.5, 0)
+        IndLbl.BackgroundTransparency = 1
+        IndLbl.TextColor3 = Color3.fromRGB(85, 85, 85)
+        IndLbl.Font = Enum.Font.Gotham
+        IndLbl.TextSize = 10
+        IndLbl.TextXAlignment = Enum.TextXAlignment.Right
+        IndLbl.TextTruncate = Enum.TextTruncate.AtEnd
+        IndLbl.ZIndex = zBase + 2
+        IndLbl.Parent = Row
+        pcall(function()
+            if element:FindFirstChild("ElementIndicator") then
+                IndLbl.Text = element.ElementIndicator.Text
+                element.ElementIndicator:GetPropertyChangedSignal("Text"):Connect(function()
+                    IndLbl.Text = element.ElementIndicator.Text
+                end)
+            end
+            if isParagraph and element:FindFirstChild("Content") then
+                Lbl.Size = UDim2.new(1, -16, 0, 16)
+                Lbl.Position = UDim2.new(0, 9, 0, 4)
+                Lbl.AnchorPoint = Vector2.new(0, 0)
+                local CntLbl = Instance.new("TextLabel")
+                CntLbl.Size = UDim2.new(1, -16, 0, 28)
+                CntLbl.Position = UDim2.new(0, 9, 0, 20)
+                CntLbl.BackgroundTransparency = 1
+                CntLbl.TextColor3 = Color3.fromRGB(100, 100, 100)
+                CntLbl.Font = Enum.Font.Gotham
+                CntLbl.TextSize = 10
+                CntLbl.TextXAlignment = Enum.TextXAlignment.Left
+                CntLbl.TextWrapped = true
+                CntLbl.TextTruncate = Enum.TextTruncate.AtEnd
+                CntLbl.Text = element.Content.Text
+                CntLbl.ZIndex = zBase + 2
+                CntLbl.Parent = Row
+                IndLbl.Text = ""
+            end
+        end)
+
+        if not isParagraph then
+            local Btn = Instance.new("TextButton")
+            Btn.Size=UDim2.new(1,0,1,0); Btn.BackgroundTransparency=1; Btn.Text=""; Btn.ZIndex=zBase+5; Btn.Parent=Row
+            Btn.MouseButton1Click:Connect(function()
+                pcall(function() if element:FindFirstChild("Interact") then element.Interact:Activate() end end)
+                TweenService:Create(Row,TweenInfo.new(0.1,Enum.EasingStyle.Quint),{BackgroundColor3=Color3.fromRGB(24,24,24)}):Play()
+                task.wait(0.12)
+                TweenService:Create(Row,TweenInfo.new(0.25,Enum.EasingStyle.Quint),{BackgroundColor3=Color3.fromRGB(32,32,32)}):Play()
+            end)
+            Btn.MouseEnter:Connect(function() TweenService:Create(Row,TweenInfo.new(0.2,Enum.EasingStyle.Quint),{BackgroundColor3=Color3.fromRGB(42,42,42)}):Play() end)
+            Btn.MouseLeave:Connect(function() TweenService:Create(Row,TweenInfo.new(0.2,Enum.EasingStyle.Quint),{BackgroundColor3=Color3.fromRGB(32,32,32)}):Play() end)
+        end
+    end
+end
+
+-- Create a draggable floating window for a pinned section
+local function CreatePinnedWindow(tabName, sectionName, sectionFrameRef, tabPageRef, startX, startY)
+    local key = tabName .. "|" .. sectionName
+    -- Deduplicate
+    if ActivePinnedWindows[key] and ActivePinnedWindows[key].Parent then return end
+
+    local WIN_W = 220
+    local WIN_TITLE_H = 32
+
+    -- Count holder children to size window height
+    local childCount = 0
+    if sectionFrameRef and sectionFrameRef:FindFirstChild("Holder") then
+        for _, c in ipairs(sectionFrameRef.Holder:GetChildren()) do
+            if c:IsA("Frame") and c.Name ~= "Placeholder" and c.Name ~= "SectionSpacing" then
+                childCount = childCount + 1
+            end
+        end
+    end
+    local WIN_H = WIN_TITLE_H + math.clamp(childCount * 38 + 6, 38, 300)
+
+    local posX = startX or 30
+    local posY = startY or 120
+
+    local Win = Instance.new("Frame")
+    Win.Name                  = "NSUIPinWin_" .. key
+    Win.Size                  = UDim2.new(0, WIN_W, 0, WIN_H)
+    Win.Position              = UDim2.new(0, posX, 0, posY)
+    Win.BackgroundColor3      = Color3.fromRGB(22, 22, 22)
+    Win.BackgroundTransparency = 0.04
+    Win.BorderSizePixel       = 0
+    Win.ZIndex                = 300
+    Win.Active                = true
+    Win.Parent                = NSUI
+
+    Win:SetAttribute("_PinTab",     tabName)
+    Win:SetAttribute("_PinSection", sectionName)
+
+    local WinCorner = Instance.new("UICorner")
+    WinCorner.CornerRadius = UDim.new(0, 8)
+    WinCorner.Parent = Win
+
+    local WinStroke = Instance.new("UIStroke")
+    WinStroke.Color        = Color3.fromRGB(58, 58, 58)
+    WinStroke.Thickness    = 1
+    WinStroke.Parent       = Win
+
+    local WinShadow = Instance.new("ImageLabel")
+    WinShadow.Name          = "Shadow"
+    WinShadow.AnchorPoint   = Vector2.new(0.5, 0.5)
+    WinShadow.Position      = UDim2.new(0.5, 0, 0.5, 4)
+    WinShadow.Size          = UDim2.new(1, 24, 1, 24)
+    WinShadow.BackgroundTransparency = 1
+    WinShadow.Image         = "rbxassetid://5554236805"
+    WinShadow.ImageColor3   = Color3.fromRGB(0, 0, 0)
+    WinShadow.ImageTransparency = 0.5
+    WinShadow.ScaleType     = Enum.ScaleType.Slice
+    WinShadow.SliceCenter   = Rect.new(23, 23, 277, 277)
+    WinShadow.ZIndex        = 299
+    WinShadow.Parent        = Win
+
+    -- ── Titlebar ──────────────────────────────────────────────────────
+    local Titlebar = Instance.new("Frame")
+    Titlebar.Name             = "Titlebar"
+    Titlebar.Size             = UDim2.new(1, 0, 0, WIN_TITLE_H)
+    Titlebar.BackgroundColor3 = Color3.fromRGB(28, 28, 28)
+    Titlebar.BackgroundTransparency = 0
+    Titlebar.BorderSizePixel  = 0
+    Titlebar.ZIndex           = 301
+    Titlebar.Parent           = Win
+
+    local TitlebarCorner = Instance.new("UICorner")
+    TitlebarCorner.CornerRadius = UDim.new(0, 8)
+    TitlebarCorner.Parent = Titlebar
+
+    -- Cover bottom corners of titlebar so it merges with content
+    local TitlebarRepair = Instance.new("Frame")
+    TitlebarRepair.Size             = UDim2.new(1, 0, 0, 8)
+    TitlebarRepair.AnchorPoint      = Vector2.new(0, 1)
+    TitlebarRepair.Position         = UDim2.new(0, 0, 1, 0)
+    TitlebarRepair.BackgroundColor3 = Color3.fromRGB(28, 28, 28)
+    TitlebarRepair.BorderSizePixel  = 0
+    TitlebarRepair.ZIndex           = 302
+    TitlebarRepair.Parent           = Titlebar
+
+    -- Pin icon in titlebar
+    local PinIcon = Instance.new("ImageLabel")
+    PinIcon.Size             = UDim2.new(0, 14, 0, 14)
+    PinIcon.AnchorPoint      = Vector2.new(0, 0.5)
+    PinIcon.Position         = UDim2.new(0, 8, 0.5, 0)
+    PinIcon.BackgroundTransparency = 1
+    PinIcon.Image            = "rbxassetid://10734886004"
+    PinIcon.ImageColor3      = Color3.fromRGB(160, 160, 160)
+    PinIcon.ZIndex           = 303
+    PinIcon.Parent           = Titlebar
+
+    -- Section title
+    local WinTitle = Instance.new("TextLabel")
+    WinTitle.Size             = UDim2.new(1, -56, 1, 0)
+    WinTitle.Position         = UDim2.new(0, 26, 0, 0)
+    WinTitle.BackgroundTransparency = 1
+    WinTitle.Text             = sectionName
+    WinTitle.TextColor3       = Color3.fromRGB(210, 210, 210)
+    WinTitle.Font             = Enum.Font.GothamBold
+    WinTitle.TextSize         = 12
+    WinTitle.TextXAlignment   = Enum.TextXAlignment.Left
+    WinTitle.TextTruncate     = Enum.TextTruncate.AtEnd
+    WinTitle.ZIndex           = 303
+    WinTitle.Parent           = Titlebar
+
+    -- Tab breadcrumb under title
+    local TabCrumb = Instance.new("TextLabel")
+    TabCrumb.Size             = UDim2.new(1, -56, 0, 10)
+    TabCrumb.Position         = UDim2.new(0, 26, 0.5, 2)
+    TabCrumb.BackgroundTransparency = 1
+    TabCrumb.Text             = tabName
+    TabCrumb.TextColor3       = Color3.fromRGB(100, 100, 100)
+    TabCrumb.Font             = Enum.Font.Gotham
+    TabCrumb.TextSize         = 9
+    TabCrumb.TextXAlignment   = Enum.TextXAlignment.Left
+    TabCrumb.TextTruncate     = Enum.TextTruncate.AtEnd
+    TabCrumb.ZIndex           = 303
+    TabCrumb.Parent           = Titlebar
+
+    -- Close/unpin button (X)
+    local CloseBtn = Instance.new("TextButton")
+    CloseBtn.Size             = UDim2.new(0, 22, 0, 22)
+    CloseBtn.AnchorPoint      = Vector2.new(1, 0.5)
+    CloseBtn.Position         = UDim2.new(1, -5, 0.5, 0)
+    CloseBtn.BackgroundTransparency = 1
+    CloseBtn.Text             = "×"
+    CloseBtn.TextColor3       = Color3.fromRGB(130, 130, 130)
+    CloseBtn.Font             = Enum.Font.GothamBold
+    CloseBtn.TextSize         = 16
+    CloseBtn.ZIndex           = 304
+    CloseBtn.Parent           = Titlebar
+
+    CloseBtn.MouseEnter:Connect(function()
+        TweenService:Create(CloseBtn, TweenInfo.new(0.2), {TextColor3 = Color3.fromRGB(200, 200, 200)}):Play()
+    end)
+    CloseBtn.MouseLeave:Connect(function()
+        TweenService:Create(CloseBtn, TweenInfo.new(0.2), {TextColor3 = Color3.fromRGB(130, 130, 130)}):Play()
+    end)
+
+    -- Drag handle on titlebar
+    local DragArea = Instance.new("TextButton")
+    DragArea.Size              = UDim2.new(1, -28, 1, 0)
+    DragArea.BackgroundTransparency = 1
+    DragArea.Text              = ""
+    DragArea.ZIndex            = 303
+    DragArea.Parent            = Titlebar
+
+    -- Drag logic (same pattern as main window)
+    do
+        local dragging, dragStart, startPos = false, nil, nil
+        DragArea.InputBegan:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                dragging  = true
+                dragStart = input.Position
+                startPos  = Win.Position
+            end
+        end)
+        UserInputService.InputChanged:Connect(function(input)
+            if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+                local delta = input.Position - dragStart
+                Win.Position = UDim2.new(
+                    startPos.X.Scale, startPos.X.Offset + delta.X,
+                    startPos.Y.Scale, startPos.Y.Offset + delta.Y
+                )
+            end
+        end)
+        UserInputService.InputEnded:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                if dragging then
+                    dragging = false
+                    SavePinnedFile()
+                end
+            end
+        end)
+    end
+
+    -- ── Content scroll area ───────────────────────────────────────────
+    local Content = Instance.new("ScrollingFrame")
+    Content.Name                    = "PinWinContent"
+    Content.Size                    = UDim2.new(1, -6, 1, -(WIN_TITLE_H + 4))
+    Content.Position                = UDim2.new(0, 3, 0, WIN_TITLE_H + 2)
+    Content.BackgroundTransparency  = 1
+    Content.BorderSizePixel         = 0
+    Content.ScrollBarThickness      = 2
+    Content.ScrollBarImageColor3    = Color3.fromRGB(70, 70, 70)
+    Content.CanvasSize              = UDim2.new(0, 0, 0, 0)
+    Content.AutomaticCanvasSize     = Enum.AutomaticSize.Y
+    Content.ZIndex                  = 81
+    Content.Parent                  = Win
+
+    local ContentLayout = Instance.new("UIListLayout")
+    ContentLayout.Padding       = UDim.new(0, 3)
+    ContentLayout.FillDirection = Enum.FillDirection.Vertical
+    ContentLayout.SortOrder     = Enum.SortOrder.LayoutOrder
+    ContentLayout.Parent        = Content
+
+    -- Populate rows from section holder
+    if sectionFrameRef and sectionFrameRef:FindFirstChild("Holder") then
+        for _, elem in ipairs(sectionFrameRef.Holder:GetChildren()) do
+            BuildPinnedRow(elem, Content, 81)
+        end
+        -- Watch for new elements added to holder later
+        sectionFrameRef.Holder.ChildAdded:Connect(function(child)
+            task.wait() -- let element finish setup
+            BuildPinnedRow(child, Content, 81)
+        end)
+    end
+
+    -- Close / unpin
+    CloseBtn.MouseButton1Click:Connect(function()
+        -- Reset pin button on the original section
+        pcall(function()
+            if sectionFrameRef and sectionFrameRef:FindFirstChild("NSUIPinButton") then
+                sectionFrameRef.NSUIPinButton.ImageColor3 = Color3.fromRGB(110, 110, 110)
+                sectionFrameRef.NSUIPinButton:SetAttribute("_Pinned", false)
+            end
+        end)
+        ActivePinnedWindows[key] = nil
+        Win:Destroy()
+        SavePinnedFile()
+    end)
+
+    ActivePinnedWindows[key] = Win
+    SavePinnedFile()
+end
+
+-- Pending pins loaded from file (applied after sections are created)
+local PendingPins = {}
+pcall(function()
+    if isfile and isfile(NSUIPinnedFile) then
+        local decoded = HttpService:JSONDecode(readfile(NSUIPinnedFile))
+        for _, entry in ipairs(decoded) do
+            table.insert(PendingPins, entry)
+        end
+    end
+end)
+-- ─────────────────────────────────────────────────────────────────────────────
+
 local SelectedTheme = NSUILib.Theme.Default
 
 function ChangeTheme(ThemeName)
@@ -924,70 +1576,478 @@ function Unhide()
     Debounce = false
 end
 
-function CloseSearch()
-    Debounce = true
-    TweenService:Create(SearchBar, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 1,Size = UDim2.new(0, 460,0, 35)}):Play()
-    TweenService:Create(SearchBar.Icon, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
-    TweenService:Create(SearchBar.Clear, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
-    TweenService:Create(SearchBar.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
-    TweenService:Create(SearchBar.Filter, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 1}):Play()
-    TweenService:Create(SearchBar.Shadow.Image, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 0.1}):Play()
-    TweenService:Create(SearchBar.Input, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 1}):Play()
-    delay(.3,function()
-        SearchBar.Input.Visible = false
+local _SB_Built = false
+
+local function _SB_Build()
+    if _SB_Built then return end
+    _SB_Built = true
+
+    local iconId, filterId, clearId = "", "", ""
+    pcall(function() iconId   = SearchBar.Icon.Image   end)
+    pcall(function() filterId = SearchBar.Filter.Image end)
+    pcall(function() clearId  = SearchBar.Clear.Image  end)
+
+    for _, ch in ipairs(SearchBar:GetChildren()) do
+        if ch.Name ~= "Input" and ch.ClassName ~= "UICorner" and ch.ClassName ~= "UIStroke" then
+            pcall(function() ch.Visible = false end)
+        end
+    end
+
+    local SIcon = Instance.new("ImageLabel")
+    SIcon.Name                   = "_SB_Icon"
+    SIcon.Size                   = UDim2.new(0, 20, 0, 20)
+    SIcon.AnchorPoint            = Vector2.new(0, 0.5)
+    SIcon.Position               = UDim2.new(0, 10, 0.5, 0)
+    SIcon.BackgroundTransparency = 1
+    SIcon.Image                  = iconId
+    SIcon.ImageColor3            = Color3.fromRGB(130, 130, 130)
+    SIcon.ZIndex                 = 502
+    SIcon.Parent                 = SearchBar
+
+    local SFilter = Instance.new("ImageLabel")
+    SFilter.Name                   = "_SB_Filter"
+    SFilter.Size                   = UDim2.new(0, 20, 0, 20)
+    SFilter.AnchorPoint            = Vector2.new(1, 0.5)
+    SFilter.Position               = UDim2.new(1, -34, 0.5, 0)
+    SFilter.BackgroundTransparency = 1
+    SFilter.Image                  = filterId
+    SFilter.ImageColor3            = Color3.fromRGB(130, 130, 130)
+    SFilter.ZIndex                 = 502
+    SFilter.Parent                 = SearchBar
+
+    local SClear = Instance.new("ImageButton")
+    SClear.Name                   = "_SB_Clear"
+    SClear.Size                   = UDim2.new(0, 20, 0, 20)
+    SClear.AnchorPoint            = Vector2.new(1, 0.5)
+    SClear.Position               = UDim2.new(1, -10, 0.5, 0)
+    SClear.BackgroundTransparency = 1
+    SClear.Image                  = clearId
+    SClear.ImageColor3            = Color3.fromRGB(130, 130, 130)
+    SClear.ZIndex                 = 502
+    SClear.Parent                 = SearchBar
+    SClear.MouseButton1Down:Connect(function()
+        SearchBar.Input.Text = ""
+        if not SearchHided then
+            SearchHided = true
+            task.spawn(CloseSearch)
+        end
     end)
-    task.wait(0.5)
-    SearchBar.Visible = false
-    Debounce = false
+
+    SearchBar.Input.AnchorPoint = Vector2.new(0, 0.5)
+    SearchBar.Input.Position    = UDim2.new(0, 34, 0.51, 0)
+    SearchBar.Input.Size        = UDim2.new(1, -72, 0, 28)
+    SearchBar.Input.ZIndex      = 502
 end
+
+function CloseSearch()
+    pcall(function()
+        if _G._NSUISearchPosConn then
+            _G._NSUISearchPosConn:Disconnect()
+            _G._NSUISearchPosConn = nil
+        end
+    end)
+    Topbar.Title.TextTransparency = 0
+    local t = TweenInfo.new(0.25, Enum.EasingStyle.Quint)
+    TweenService:Create(SearchBar, t, {BackgroundTransparency = 1}):Play()
+    TweenService:Create(SearchBar.Input, t, {TextTransparency = 1}):Play()
+    pcall(function() TweenService:Create(SearchBar.UIStroke, t, {Transparency = 1}):Play() end)
+    pcall(function() TweenService:Create(SearchBar:FindFirstChild("_SB_Icon"),   t, {ImageTransparency = 1}):Play() end)
+    pcall(function() TweenService:Create(SearchBar:FindFirstChild("_SB_Filter"), t, {ImageTransparency = 1}):Play() end)
+    pcall(function() TweenService:Create(SearchBar:FindFirstChild("_SB_Clear"),  t, {ImageTransparency = 1}):Play() end)
+    task.wait(0.3)
+    SearchBar.Input.Text             = ""
+    SearchBar.Input.Visible          = false
+    SearchBar.Visible                = false
+    SearchBar.Parent                 = Main
+    SearchBar.BackgroundTransparency = 1
+end
+
 function OpenSearch()
     Debounce = true
-    SearchBar.Visible = true
-    SearchBar.Input.Visible = true
-    TweenService:Create(SearchBar, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = 0,Size = UDim2.new(0, 480,0, 40)}):Play()
-    TweenService:Create(SearchBar.Icon, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 0.5}):Play()
-    TweenService:Create(SearchBar.Shadow.Image, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = 0.1}):Play()
-    TweenService:Create(SearchBar.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
-    TweenService:Create(SearchBar.Clear, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = .8}):Play()
-    TweenService:Create(SearchBar.Filter, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {ImageTransparency = .8}):Play()
-    TweenService:Create(SearchBar.Input, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
-    task.wait(0.5)
+    SearchBar.BackgroundColor3       = SelectedTheme.InputBackground
+    SearchBar.BackgroundTransparency = 1
+    SearchBar.Parent                 = NSUI
+    SearchBar.ZIndex                 = 500
+    SearchBar.AnchorPoint            = Vector2.new(0, 1)
+    SearchBar.ClipsDescendants       = false
+
+    local function UpdateSearchPos()
+        pcall(function()
+            local ap = Main.AbsolutePosition
+            local as = Main.AbsoluteSize
+            SearchBar.Position = UDim2.new(0, ap.X + 5, 0, ap.Y - 6)
+            SearchBar.Size     = UDim2.new(0, as.X - 10, 0, 40)
+        end)
+    end
+    UpdateSearchPos()
+    _G._NSUISearchPosConn = Main:GetPropertyChangedSignal("AbsolutePosition"):Connect(UpdateSearchPos)
+
+    _SB_Build()
+
+    SearchBar.Input.TextTransparency = 1
+    pcall(function() SearchBar.UIStroke.Transparency = 1 end)
+    pcall(function() local i = SearchBar:FindFirstChild("_SB_Icon");   if i then i.ImageTransparency = 1 end end)
+    pcall(function() local i = SearchBar:FindFirstChild("_SB_Filter"); if i then i.ImageTransparency = 1 end end)
+    pcall(function() local i = SearchBar:FindFirstChild("_SB_Clear");  if i then i.ImageTransparency = 1 end end)
+
+    SearchBar.Input.TextColor3        = Color3.fromRGB(180, 180, 180)
+    SearchBar.Input.PlaceholderColor3 = Color3.fromRGB(100, 100, 100)
+    SearchBar.Input.PlaceholderText   = "Search elements..."
+    SearchBar.Input.Visible           = true
+    SearchBar.Visible                 = true
+
+    task.wait()
+
+    local t = TweenInfo.new(0.4, Enum.EasingStyle.Quint)
+    TweenService:Create(SearchBar, t, {BackgroundTransparency = 0}):Play()
+    TweenService:Create(SearchBar.Input, t, {TextTransparency = 0}):Play()
+    pcall(function() TweenService:Create(SearchBar.UIStroke, t, {Transparency = 0}):Play() end)
+    pcall(function() TweenService:Create(SearchBar:FindFirstChild("_SB_Icon"),   t, {ImageTransparency = 0.3}):Play() end)
+    pcall(function() TweenService:Create(SearchBar:FindFirstChild("_SB_Filter"), t, {ImageTransparency = 0.4}):Play() end)
+    pcall(function() TweenService:Create(SearchBar:FindFirstChild("_SB_Clear"),  t, {ImageTransparency = 0.4}):Play() end)
+
+    task.wait(0.45)
     Debounce = false
 end
+
+-- ── NSUI Global Search ───────────────────────────────────────────────────────
+
+local function EnsureSearchPage()
+    if SearchResultsPage then return end
+    SearchResultsPage = Instance.new("ScrollingFrame")
+    SearchResultsPage.Name                  = "___SearchResults___"
+    SearchResultsPage.Size                  = UDim2.new(1, 0, 1, 0)
+    SearchResultsPage.BackgroundTransparency = 1
+    SearchResultsPage.BorderSizePixel       = 0
+    SearchResultsPage.ScrollBarThickness    = 3
+    SearchResultsPage.ScrollBarImageColor3  = Color3.fromRGB(80, 80, 80)
+    SearchResultsPage.CanvasSize            = UDim2.new(0, 0, 0, 0)
+    SearchResultsPage.AutomaticCanvasSize   = Enum.AutomaticSize.Y
+    SearchResultsPage.Visible               = true
+    SearchResultsPage.LayoutOrder           = 999999
+    SearchResultsPage.Parent                = Elements
+
+    local lyt = Instance.new("UIListLayout")
+    lyt.Padding        = UDim.new(0, 4)
+    lyt.FillDirection  = Enum.FillDirection.Vertical
+    lyt.SortOrder      = Enum.SortOrder.LayoutOrder
+    lyt.Parent         = SearchResultsPage
+
+    local pad = Instance.new("UIPadding")
+    pad.PaddingLeft   = UDim.new(0, 6)
+    pad.PaddingRight  = UDim.new(0, 6)
+    pad.PaddingTop    = UDim.new(0, 8)
+    pad.PaddingBottom = UDim.new(0, 6)
+    pad.Parent        = SearchResultsPage
+end
+
+local function ClearSearchPage()
+    if not SearchResultsPage then return end
+    for _, c in ipairs(SearchResultsPage:GetChildren()) do
+        if c:IsA("Frame") then c:Destroy() end
+    end
+end
+
+local function AddSearchCard(elementName, tabName, sectionName, tabPageRef, elementFrameRef, order, elementType)
+    -- ── Type appearance map ──────────────────────────────────────────────
+    local typeColor = {
+        TOGGLE   = Color3.fromRGB(0,  146, 214),
+        BUTTON   = Color3.fromRGB(90, 180, 100),
+        DROPDOWN = Color3.fromRGB(200, 140, 60),
+        KEYBIND  = Color3.fromRGB(170, 100, 220),
+    }
+    local typeBg = {
+        TOGGLE   = Color3.fromRGB(0,  30,  55),
+        BUTTON   = Color3.fromRGB(18, 42,  22),
+        DROPDOWN = Color3.fromRGB(48, 30,  10),
+        KEYBIND  = Color3.fromRGB(40, 18,  58),
+    }
+    local typeLabel = elementType or "ELEMENT"
+    local tColor    = typeColor[typeLabel]  or Color3.fromRGB(130, 130, 130)
+    local tBgColor  = typeBg[typeLabel]     or Color3.fromRGB(28, 28, 28)
+
+    local Card = Instance.new("Frame")
+    Card.Name               = "SRCard"
+    Card.Size               = UDim2.new(1, -4, 0, 48)
+    Card.BackgroundColor3   = Color3.fromRGB(35, 35, 35)
+    Card.BackgroundTransparency = 0
+    Card.BorderSizePixel    = 0
+    Card.LayoutOrder        = order
+    Card.ZIndex             = 5
+    Card.Parent             = SearchResultsPage
+
+    local cc = Instance.new("UICorner")
+    cc.CornerRadius = UDim.new(0, 7)
+    cc.Parent = Card
+
+    local cs = Instance.new("UIStroke")
+    cs.Color        = Color3.fromRGB(50, 50, 55)
+    cs.Thickness    = 1
+    cs.Parent       = Card
+
+    -- ── Left accent bar ───────────────────────────────────────────────────
+    local Accent = Instance.new("Frame")
+    Accent.Size             = UDim2.new(0, 3, 1, -14)
+    Accent.Position         = UDim2.new(0, 0, 0.5, 0)
+    Accent.AnchorPoint      = Vector2.new(0, 0.5)
+    Accent.BackgroundColor3 = tColor
+    Accent.BorderSizePixel  = 0
+    Accent.ZIndex           = 6
+    Accent.Parent           = Card
+    local acCorner = Instance.new("UICorner")
+    acCorner.CornerRadius = UDim.new(1, 0)
+    acCorner.Parent = Accent
+
+    -- ── Element name ──────────────────────────────────────────────────────
+    local NameLbl = Instance.new("TextLabel")
+    NameLbl.Size               = UDim2.new(1, -110, 0, 18)
+    NameLbl.Position           = UDim2.new(0, 12, 0, 8)
+    NameLbl.BackgroundTransparency = 1
+    NameLbl.Text               = elementName
+    NameLbl.TextColor3         = Color3.fromRGB(230, 230, 230)
+    NameLbl.Font               = Enum.Font.GothamBold
+    NameLbl.TextSize           = 13
+    NameLbl.TextXAlignment     = Enum.TextXAlignment.Left
+    NameLbl.TextTruncate       = Enum.TextTruncate.AtEnd
+    NameLbl.ZIndex             = 6
+    NameLbl.Parent             = Card
+
+    -- ── Type badge — right side of name row ───────────────────────────────
+    local BadgeBg = Instance.new("Frame")
+    BadgeBg.Size             = UDim2.new(0, 68, 0, 16)
+    BadgeBg.AnchorPoint      = Vector2.new(1, 0.5)   -- vertically centred like the arrow
+    BadgeBg.Position         = UDim2.new(1, -40, 0.5, 0)  -- 6 px gap left of the arrow
+    BadgeBg.BackgroundColor3 = tBgColor
+    BadgeBg.BorderSizePixel  = 0
+    BadgeBg.ZIndex           = 6
+    BadgeBg.Parent           = Card
+    local badgeCorner = Instance.new("UICorner")
+    badgeCorner.CornerRadius = UDim.new(1, 0)
+    badgeCorner.Parent = BadgeBg
+    local badgeStroke = Instance.new("UIStroke")
+    badgeStroke.Color        = tColor
+    badgeStroke.Thickness    = 1
+    badgeStroke.Transparency = 0.4
+    badgeStroke.Parent       = BadgeBg
+
+    local BadgeLbl = Instance.new("TextLabel")
+    BadgeLbl.Size               = UDim2.new(1, 0, 1, 0)
+    BadgeLbl.BackgroundTransparency = 1
+    BadgeLbl.Text               = typeLabel
+    BadgeLbl.TextColor3         = tColor
+    BadgeLbl.Font               = Enum.Font.GothamBold
+    BadgeLbl.TextSize           = 8
+    BadgeLbl.TextXAlignment     = Enum.TextXAlignment.Center
+    BadgeLbl.ZIndex             = 7
+    BadgeLbl.Parent             = BadgeBg
+
+    -- ── Path: Tab  ›  Section ─────────────────────────────────────────────
+    local pathStr = tabName .. (sectionName ~= "" and ("  ›  " .. sectionName) or "")
+    local PathLbl = Instance.new("TextLabel")
+    PathLbl.Size               = UDim2.new(1, -42, 0, 13)
+    PathLbl.Position           = UDim2.new(0, 12, 0, 30)
+    PathLbl.BackgroundTransparency = 1
+    PathLbl.Text               = pathStr
+    PathLbl.TextColor3         = Color3.fromRGB(100, 100, 110)
+    PathLbl.Font               = Enum.Font.Gotham
+    PathLbl.TextSize           = 10
+    PathLbl.TextXAlignment     = Enum.TextXAlignment.Left
+    PathLbl.TextTruncate       = Enum.TextTruncate.AtEnd
+    PathLbl.ZIndex             = 6
+    PathLbl.Parent             = Card
+
+    -- ── Go arrow ──────────────────────────────────────────────────────────
+    local GoLbl = Instance.new("TextLabel")
+    GoLbl.Size               = UDim2.new(0, 30, 1, 0)
+    GoLbl.AnchorPoint        = Vector2.new(1, 0.5)
+    GoLbl.Position           = UDim2.new(1, -4, 0.5, 0)
+    GoLbl.BackgroundTransparency = 1
+    GoLbl.Text               = "›"
+    GoLbl.TextColor3         = tColor
+    GoLbl.Font               = Enum.Font.GothamBold
+    GoLbl.TextSize           = 20
+    GoLbl.ZIndex             = 6
+    GoLbl.Parent             = Card
+
+    -- Invisible click button over whole card
+    local Btn = Instance.new("TextButton")
+    Btn.Size                = UDim2.new(1, 0, 1, 0)
+    Btn.BackgroundTransparency = 1
+    Btn.Text                = ""
+    Btn.ZIndex              = 7
+    Btn.Parent              = Card
+
+    -- Hover effect
+    Btn.MouseEnter:Connect(function()
+        TweenService:Create(Card, TweenInfo.new(0.25, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(45, 45, 50)}):Play()
+    end)
+    Btn.MouseLeave:Connect(function()
+        TweenService:Create(Card, TweenInfo.new(0.25, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(35, 35, 35)}):Play()
+    end)
+
+    -- Navigate on click
+    Btn.MouseButton1Click:Connect(function()
+        -- Clear search
+        SearchBar.Input.Text = ""
+        task.wait(0.05)
+        -- Navigate to the right tab
+        pcall(function()
+            if TabNavRegistry[tabName] then
+                TabNavRegistry[tabName].navigate()
+            end
+            -- Scroll element into view in its tab page
+            if tabPageRef and elementFrameRef then
+                task.wait(0.25)
+                pcall(function()
+                    local elemY = elementFrameRef.AbsolutePosition.Y - tabPageRef.AbsolutePosition.Y + tabPageRef.CanvasPosition.Y
+                    TweenService:Create(tabPageRef, TweenInfo.new(0.4, Enum.EasingStyle.Quint),
+                        {CanvasPosition = Vector2.new(0, math.max(0, elemY - 20))}):Play()
+                    -- Brief highlight flash
+                    local origColor = elementFrameRef.BackgroundColor3
+                    TweenService:Create(elementFrameRef, TweenInfo.new(0.25, Enum.EasingStyle.Quint),
+                        {BackgroundColor3 = Color3.fromRGB(50, 80, 110)}):Play()
+                    task.wait(0.5)
+                    TweenService:Create(elementFrameRef, TweenInfo.new(0.5, Enum.EasingStyle.Quint),
+                        {BackgroundColor3 = origColor}):Play()
+                end)
+            end
+        end)
+    end)
+end
+
 SearchBar.Input:GetPropertyChangedSignal("Text"):Connect(function()
     local InputText = string.upper(SearchBar.Input.Text)
-    for _, page in ipairs(Elements:GetChildren()) do
-        if page ~= "Template" and page:IsA("ScrollingFrame") then
-            for _, Element in pairs(page:GetChildren()) do
-                if Element:IsA("Frame") and Element.Name ~= "Placeholder" then
 
-                    if Element:FindFirstChild("Holder") then
-                        if InputText == "" then
-                            Element.Visible = true
-                            for _, child in pairs(Element.Holder:GetChildren()) do
-                                if child:IsA("Frame") and child.Name ~= "Placeholder" then
-                                    child.Visible = true
+    if InputText == "" then
+        TweenService:Create(Topbar.Title, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
+        if GlobalSearchActive then
+            GlobalSearchActive = false
+            ClearSearchPage()
+            if LastActivePage then
+                pcall(function()
+                    Elements.UIPageLayout.Animated = false
+                    Elements.UIPageLayout:JumpTo(LastActivePage)
+                    Elements.UIPageLayout.Animated = true
+                end)
+            end
+        end
+        for _, page in ipairs(Elements:GetChildren()) do
+            if page:IsA("ScrollingFrame") and page.Name ~= "___SearchResults___" and page.Name ~= "Template" then
+                for _, Element in pairs(page:GetChildren()) do
+                    if Element:IsA("Frame") and Element.Name ~= "Placeholder" then
+                        Element.Visible = true
+                        if Element:FindFirstChild("Holder") then
+                            local sectionIsOpen = true
+                            pcall(function()
+                                if Element:FindFirstChild("Title") and Element.Title:FindFirstChild("ImageButton") then
+                                    sectionIsOpen = Element.Title.ImageButton.Rotation ~= 180
                                 end
-                            end
-                        else
-                            local anyMatch = false
-                            for _, child in pairs(Element.Holder:GetChildren()) do
-                                if child:IsA("Frame") and child.Name ~= "Placeholder" then
-                                    if string.find(string.upper(child.Name), InputText) ~= nil then
+                            end)
+                            if sectionIsOpen then
+                                for _, child in pairs(Element.Holder:GetChildren()) do
+                                    if child:IsA("Frame") and child.Name ~= "Placeholder" then
                                         child.Visible = true
-                                        anyMatch = true
-                                    else
-                                        child.Visible = false
                                     end
                                 end
                             end
-                            Element.Visible = anyMatch
                         end
+                    end
+                end
+            end
+        end
+        return
+    end
+
+    -- ── Global search across all tabs ────────────────────────────────────
+    if not GlobalSearchActive then
+        -- Remember current page before jumping away
+        pcall(function() LastActivePage = Elements.UIPageLayout.CurrentPage end)
+        GlobalSearchActive = true
+    end
+
+    EnsureSearchPage()
+    ClearSearchPage()
+
+    local resultOrder = 0
+    local seenKeys = {}  -- dedup: "tabName|sectionTitle|elementTitle"
+
+    -- ── Detect element type; returns nil for excluded types ────────────────
+    local function DetectElementType(elem)
+        if not elem:IsA("Frame") then return nil end
+        -- Exclude non-interactive / paragraph / label types
+        if elem:FindFirstChild("Content")    then return nil end  -- paragraph
+        if elem:FindFirstChild("CPBackground") then return nil end  -- color picker
+        local hasMain = elem:FindFirstChild("Main")
+        if hasMain and hasMain:FindFirstChild("Progress") then return nil end  -- slider
+        if elem:FindFirstChild("InputFrame")
+            and not (elem:FindFirstChild("Selected") and elem:FindFirstChild("List"))
+        then return nil end  -- text input
+
+        -- Interactive types we DO show
+        if elem:FindFirstChild("Switch")   then return "TOGGLE"   end
+        if elem:FindFirstChild("KeybindFrame") then return "KEYBIND" end
+        if elem:FindFirstChild("Selected") and elem:FindFirstChild("List") then return "DROPDOWN" end
+        if elem:FindFirstChild("ElementIndicator") then return "BUTTON" end
+        return nil  -- label or unrecognised – skip
+    end
+
+    local function SafeAddCard(elemTitle, tName, sectTitle, pageRef, frameRef, elemType)
+        local key = tName .. "|" .. sectTitle .. "|" .. elemTitle
+        if seenKeys[key] then return end
+        seenKeys[key] = true
+        resultOrder = resultOrder + 1
+        AddSearchCard(elemTitle, tName, sectTitle, pageRef, frameRef, resultOrder, elemType)
+    end
+
+    for _, page in ipairs(Elements:GetChildren()) do
+        if page:IsA("ScrollingFrame") and page.Name ~= "___SearchResults___" and page.Name ~= "Template" and page.Name ~= "Placeholder" then
+            local tabName = page.Name
+            for _, Element in pairs(page:GetChildren()) do
+                if Element:IsA("Frame") and Element.Name ~= "Placeholder" and Element.Name ~= "SectionSpacing" then
+
+                    if Element:FindFirstChild("Holder") then
+                        -- Section frame – read its real title from the Title label
+                        local sectionTitle = Element.Name
+                        pcall(function()
+                            if Element:FindFirstChild("Title") and Element.Title.Text ~= "" then
+                                sectionTitle = Element.Title.Text
+                            end
+                        end)
+                        local sectionMatches = string.find(string.upper(sectionTitle), InputText) ~= nil
+
+                        for _, child in pairs(Element.Holder:GetChildren()) do
+                            if child:IsA("Frame") and child.Name ~= "Placeholder" and child.Name ~= "SectionSpacing" then
+                                local elemType = DetectElementType(child)
+                                if elemType then  -- nil = filtered out (paragraph, label, slider, etc.)
+                                    local childTitle = child.Name
+                                    pcall(function()
+                                        if child:FindFirstChild("Title") and child.Title.Text ~= "" then
+                                            childTitle = child.Title.Text
+                                        end
+                                    end)
+                                    local childMatches = string.find(string.upper(childTitle), InputText) ~= nil
+                                    -- Show child if the section or the element itself matches
+                                    if sectionMatches or childMatches then
+                                        SafeAddCard(childTitle, tabName, sectionTitle, page, child, elemType)
+                                    end
+                                end
+                            end
+                        end
+                        -- (section header is NOT added as a separate card)
+
                     else
-                        if InputText == "" or string.find(string.upper(Element.Name), InputText) ~= nil then
-                            Element.Visible = true
-                        else
-                            Element.Visible = false
+                        -- Top-level element (not inside a section)
+                        local elemType = DetectElementType(Element)
+                        if elemType then
+                            local elemTitle = Element.Name
+                            pcall(function()
+                                if Element:FindFirstChild("Title") and Element.Title.Text ~= "" then
+                                    elemTitle = Element.Title.Text
+                                end
+                            end)
+                            if string.find(string.upper(elemTitle), InputText) ~= nil then
+                                SafeAddCard(elemTitle, tabName, "", page, Element, elemType)
+                            end
                         end
                     end
 
@@ -995,18 +2055,23 @@ SearchBar.Input:GetPropertyChangedSignal("Text"):Connect(function()
             end
         end
     end
+
+    -- Jump to results page
+    pcall(function()
+        Elements.UIPageLayout.Animated = false
+        Elements.UIPageLayout:JumpTo(SearchResultsPage)
+        Elements.UIPageLayout.Animated = true
+    end)
 end)
+-- ─────────────────────────────────────────────────────────────────────────────
 SearchBar.Clear.MouseButton1Down:Connect(function()
-    Filler.Position = UDim2.new(0.957,0,.5,0)
-    Filler.Size = UDim2.new(0,1,0,1)
-    Filler.BackgroundTransparency = .9
-
-    local goal = {}
-    goal.Size = UDim2.new(0,1000,0,500)
-    goal.BackgroundTransparency = 1
-
-    TweenService:Create(Filler, TweenInfo.new(1,Enum.EasingStyle.Sine,Enum.EasingDirection.Out), goal):Play()
+    -- Clear text first (triggers the Input Changed handler which restores tab)
     SearchBar.Input.Text = ""
+    -- Then close the bar
+    if not SearchHided then
+        SearchHided = true
+        task.spawn(CloseSearch)
+    end
 end)
 
 function Maximise()
@@ -1096,11 +2161,16 @@ function OpenSideBar()
     TweenService:Create(Main.SideTabList, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {BackgroundTransparency = .03,Size = UDim2.new(0,160,0,405),Position = UDim2.new(0,14,0.5,22)}):Play()
     TweenService:Create(Main.SideTabList.UIStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{Transparency = 0}):Play()
     TweenService:Create(Main.SideTabList.RDMT, TweenInfo.new(0.4, Enum.EasingStyle.Quint),{TextTransparency = 0}):Play()
-    for _, child in pairs(Main:GetChildren()) do
-        if child.Name == "SpacerLine" then
-            TweenService:Create(child, TweenInfo.new(0.25, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.75}):Play()
+    -- Defer by one frame so Roblox computes SideSpacer.AbsolutePosition first,
+    -- which triggers UpdateLinePos and places every SpacerLine correctly before
+    -- it becomes visible (fixes wrong position on first open).
+    task.defer(function()
+        for _, child in pairs(Main:GetChildren()) do
+            if child.Name == "SpacerLine" then
+                TweenService:Create(child, TweenInfo.new(0.25, Enum.EasingStyle.Quint), {BackgroundTransparency = 0.75}):Play()
+            end
         end
-    end
+    end)
     for _,tabbtn in pairs(SideList:GetChildren()) do
         if tabbtn.ClassName == "Frame" and tabbtn.Name ~= "Placeholder" and tabbtn.Name ~= "SpacerTab" then
             if tabbtn.Title.TextColor3 ~= Color3.fromRGB(255,255,255) then
@@ -1618,6 +2688,14 @@ function Window:CreateSpacerTab(px)
         )
     end
     SideSpacer:GetPropertyChangedSignal("AbsolutePosition"):Connect(UpdateLinePos)
+    -- Also update when the sidebar panel itself moves or resizes (covers the first-open case
+    -- where SideSpacer.AbsolutePosition was 0,0 while SideTabList was hidden).
+    Main.SideTabList:GetPropertyChangedSignal("AbsolutePosition"):Connect(function()
+        task.defer(UpdateLinePos)
+    end)
+    Main.SideTabList:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
+        task.defer(UpdateLinePos)
+    end)
     task.defer(UpdateLinePos)
 
     local TopSpacer = Instance.new("Frame")
@@ -1787,6 +2865,12 @@ end
         TopTabButton.Interact.MouseButton1Click:Connect(Pick)
         SideTabButton.Interact.MouseButton1Click:Connect(Pick)
 
+        -- Register this tab so search results and pinned-panel entries can navigate here
+        TabNavRegistry[Name] = {
+            page     = TabPage,
+            navigate = Pick
+        }
+
         -- Button
         function Tab:CreateButton(ButtonSettings)
             local ButtonValue = {Locked = false}
@@ -1895,6 +2979,7 @@ end
             local Debounce = false
             local Section = Elements.Template.SectionTitle:Clone()
             SectionValue.Holder = Section.Holder
+            Section.Name = SectionName   -- fix: use real name so search path shows correctly
             Section.Title.Text = SectionName
             Section.Visible = true
             Section.Parent = TabPage
@@ -1919,6 +3004,8 @@ end
             Section.Title.TextTransparency = 1
             TweenService:Create(Section.Title, TweenInfo.new(0.7, Enum.EasingStyle.Quint), { TextTransparency = 0 })
                 :Play()
+
+            -- ─────────────────────────────────────────────────────────────────
 
             function SectionValue:Set(NewSection)
                 Section.Title.Text = NewSection
@@ -2338,7 +3425,7 @@ end
                 elseif DropdownSettings.Items.Selected[1] then
                     Dropdown.Selected.Text = DropdownSettings.Items.Selected[1].Option.Name
                 else
-                    Dropdown.Selected.Text = "Select an option"
+                    Dropdown.Selected.Text = DropdownSettings.PlaceholderText or "Choose an option"
                 end
             end
 
@@ -2790,15 +3877,14 @@ end)
                 local NewKeyNoEnum = SplitMessage[3]
 
                 if table.find(BlockedKeybinds, NewKeyNoEnum) then
-                    CheckingForKey = false
-                    Keybind.KeybindFrame.KeybindBox.Text = ""
-                    Keybind.KeybindFrame.KeybindBox:ReleaseFocus()
                     NSUILib:Notify({
                         Title = "Blocked Key",
                         Content = "You can't use that key as a keybind!",
-                        Duration = 2.5,
-						Image = 10747384394
+                        Duration = 2.5
                     })
+                    task.wait(0.5)
+                    local current = KeybindSettings.CurrentKeybind
+                    Keybind.KeybindFrame.KeybindBox.Text = (not current or current == "Unknown") and "Set Keybind" or current
                     return
                 end
 
@@ -3855,5 +4941,63 @@ function NSUILib:AllTrue(conditions)
 end
 
 task.delay(9, NSUILib.LoadConfiguration, NSUILib)
+
+-- NSUI Search Bar Diagnostic Logger
+-- Paste and run this AFTER the main NSUI script loads
+-- Then open the search bar and start typing
+
+-- Diagnostic (uses variables already in scope)
+task.delay(14, function()
+    warn("[DIAG] === SNAPSHOT ===")
+    warn("[DIAG] SearchBar.BackgroundColor3 = " .. tostring(SearchBar.BackgroundColor3))
+    warn("[DIAG] SearchBar.BackgroundTransparency = " .. tostring(SearchBar.BackgroundTransparency))
+    warn("[DIAG] SearchBar.Visible = " .. tostring(SearchBar.Visible))
+    for _, desc in ipairs(SearchBar:GetDescendants()) do
+        if desc:IsA("GuiObject") then
+            local info = string.format("  %s | Vis=%s | BgTrans=%.2f | ZIndex=%d", desc.Name, tostring(desc.Visible), desc.BackgroundTransparency, desc.ZIndex)
+            if desc:IsA("TextBox") or desc:IsA("TextLabel") then
+                info = info .. string.format(" | TextTrans=%.2f", desc.TextTransparency)
+            end
+            if desc.ClassName == "CanvasGroup" then
+                info = info .. string.format(" | GroupTrans=%.2f", desc.GroupTransparency)
+            end
+            warn("[DIAG]" .. info)
+        end
+    end
+    warn("[DIAG] === Now open search bar, then type. Monitors active. ===")
+
+    local function monitor(obj, path)
+        if obj:IsA("GuiObject") then
+            obj:GetPropertyChangedSignal("BackgroundTransparency"):Connect(function()
+                if obj.BackgroundTransparency > 0.5 then
+                    warn(string.format("[DIAG] BgTrans=%.2f → %s", obj.BackgroundTransparency, path))
+                end
+            end)
+            obj:GetPropertyChangedSignal("Visible"):Connect(function()
+                warn(string.format("[DIAG] Visible=%s → %s", tostring(obj.Visible), path))
+            end)
+        end
+        if obj:IsA("TextBox") or obj:IsA("TextLabel") then
+            obj:GetPropertyChangedSignal("TextTransparency"):Connect(function()
+                warn(string.format("[DIAG] TextTrans=%.2f → %s", obj.TextTransparency, path))
+            end)
+        end
+        if obj.ClassName == "CanvasGroup" then
+            obj:GetPropertyChangedSignal("GroupTransparency"):Connect(function()
+                warn(string.format("[DIAG] GroupTrans=%.2f → %s", obj.GroupTransparency, path))
+            end)
+        end
+        obj:GetPropertyChangedSignal("ZIndex"):Connect(function()
+            warn(string.format("[DIAG] ZIndex=%d → %s", obj.ZIndex, path))
+        end)
+    end
+
+    monitor(SearchBar, "SearchBar")
+    for _, desc in ipairs(SearchBar:GetDescendants()) do
+        if desc:IsA("GuiObject") then
+            monitor(desc, "SearchBar." .. desc.Name)
+        end
+    end
+end)
 
 return NSUILib
