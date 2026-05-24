@@ -3220,12 +3220,8 @@ end
                 local PIcon = Instance.new("ImageLabel")
                 PIcon.Name                   = "ParagraphIcon"
                 PIcon.Size                   = UDim2.new(0, 18, 0, 18)
-                PIcon.AnchorPoint = Vector2.new(0, 0)
-                PIcon.Position    = UDim2.new(
-                    0, 10,
-                    Paragraph.Title.Position.Y.Scale,
-                    Paragraph.Title.Position.Y.Offset
-                )
+                PIcon.AnchorPoint            = Vector2.new(0, Paragraph.Title.AnchorPoint.Y)
+                PIcon.Position               = UDim2.new(0, 10, Paragraph.Title.Position.Y.Scale, Paragraph.Title.Position.Y.Offset)
                 PIcon.BackgroundTransparency = 1
                 PIcon.Image                  = "rbxassetid://" .. tostring(ParagraphSettings.Icon)
                 PIcon.ImageColor3            = Color3.fromRGB(210, 210, 210)
@@ -4988,63 +4984,5 @@ function NSUILib:AllTrue(conditions)
 end
 
 task.delay(9, NSUILib.LoadConfiguration, NSUILib)
-
--- NSUI Search Bar Diagnostic Logger
--- Paste and run this AFTER the main NSUI script loads
--- Then open the search bar and start typing
-
--- Diagnostic (uses variables already in scope)
-task.delay(14, function()
-    warn("[DIAG] === SNAPSHOT ===")
-    warn("[DIAG] SearchBar.BackgroundColor3 = " .. tostring(SearchBar.BackgroundColor3))
-    warn("[DIAG] SearchBar.BackgroundTransparency = " .. tostring(SearchBar.BackgroundTransparency))
-    warn("[DIAG] SearchBar.Visible = " .. tostring(SearchBar.Visible))
-    for _, desc in ipairs(SearchBar:GetDescendants()) do
-        if desc:IsA("GuiObject") then
-            local info = string.format("  %s | Vis=%s | BgTrans=%.2f | ZIndex=%d", desc.Name, tostring(desc.Visible), desc.BackgroundTransparency, desc.ZIndex)
-            if desc:IsA("TextBox") or desc:IsA("TextLabel") then
-                info = info .. string.format(" | TextTrans=%.2f", desc.TextTransparency)
-            end
-            if desc.ClassName == "CanvasGroup" then
-                info = info .. string.format(" | GroupTrans=%.2f", desc.GroupTransparency)
-            end
-            warn("[DIAG]" .. info)
-        end
-    end
-    warn("[DIAG] === Now open search bar, then type. Monitors active. ===")
-
-    local function monitor(obj, path)
-        if obj:IsA("GuiObject") then
-            obj:GetPropertyChangedSignal("BackgroundTransparency"):Connect(function()
-                if obj.BackgroundTransparency > 0.5 then
-                    warn(string.format("[DIAG] BgTrans=%.2f → %s", obj.BackgroundTransparency, path))
-                end
-            end)
-            obj:GetPropertyChangedSignal("Visible"):Connect(function()
-                warn(string.format("[DIAG] Visible=%s → %s", tostring(obj.Visible), path))
-            end)
-        end
-        if obj:IsA("TextBox") or obj:IsA("TextLabel") then
-            obj:GetPropertyChangedSignal("TextTransparency"):Connect(function()
-                warn(string.format("[DIAG] TextTrans=%.2f → %s", obj.TextTransparency, path))
-            end)
-        end
-        if obj.ClassName == "CanvasGroup" then
-            obj:GetPropertyChangedSignal("GroupTransparency"):Connect(function()
-                warn(string.format("[DIAG] GroupTrans=%.2f → %s", obj.GroupTransparency, path))
-            end)
-        end
-        obj:GetPropertyChangedSignal("ZIndex"):Connect(function()
-            warn(string.format("[DIAG] ZIndex=%d → %s", obj.ZIndex, path))
-        end)
-    end
-
-    monitor(SearchBar, "SearchBar")
-    for _, desc in ipairs(SearchBar:GetDescendants()) do
-        if desc:IsA("GuiObject") then
-            monitor(desc, "SearchBar." .. desc.Name)
-        end
-    end
-end)
 
 return NSUILib
