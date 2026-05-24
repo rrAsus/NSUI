@@ -3219,7 +3219,7 @@ end
             if ParagraphSettings.Icon then
                 local PIcon = Instance.new("ImageLabel")
                 PIcon.Name                   = "ParagraphIcon"
-                PIcon.Size                   = UDim2.new(0, 18, 0, 18)
+                PIcon.Size = UDim2.new(0, 16, 0, 16)
                 PIcon.AnchorPoint            = Vector2.new(0, Paragraph.Title.AnchorPoint.Y)
                 PIcon.Position               = UDim2.new(0, 10, Paragraph.Title.Position.Y.Scale, Paragraph.Title.Position.Y.Offset)
                 PIcon.BackgroundTransparency = 1
@@ -3230,8 +3230,8 @@ end
                 PIcon.Parent                 = Paragraph
 
                 Paragraph.Title.AnchorPoint = Vector2.new(0, Paragraph.Title.AnchorPoint.Y)
-                Paragraph.Title.Position    = UDim2.new(0, 34, Paragraph.Title.Position.Y.Scale, Paragraph.Title.Position.Y.Offset)
-                Paragraph.Title.Size        = UDim2.new(1, -44, Paragraph.Title.Size.Y.Scale, Paragraph.Title.Size.Y.Offset)
+                Paragraph.Title.Position = UDim2.new(0, 29, Paragraph.Title.Position.Y.Scale, Paragraph.Title.Position.Y.Offset)
+                Paragraph.Title.Size     = UDim2.new(1, -39, Paragraph.Title.Size.Y.Scale, Paragraph.Title.Size.Y.Offset)
 
                 TweenService:Create(PIcon, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
             end
