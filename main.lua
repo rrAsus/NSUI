@@ -3216,6 +3216,24 @@ end
 		Paragraph.Title.RichText = true
             Paragraph.Content.Text = ParagraphSettings.Content
             Paragraph.Content.RichText = true
+            if ParagraphSettings.Icon then
+                local PIcon = Instance.new("ImageLabel")
+                PIcon.Name                   = "ParagraphIcon"
+                PIcon.Size                   = UDim2.new(0, 18, 0, 18)
+                PIcon.AnchorPoint            = Vector2.new(0, 0.5)
+                PIcon.Position               = UDim2.new(0, 10, 0, 27)
+                PIcon.BackgroundTransparency = 1
+                PIcon.Image                  = "rbxassetid://" .. tostring(ParagraphSettings.Icon)
+                PIcon.ImageColor3            = Color3.fromRGB(210, 210, 210)
+                PIcon.ImageTransparency      = 1
+                PIcon.ZIndex                 = Paragraph.Title.ZIndex
+                PIcon.Parent                 = Paragraph
+
+                Paragraph.Title.Position = UDim2.new(0, 34, Paragraph.Title.Position.Y.Scale, Paragraph.Title.Position.Y.Offset)
+                Paragraph.Title.Size     = UDim2.new(Paragraph.Title.Size.X.Scale, Paragraph.Title.Size.X.Offset - 24, Paragraph.Title.Size.Y.Scale, Paragraph.Title.Size.Y.Offset)
+
+                TweenService:Create(PIcon, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
+            end
             Paragraph.Visible = true
             Tab.Elements[ParagraphSettings.Title] = {
                 type = "paragraph",
@@ -3237,7 +3255,7 @@ end
             Paragraph.UIStroke.Transparency = 1
             Paragraph.Title.TextTransparency = 1
             Paragraph.Content.TextTransparency = 1
-
+            
             Paragraph.BackgroundColor3 = SelectedTheme.SecondaryElementBackground
             Paragraph.UIStroke.Color = SelectedTheme.SecondaryElementStroke
 
@@ -3247,8 +3265,14 @@ end
             TweenService:Create(Paragraph.Content, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()	
 
             function ParagraphValue:Set(NewParagraphSettings)
-                Paragraph.Title.Text = NewParagraphSettings.Title
+                Paragraph.Title.Text   = NewParagraphSettings.Title
                 Paragraph.Content.Text = NewParagraphSettings.Content
+                if NewParagraphSettings.Icon then
+                    local existing = Paragraph:FindFirstChild("ParagraphIcon")
+                    if existing then
+                        existing.Image = "rbxassetid://" .. tostring(NewParagraphSettings.Icon)
+                    end
+                end
             end
 
             return ParagraphValue
