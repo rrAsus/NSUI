@@ -129,8 +129,13 @@ if RunService:IsStudio() then
 end
 
 pcall(function()
-    _G.LastNSUI.Name = "Old NSUI"
-    _G.LastNSUI.Enabled = false
+    if _G.LastNSUI_Connections then
+        for _, conn in ipairs(_G.LastNSUI_Connections) do
+            pcall(function() conn:Disconnect() end)
+        end
+        _G.LastNSUI_Connections = nil
+    end
+    _G.LastNSUI:Destroy()
 end)
 
 local ParentObject = function(Gui)
@@ -4858,7 +4863,9 @@ Topbar.Hide.MouseButton1Click:Connect(function()
     end
 end)
 
-UserInputService.InputBegan:Connect(function(input, processed)
+_G.LastNSUI_Connections = _G.LastNSUI_Connections or {}
+
+local keyConn = UserInputService.InputBegan:Connect(function(input, processed)
     if (input.KeyCode == Enum.KeyCode.Quote and not processed) then
         if Debounce then return end
         if Hidden then
@@ -4871,6 +4878,7 @@ UserInputService.InputBegan:Connect(function(input, processed)
         end
     end
 end)
+table.insert(_G.LastNSUI_Connections, keyConn)
 
 for _, TopbarButton in ipairs(Topbar:GetChildren()) do
     if TopbarButton.ClassName == "ImageButton" then
