@@ -3229,8 +3229,9 @@ end
                 PIcon.ZIndex                 = Paragraph.Title.ZIndex
                 PIcon.Parent                 = Paragraph
 
-                Paragraph.Title.Position = UDim2.new(0, 34, Paragraph.Title.Position.Y.Scale, Paragraph.Title.Position.Y.Offset)
-                Paragraph.Title.Size     = UDim2.new(Paragraph.Title.Size.X.Scale, Paragraph.Title.Size.X.Offset - 24, Paragraph.Title.Size.Y.Scale, Paragraph.Title.Size.Y.Offset)
+                Paragraph.Title.AnchorPoint = Vector2.new(0, Paragraph.Title.AnchorPoint.Y)
+                Paragraph.Title.Position    = UDim2.new(0, 34, Paragraph.Title.Position.Y.Scale, Paragraph.Title.Position.Y.Offset)
+                Paragraph.Title.Size        = UDim2.new(1, -44, Paragraph.Title.Size.Y.Scale, Paragraph.Title.Size.Y.Offset)
 
                 TweenService:Create(PIcon, TweenInfo.new(0.7, Enum.EasingStyle.Quint), {ImageTransparency = 0}):Play()
             end
